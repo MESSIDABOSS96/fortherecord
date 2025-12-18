@@ -2,6 +2,7 @@
 
 import { Record } from "@/types/record";
 import { useState, useEffect } from "react";
+import SpotifySearch from "./SpotifySearch";
 
 interface AddRecordModalProps {
   onClose: () => void;
@@ -21,10 +22,12 @@ export default function AddRecordModal({
   onSubmit,
 }: AddRecordModalProps) {
   const [step, setStep] = useState(1);
+  const [selectedSong, setSelectedSong] = useState(false); // Track if song is selected
   const [formData, setFormData] = useState({
     song_title: "",
     artist: "",
     album_art_url: "",
+    spotify_track_id: "",
     lyric_excerpt: "",
     for_name: "",
     reflection_text: "",
@@ -58,8 +61,23 @@ export default function AddRecordModal({
     }
   };
 
+  const handleSongSelect = (songData: {
+    song_title: string;
+    artist: string;
+    album_art_url: string;
+    spotify_track_id: string;
+  }) => {
+    setFormData({
+      ...formData,
+      ...songData,
+    });
+    setSelectedSong(true);
+    // Auto-advance to Step 2 after selecting a song
+    setTimeout(() => setStep(2), 500);
+  };
+
   const canProceed = () => {
-    if (step === 1) return formData.song_title && formData.artist;
+    if (step === 1) return selectedSong;
     if (step === 2) return formData.lyric_excerpt;
     if (step === 3) return formData.for_name && formData.reflection_text;
     return false;
@@ -110,62 +128,31 @@ export default function AddRecordModal({
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Step 1: Song Selection */}
+          {/* Step 1: Song Selection via Spotify */}
           {step === 1 && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-bold mb-2">Select a song</h2>
                 <p className="text-gray-600">
-                  Tell us about the song that reminds you of someone
+                  Search Spotify's library for the song that reminds you of someone
                 </p>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Song Title *
-                </label>
-                <input
-                  type="text"
-                  value={formData.song_title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, song_title: e.target.value })
-                  }
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
-                  placeholder="e.g., 505"
-                  required
-                />
-              </div>
+              <SpotifySearch onSelectTrack={handleSongSelect} />
 
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Artist *
-                </label>
-                <input
-                  type="text"
-                  value={formData.artist}
-                  onChange={(e) =>
-                    setFormData({ ...formData, artist: e.target.value })
-                  }
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
-                  placeholder="e.g., Arctic Monkeys"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Album Art URL (optional)
-                </label>
-                <input
-                  type="url"
-                  value={formData.album_art_url}
-                  onChange={(e) =>
-                    setFormData({ ...formData, album_art_url: e.target.value })
-                  }
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
-                  placeholder="https://..."
-                />
-              </div>
+              {selectedSong && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center gap-2 text-green-700">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="font-medium">Song selected!</span>
+                  </div>
+                  <p className="text-sm text-green-600 mt-1">
+                    {formData.song_title} by {formData.artist}
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
