@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { extractDominantColor } from '@/utils/colorExtraction';
+import { matchColorToPalette, getRandomPaletteColor } from '@/utils/colorPalette';
 
 interface SpotifyTrack {
   id: string;
@@ -21,6 +23,7 @@ interface SpotifySearchProps {
     artist: string;
     album_art_url: string;
     spotify_track_id: string;
+    background_color: string;
   }) => void;
 }
 
@@ -61,12 +64,26 @@ export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
     return () => clearTimeout(timer);
   }, [query]);
 
-  const handleSelectTrack = (track: SpotifyTrack) => {
+  const handleSelectTrack = async (track: SpotifyTrack) => {
+    let matchedColor: string;
+
+    try {
+      // Extract dominant color from album art
+      const dominantColor = await extractDominantColor(track.albumArtMedium);
+      // Match to closest palette color
+      matchedColor = matchColorToPalette(dominantColor);
+    } catch (error) {
+      console.error('Color extraction failed:', error);
+      // Graceful fallback to random palette color
+      matchedColor = getRandomPaletteColor();
+    }
+
     onSelectTrack({
       song_title: track.name,
       artist: track.artists,
       album_art_url: track.albumArtMedium, // 300x300 image
       spotify_track_id: track.id,
+      background_color: matchedColor,
     });
   };
 

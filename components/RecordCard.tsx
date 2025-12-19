@@ -25,7 +25,7 @@ function LyricCard({ record, onClick }: RecordCardProps) {
     >
       {/* Header: Album art + Song info */}
       <div className="flex items-center gap-3 mb-5 flex-shrink-0">
-        <div className="w-[46px] h-[46px] bg-black/20 rounded-md flex-shrink-0 overflow-hidden">
+        <div className="w-[46px] h-[46px] bg-black/20 rounded-sm flex-shrink-0 overflow-hidden">
           {record.album_art_url ? (
             <Image
               src={record.album_art_url}

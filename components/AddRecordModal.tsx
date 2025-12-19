@@ -9,14 +9,6 @@ interface AddRecordModalProps {
   onSubmit: (record: Omit<Record, "id" | "created_at">) => void;
 }
 
-const CARD_COLORS = [
-  "#c4a8d8", // purple
-  "#8fb5e8", // blue
-  "#e88b8b", // red
-  "#9fa8b5", // gray
-  "#d89b7a", // orange
-];
-
 export default function AddRecordModal({
   onClose,
   onSubmit,
@@ -31,7 +23,7 @@ export default function AddRecordModal({
     lyric_excerpt: "",
     for_name: "",
     reflection_text: "",
-    background_color: CARD_COLORS[Math.floor(Math.random() * CARD_COLORS.length)],
+    background_color: "", // Will be set when song is selected from Spotify
   });
 
   // Close on escape key
@@ -66,6 +58,7 @@ export default function AddRecordModal({
     artist: string;
     album_art_url: string;
     spotify_track_id: string;
+    background_color: string;
   }) => {
     setFormData({
       ...formData,
@@ -222,29 +215,6 @@ export default function AddRecordModal({
                   placeholder="Why does this song/lyric remind you of them? Tell their story..."
                   required
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Card Color
-                </label>
-                <div className="flex gap-3">
-                  {CARD_COLORS.map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() =>
-                        setFormData({ ...formData, background_color: color })
-                      }
-                      className={`w-12 h-12 rounded-lg transition-all ${
-                        formData.background_color === color
-                          ? "ring-4 ring-gray-900 ring-offset-2"
-                          : "hover:scale-110"
-                      }`}
-                      style={{ backgroundColor: color }}
-                    />
-                  ))}
-                </div>
               </div>
             </div>
           )}

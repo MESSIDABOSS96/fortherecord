@@ -48,7 +48,7 @@ export const seedRecords: Record[] = [
     album_art_url: "https://i.scdn.co/image/ab67616d00001e02ea07dca8b4ca808c1e5b17fb",
     lyric_excerpt: "Now it makes me so mad\nIt makes me mad at truth for loving what was you",
     reflection_text: "Sometimes anger is just love with nowhere to go.",
-    background_color: "#e88b8b",
+    background_color: "#f19ca7",
     created_at: new Date("2025-11-22"),
   },
   {
@@ -72,7 +72,7 @@ export const seedRecords: Record[] = [
     album_art_url: "https://i.scdn.co/image/ab67616d00001e02de3c04b5fc750b68899b20a9",
     lyric_excerpt: "In the deepest ocean\nThe bottom of the sea\nYour eyes\nThey turn me",
     reflection_text: "There's something hypnotic about the way this song builds, like falling deeper into something beautiful and terrifying at once.",
-    background_color: "#d89b7a",
+    background_color: "#d8a48f",
     created_at: new Date("2025-11-20"),
   },
   {
@@ -96,7 +96,7 @@ export const seedRecords: Record[] = [
     album_art_url: "https://i.scdn.co/image/ab67616d00001e02a048415db06a5b6fa7ec4e1a",
     lyric_excerpt: "Man, I wish that I could say the same\nI swear I'm not angry, that's just my face",
     reflection_text: "This became our inside joke - every time someone asked if I was okay, we'd both know.",
-    background_color: "#8fb5e8",
+    background_color: "#c48a8a",
     created_at: new Date("2025-11-18"),
   },
   {
