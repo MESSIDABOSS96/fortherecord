@@ -1,26 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Record } from "@/types/record";
 import { seedRecords } from "@/data/seedRecords";
 import HeaderNav from "@/components/HeaderNav";
 import MasonryGrid from "@/components/MasonryGrid";
 import RecordModal from "@/components/RecordModal";
-import AddRecordModal from "@/components/AddRecordModal";
 
 export default function Home() {
   const [records, setRecords] = useState<Record[]>(seedRecords);
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false);
+  const router = useRouter();
 
-  const handleAddRecord = (newRecordData: Omit<Record, "id" | "created_at">) => {
-    const newRecord: Record = {
-      ...newRecordData,
-      id: Date.now().toString(),
-      created_at: new Date(),
-    };
-    setRecords([newRecord, ...records]);
-  };
+  // Load records from localStorage on mount
+  useEffect(() => {
+    const storedRecords = localStorage.getItem('records');
+    if (storedRecords) {
+      const parsed = JSON.parse(storedRecords);
+      setRecords(parsed);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -60,7 +60,7 @@ export default function Home() {
 
         {/* Add button (fixed position) */}
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={() => router.push('/add')}
           className="fixed top-10 right-10 px-8 py-3 bg-white border-2 border-gray-900 rounded-full font-semibold text-sm hover:bg-gray-900 hover:text-white transition-colors z-40 shadow-md"
         >
           Add
@@ -75,13 +75,6 @@ export default function Home() {
         <RecordModal
           record={selectedRecord}
           onClose={() => setSelectedRecord(null)}
-        />
-      )}
-
-      {showAddModal && (
-        <AddRecordModal
-          onClose={() => setShowAddModal(false)}
-          onSubmit={handleAddRecord}
         />
       )}
     </div>
