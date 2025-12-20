@@ -12,8 +12,31 @@ export function splitLyricsIntoLines(lyrics: string): string[] {
       // Filter out section headers like [Verse 1], [Chorus], etc.
       if (line.startsWith('[') && line.endsWith(']')) return false;
 
+      // Filter out lines with embedded section tags like "Title[Intro]"
+      if (line.includes('[') && line.includes(']')) return false;
+
       // Filter out parenthetical annotations like (2x)
       if (line.match(/^\([^)]+\)$/)) return false;
+
+      // Filter out Genius metadata patterns
+      if (line.match(/\d+\s*Contributors?/i)) return false;
+      if (line.match(/Translations?/i)) return false;
+      if (line.match(/Lyrics$/)) return false;
+
+      // Filter out language names commonly found in Genius metadata
+      const languagePattern = /(Nederlands|Italiano|Español|Français|Deutsch|Português|Polski|Türkçe|Русский|日本語|中文)/;
+      if (languagePattern.test(line)) return false;
+
+      // Filter out lines that are suspiciously long (likely concatenated metadata)
+      if (line.length > 150) return false;
+
+      // Filter out "Embed" buttons and other UI elements
+      if (line.match(/^Embed$/i)) return false;
+      if (line.match(/^See.*Lyrics$/i)) return false;
+
+      // Filter out lines with unusual character density (camelCase spam)
+      const uppercaseCount = (line.match(/[A-Z]/g) || []).length;
+      if (uppercaseCount > line.length * 0.4) return false;
 
       return true;
     });

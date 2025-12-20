@@ -9,7 +9,7 @@ interface SongData {
 }
 
 export function useAddRecordState() {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [songData, setSongData] = useState<SongData | null>(null);
   const [selectedLines, setSelectedLines] = useState<string[]>([]);
   const [forName, setForName] = useState('');

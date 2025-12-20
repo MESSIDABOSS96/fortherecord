@@ -1,4 +1,4 @@
-import FastAverageColor from 'fast-average-color';
+import { FastAverageColor } from 'fast-average-color';
 
 /**
  * Extract the dominant color from an image URL
@@ -29,8 +29,9 @@ export async function extractDominantColor(
       try {
         clearTimeout(timeoutId);
 
-        // Extract average color from the image
-        const color = fac.getColor(img);
+        // Extract dominant color from the image using the 'dominant' algorithm
+        // This gives the most prominent color rather than mixing all colors equally
+        const color = fac.getColor(img, { algorithm: 'dominant' });
 
         // Return RGB values
         resolve({

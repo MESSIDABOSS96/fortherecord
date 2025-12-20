@@ -62,7 +62,7 @@ export default function LyricSelector({
       onSelectionChange(selectedLines.filter(l => l !== line));
     } else {
       // Select (if under limit)
-      if (selectedLines.length < 3) {
+      if (selectedLines.length < 4) {
         onSelectionChange([...selectedLines, line]);
       }
     }
@@ -95,7 +95,7 @@ export default function LyricSelector({
       {/* Selection counter */}
       <div className="mb-4 p-3 bg-gray-50 rounded-lg">
         <p className="text-sm font-medium text-gray-700">
-          {selectedLines.length} of 3 lines selected
+          {selectedLines.length} of 4 lines selected
         </p>
       </div>
 
@@ -109,12 +109,12 @@ export default function LyricSelector({
             <button
               key={index}
               onClick={() => handleLineClick(line)}
-              disabled={!isSelected && selectedLines.length >= 3}
+              disabled={!isSelected && selectedLines.length >= 4}
               className={`w-full text-left px-4 py-3 rounded-lg border-2 transition-all ${
                 isSelected
                   ? 'border-gray-900 bg-gray-50'
                   : 'border-gray-200 hover:border-gray-400'
-              } ${!isSelected && selectedLines.length >= 3 ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
+              } ${!isSelected && selectedLines.length >= 4 ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <div className="flex items-start gap-3">
                 {/* Selection badge */}

@@ -1,9 +1,9 @@
 "use client";
 
 interface AddRecordInputsProps {
-  forName: string;
+  forName: string; // Keep for potential display, but don't show input
   reflectionText: string;
-  onForNameChange: (value: string) => void;
+  onForNameChange: (value: string) => void; // Keep for interface compatibility
   onReflectionChange: (value: string) => void;
   onSubmit: () => void;
   canSubmit: boolean;
@@ -19,20 +19,6 @@ export default function AddRecordInputs({
 }: AddRecordInputsProps) {
   return (
     <div className="space-y-6">
-      {/* For Name */}
-      <div>
-        <label className="block text-sm font-medium mb-2">
-          Who do these lyrics remind you of? *
-        </label>
-        <input
-          type="text"
-          value={forName}
-          onChange={(e) => onForNameChange(e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
-          placeholder="e.g., Emma"
-        />
-      </div>
-
       {/* Reflection */}
       <div>
         <label className="block text-sm font-medium mb-2">
