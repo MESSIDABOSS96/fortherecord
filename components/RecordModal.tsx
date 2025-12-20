@@ -39,7 +39,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
       onClick={onClose}
     >
       <div
-        className="relative max-w-3xl w-full rounded-3xl overflow-hidden"
+        className="relative max-w-4xl w-full rounded-3xl overflow-hidden flex flex-col p-8"
         style={{
           backgroundColor: record.background_color,
           boxShadow: "var(--shadow-lg)",
@@ -49,29 +49,29 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/20 hover:bg-black/30 flex items-center justify-center transition-colors"
+          className="absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 border-black hover:bg-black/10 flex items-center justify-center transition-colors"
           aria-label="Close"
         >
           <svg
-            width="16"
-            height="16"
+            width="14"
+            height="14"
             viewBox="0 0 16 16"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
               d="M2 2L14 14M14 2L2 14"
-              stroke="white"
+              stroke="black"
               strokeWidth="2"
               strokeLinecap="round"
             />
           </svg>
         </button>
 
-        {/* Content */}
-        <div className="flex flex-col md:flex-row">
+        {/* Content box */}
+        <div className="flex flex-col md:flex-row mb-8 relative">
           {/* Left panel: Song info + Lyrics */}
-          <div className="md:w-1/2 p-8 border-b md:border-b-0 md:border-r border-black/10">
+          <div className="md:w-1/2 p-8 flex flex-col">
             {/* Album art + Song info */}
             <div className="flex items-center gap-4 mb-6">
               <div className="w-16 h-16 bg-black/20 rounded-xl flex-shrink-0 overflow-hidden">
@@ -118,17 +118,27 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
             </div>
           </div>
 
+          {/* Vertical divider */}
+          <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-4/5 w-px bg-black/20"></div>
+
           {/* Right panel: Reflection */}
           <div className="md:w-1/2 p-8 flex flex-col">
-            <div className="text-xs font-medium italic text-gray-800 uppercase tracking-wide mb-4">
+            <div className="text-base font-medium italic text-gray-800 uppercase tracking-wide mb-4 text-center">
               FOR {record.for_name.toUpperCase()}
             </div>
-            <div className="text-gray-900 leading-relaxed flex-1">
+            <div className="text-gray-900 leading-relaxed overflow-y-auto max-h-[350px]">
               {record.reflection_text}
             </div>
-            <div className="mt-6 pt-6 border-t border-black/10 text-xs text-gray-700 text-center uppercase tracking-wide">
-              Posted on {formattedDate}
-            </div>
+          </div>
+        </div>
+
+        {/* Footer - outside the bordered box */}
+        <div className="text-center">
+          <div className="text-sm font-bold uppercase tracking-wide text-gray-900">
+            Posted on {formattedDate}
+          </div>
+          <div className="text-sm font-bold uppercase tracking-wide text-gray-900">
+            For {record.for_name}
           </div>
         </div>
       </div>
