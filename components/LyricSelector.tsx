@@ -19,6 +19,68 @@ export default function LyricSelector({
   onSelectionChange,
   onConfirm,
 }: LyricSelectorProps) {
+  // Helper function to get min/max range of current selection
+  const getSelectionRange = (lines: SelectedLyric[]): { min: number; max: number } | null => {
+    if (lines.length === 0) return null;
+
+    const indices = lines.map(l => l.originalIndex).sort((a, b) => a - b);
+    return {
+      min: indices[0],
+      max: indices[indices.length - 1]
+    };
+  };
+
+  // Helper function to validate consecutiveness
+  const isConsecutiveSelection = (lines: SelectedLyric[]): boolean => {
+    if (lines.length <= 1) return true;
+
+    const indices = lines.map(l => l.originalIndex).sort((a, b) => a - b);
+
+    for (let i = 1; i < indices.length; i++) {
+      if (indices[i] !== indices[i - 1] + 1) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // Helper function to check if a line can be selected
+  const canSelectLine = (
+    lineIndex: number,
+    currentSelection: SelectedLyric[]
+  ): boolean => {
+    // Empty selection: any line can start a new selection
+    if (currentSelection.length === 0) return true;
+
+    // Maximum 4 lines
+    if (currentSelection.length >= 4) return false;
+
+    // Get current range
+    const range = getSelectionRange(currentSelection);
+    if (!range) return true;
+
+    // Line must be adjacent to current range (extends min or max)
+    return lineIndex === range.min - 1 || lineIndex === range.max + 1;
+  };
+
+  // Helper function to check if a line can be deselected
+  const canDeselectLine = (
+    lineIndex: number,
+    currentSelection: SelectedLyric[]
+  ): boolean => {
+    if (currentSelection.length === 0) return false;
+
+    // Single line: always allow deselection
+    if (currentSelection.length === 1) return true;
+
+    const range = getSelectionRange(currentSelection);
+    if (!range) return false;
+
+    // Can only deselect from edges (first or last line)
+    return lineIndex === range.min || lineIndex === range.max;
+  };
+
   const [lyrics, setLyrics] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -57,18 +119,31 @@ export default function LyricSelector({
 
   const handleLineClick = (line: string, index: number) => {
     // Check if already selected
-    const existingIndex = selectedLines.findIndex(l => l.text === line);
+    const isSelected = selectedLines.some(l => l.originalIndex === index);
 
-    if (existingIndex >= 0) {
-      // Deselect: remove from array
-      const newSelection = selectedLines.filter((_, i) => i !== existingIndex);
+    if (isSelected) {
+      // DESELECTION: Only allow from edges
+      if (!canDeselectLine(index, selectedLines)) {
+        return; // Middle lines cannot be deselected
+      }
+
+      const newSelection = selectedLines.filter(l => l.originalIndex !== index);
       onSelectionChange(newSelection);
     } else {
-      // Select: add with original index
-      if (selectedLines.length < 4) {
-        const newSelection = [...selectedLines, { text: line, originalIndex: index }];
-        onSelectionChange(newSelection);
+      // SELECTION: Must extend consecutive range
+      if (!canSelectLine(index, selectedLines)) {
+        return; // Non-adjacent lines cannot be selected
       }
+
+      const newSelection = [...selectedLines, { text: line, originalIndex: index }];
+
+      // Safety check
+      if (!isConsecutiveSelection(newSelection)) {
+        console.error('Non-consecutive selection detected');
+        return;
+      }
+
+      onSelectionChange(newSelection);
     }
   };
 
@@ -103,6 +178,11 @@ export default function LyricSelector({
         <p className="text-sm font-medium text-gray-700">
           {selectedLines.length} of 4 lines selected
         </p>
+        {selectedLines.length > 0 && (
+          <p className="text-xs text-gray-500 mt-1">
+            Select consecutive lines only. Click the first or last line to deselect.
+          </p>
+        )}
       </div>
 
       {/* Lyric lines */}
@@ -115,12 +195,28 @@ export default function LyricSelector({
             <button
               key={index}
               onClick={() => handleLineClick(line, index)}
-              disabled={!isSelected && selectedLines.length >= 4}
+              disabled={(() => {
+                const isSelected = getLineNumber(line) !== null;
+
+                if (isSelected) {
+                  // Selected line: check if it can be deselected
+                  return !canDeselectLine(index, selectedLines);
+                } else {
+                  // Unselected line: check if it can be selected
+                  return !canSelectLine(index, selectedLines);
+                }
+              })()}
               className={`w-full text-left px-4 py-3 rounded-lg border-2 transition-all ${
                 isSelected
                   ? 'border-gray-900 bg-gray-50'
-                  : 'border-gray-200 hover:border-gray-400'
-              } ${!isSelected && selectedLines.length >= 4 ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
+                  : canSelectLine(index, selectedLines)
+                    ? 'border-gray-200 hover:border-gray-400 cursor-pointer'
+                    : 'border-gray-200 opacity-40 cursor-not-allowed'
+              } ${
+                isSelected && !canDeselectLine(index, selectedLines)
+                  ? 'opacity-60 cursor-not-allowed'
+                  : ''
+              }`}
             >
               <div className="flex items-start gap-3">
                 {/* Selection badge */}
