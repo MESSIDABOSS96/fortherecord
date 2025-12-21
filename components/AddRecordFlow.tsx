@@ -7,6 +7,7 @@ import AddRecordInputs from './AddRecordInputs';
 import { useAddRecordState } from '@/hooks/useAddRecordState';
 import { Record } from '@/types/record';
 import { useState } from 'react';
+import Image from 'next/image';
 
 interface AddRecordFlowProps {
   onSubmit: (data: Omit<Record, 'id' | 'created_at'>) => void;
@@ -68,13 +69,13 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
   return (
     <main className="max-w-7xl mx-auto px-6 py-12">
       {/* Progress indicator */}
-      <div className="max-w-md mx-auto mb-12">
+      <div className="max-w-sm mx-auto mb-6">
         <div className="flex gap-2">
           {[1, 2, 3, 4].map((s) => (
             <div
               key={s}
-              className={`h-1 flex-1 rounded-full transition-colors ${
-                s <= step ? 'bg-gray-800' : 'bg-gray-300'
+              className={`h-0.5 flex-1 rounded-full transition-colors ${
+                s <= step ? 'bg-gray-800' : 'bg-gray-200'
               }`}
             />
           ))}
@@ -83,8 +84,8 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
 
       {/* Step 1: Centered song selection */}
       {step === 1 && (
-        <div className="max-w-2xl mx-auto mt-16">
-          <div className="text-center mb-10">
+        <div className="max-w-2xl mx-auto mt-12">
+          <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-3">Select a song</h2>
             <p className="text-gray-600 text-lg">
               Search for the song that reminds you of someone
@@ -96,8 +97,8 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
 
       {/* Step 2: Who are you thinking of? */}
       {step === 2 && songData && (
-        <div className="mt-16">
-          <div className="mb-8">
+        <div className="mt-12">
+          <div className="mb-10">
             <button
               onClick={() => setStep(1)}
               className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
@@ -110,7 +111,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
           </div>
 
           <div className="max-w-xl mx-auto">
-            <div className="text-center mb-10">
+            <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-3">Who are you thinking of?</h2>
             </div>
 
@@ -139,12 +140,12 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
 
       {/* Step 3: Lyric Selection - 2 column with preview */}
       {step === 3 && songData && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-16">
           {/* Left: Lyric Selector */}
           <div>
             <button
               onClick={() => setStep(2)}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8"
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M12 4l-8 8 8 8" stroke="currentColor" strokeWidth="2" />
@@ -152,8 +153,8 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
               Back
             </button>
 
-            <h2 className="text-2xl font-bold mb-2">Select lyrics</h2>
-            <p className="text-gray-600 mb-8">
+            <h2 className="text-2xl font-bold mb-4">Select lyrics</h2>
+            <p className="text-gray-600 mb-10">
               Click up to 4 lines that remind you of {forName}
             </p>
 
@@ -168,13 +169,13 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
 
           {/* Right: Preview */}
           <div className="hidden lg:block">
-            <div className="sticky top-8">
-              <p className="text-sm text-gray-500 mb-4">Preview</p>
+            <div className="sticky top-12">
               <RecordPreview
                 songData={songData}
                 lyricExcerpt={selectedLines.join('\n')}
                 forName={forName}
                 reflectionText={reflectionText}
+                showExpandedView={false}
               />
             </div>
           </div>
@@ -190,65 +191,120 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
             lyricExcerpt={selectedLines.join('\n')}
             forName={forName}
             reflectionText={reflectionText}
+            showExpandedView={false}
           />
         </div>
       )}
 
-      {/* Step 4: Story - 2 column with preview */}
+      {/* Step 4: Tell your story - Inline editing in expanded card */}
       {step === 4 && songData && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mt-8">
-          {/* Left: Story Input */}
-          <div className="bg-white rounded-2xl p-8 shadow-sm">
+        <div className="mt-16">
+          {/* Back button */}
+          <div className="max-w-4xl mx-auto mb-8">
             <button
               onClick={() => setStep(3)}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M12 4l-8 8 8 8" stroke="currentColor" strokeWidth="2" />
               </svg>
               Back to lyrics
             </button>
-
-            <h2 className="text-2xl font-bold mb-2">Tell your story</h2>
-            <p className="text-gray-600 mb-8">
-              Why do these lyrics remind you of {forName}?
-            </p>
-
-            <AddRecordInputs
-              forName={forName}
-              reflectionText={reflectionText}
-              onForNameChange={setForName}
-              onReflectionChange={setReflectionText}
-              onSubmit={handleSubmit}
-              canSubmit={reflectionText.trim() !== ''}
-            />
           </div>
 
-          {/* Right: Preview */}
-          <div className="hidden lg:block">
-            <div className="sticky top-8">
-              <p className="text-sm text-gray-500 mb-4">Preview</p>
-              <RecordPreview
-                songData={songData}
-                lyricExcerpt={selectedLines.join('\n')}
-                forName={forName}
-                reflectionText={reflectionText}
-              />
+          {/* Expanded card - matches RecordModal structure */}
+          <div className="max-w-4xl mx-auto">
+            <div
+              className="rounded-3xl overflow-hidden flex flex-col p-8"
+              style={{
+                backgroundColor: songData.background_color,
+                boxShadow: "var(--shadow-lg)",
+              }}
+            >
+              {/* Two-panel content */}
+              <div className="flex flex-col md:flex-row mb-8 relative">
+                {/* Left panel: Song info + Lyrics */}
+                <div className="md:w-1/2 p-8 flex flex-col">
+                  {/* Album art + Song info */}
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-16 h-16 bg-black/20 rounded-xl flex-shrink-0 overflow-hidden">
+                      {songData.album_art_url ? (
+                        <Image
+                          src={songData.album_art_url}
+                          alt={songData.song_title}
+                          width={64}
+                          height={64}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <circle cx="16" cy="16" r="14" stroke="white" strokeWidth="2" />
+                            <circle cx="16" cy="16" r="6" fill="white" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-xl text-gray-900">
+                        {songData.song_title}
+                      </div>
+                      <div className="text-gray-700">{songData.artist}</div>
+                    </div>
+                  </div>
+
+                  {/* Lyric excerpt */}
+                  <div className="text-gray-900 font-bold text-2xl leading-snug whitespace-pre-wrap">
+                    {selectedLines.join('\n') || 'Select lyrics to see preview...'}
+                  </div>
+                </div>
+
+                {/* Vertical divider */}
+                <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-4/5 w-px bg-black/20"></div>
+
+                {/* Right panel: Inline editing area */}
+                <div className="md:w-1/2 p-8 flex flex-col">
+                  <div className="text-base font-medium italic text-gray-800 uppercase tracking-wide mb-4 text-center">
+                    FOR {forName.toUpperCase() || 'YOUR NAME'}
+                  </div>
+
+                  {/* Inline textarea - replaces static text */}
+                  <textarea
+                    value={reflectionText}
+                    onChange={(e) => setReflectionText(e.target.value)}
+                    placeholder="Why do these lyrics remind you of them? Tell their story..."
+                    className="text-gray-900 leading-relaxed overflow-y-auto max-h-[350px] bg-transparent border-none focus:outline-none focus:ring-0 resize-none w-full placeholder:text-gray-500 placeholder:italic"
+                    style={{ minHeight: '200px' }}
+                  />
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="text-center">
+                <div className="text-sm font-bold uppercase tracking-wide text-gray-900">
+                  Posted on {new Date().toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </div>
+                <div className="text-sm font-bold uppercase tracking-wide text-gray-900">
+                  For {forName || 'Your Name'}
+                </div>
+              </div>
+            </div>
+
+            {/* Publish button - below the card */}
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={handleSubmit}
+                disabled={reflectionText.trim() === ''}
+                className="px-12 py-4 bg-gray-900 text-white rounded-full font-semibold text-base hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md"
+              >
+                Publish Record
+              </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Mobile preview for step 4 */}
-      {step === 4 && songData && (
-        <div className="lg:hidden mt-8">
-          <p className="text-sm text-gray-500 mb-4">Preview</p>
-          <RecordPreview
-            songData={songData}
-            lyricExcerpt={selectedLines.join('\n')}
-            forName={forName}
-            reflectionText={reflectionText}
-          />
         </div>
       )}
     </main>

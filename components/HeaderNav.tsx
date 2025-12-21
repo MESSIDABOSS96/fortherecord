@@ -24,10 +24,10 @@ export default function HeaderNav() {
           {/* Center Navigation */}
           <div className="flex gap-8 text-sm">
             <Link
-              href="/archive"
+              href="/"
               className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
             >
-              Archive
+              Collection
             </Link>
             <Link
               href="/playlist"

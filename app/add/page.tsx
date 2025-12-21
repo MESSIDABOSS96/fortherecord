@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import AddRecordFlow from '@/components/AddRecordFlow';
+import HeaderNav from '@/components/HeaderNav';
 import { Record } from '@/types/record';
 
 export default function AddPage() {
@@ -29,11 +30,13 @@ export default function AddPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Cancel button - fixed top right */}
+    <div className="min-h-screen">
+      <HeaderNav />
+
+      {/* Cancel Button */}
       <button
         onClick={handleCancel}
-        className="fixed top-10 right-10 px-6 py-2.5 bg-white border-2 border-gray-300 rounded-full font-medium text-sm hover:border-gray-900 transition-colors z-50"
+        className="absolute top-10 right-10 px-8 py-3 bg-transparent border-2 border-gray-900 rounded-full font-semibold text-sm hover:bg-gray-900 hover:text-white transition-colors z-40 shadow-md"
       >
         Cancel
       </button>
