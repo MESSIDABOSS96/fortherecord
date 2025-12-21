@@ -8,10 +8,15 @@ interface SongData {
   background_color: string;
 }
 
+export interface SelectedLyric {
+  text: string;
+  originalIndex: number;
+}
+
 export function useAddRecordState() {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [songData, setSongData] = useState<SongData | null>(null);
-  const [selectedLines, setSelectedLines] = useState<string[]>([]);
+  const [selectedLines, setSelectedLines] = useState<SelectedLyric[]>([]);
   const [forName, setForName] = useState('');
   const [reflectionText, setReflectionText] = useState('');
 

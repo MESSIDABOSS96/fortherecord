@@ -1,3 +1,5 @@
+import { SelectedLyric } from '@/hooks/useAddRecordState';
+
 /**
  * Split lyrics into individual lines, filtering out empty lines and section headers
  */
@@ -43,9 +45,9 @@ export function splitLyricsIntoLines(lyrics: string): string[] {
 }
 
 /**
- * Validate lyric selection (max 3 lines)
+ * Validate lyric selection (max 4 lines)
  */
-export function validateLyricSelection(lines: string[]): {
+export function validateLyricSelection(lines: SelectedLyric[]): {
   valid: boolean;
   error?: string;
 } {
@@ -53,16 +55,20 @@ export function validateLyricSelection(lines: string[]): {
     return { valid: false, error: 'Please select at least one line' };
   }
 
-  if (lines.length > 3) {
-    return { valid: false, error: 'Maximum 3 lines allowed' };
+  if (lines.length > 4) {
+    return { valid: false, error: 'Maximum 4 lines allowed' };
   }
 
   return { valid: true };
 }
 
 /**
- * Format selected lines for display (join with newlines)
+ * Format selected lines for display (sorted by original song position, then joined with newlines)
  */
-export function formatLyricExcerpt(lines: string[]): string {
-  return lines.join('\n');
+export function formatLyricExcerpt(lines: SelectedLyric[]): string {
+  return lines
+    .slice()
+    .sort((a, b) => a.originalIndex - b.originalIndex)
+    .map(l => l.text)
+    .join('\n');
 }

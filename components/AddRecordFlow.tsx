@@ -4,7 +4,7 @@ import SpotifySearch from './SpotifySearch';
 import LyricSelector from './LyricSelector';
 import RecordPreview from './RecordPreview';
 import AddRecordInputs from './AddRecordInputs';
-import { useAddRecordState } from '@/hooks/useAddRecordState';
+import { useAddRecordState, SelectedLyric } from '@/hooks/useAddRecordState';
 import { Record } from '@/types/record';
 import { useState } from 'react';
 import Image from 'next/image';
@@ -30,6 +30,15 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
 
   const [tempName, setTempName] = useState('');
 
+  // Helper function to sort lyrics by original song position
+  const getSortedLyricText = (lyrics: SelectedLyric[]): string => {
+    return lyrics
+      .slice()
+      .sort((a, b) => a.originalIndex - b.originalIndex)
+      .map(l => l.text)
+      .join('\n');
+  };
+
   const handleSongSelect = async (song: any) => {
     setSongData({
       song_title: song.song_title,
@@ -49,7 +58,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
     }
   };
 
-  const handleLyricsConfirm = (lines: string[]) => {
+  const handleLyricsConfirm = (lines: SelectedLyric[]) => {
     setSelectedLines(lines);
     setStep(4);
   };
@@ -59,7 +68,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
 
     onSubmit({
       ...songData,
-      lyric_excerpt: selectedLines.join('\n'),
+      lyric_excerpt: getSortedLyricText(selectedLines),
       for_name: forName,
       reflection_text: reflectionText,
       cardType: 'lyric',
@@ -172,7 +181,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
             <div className="sticky top-12">
               <RecordPreview
                 songData={songData}
-                lyricExcerpt={selectedLines.join('\n')}
+                lyricExcerpt={getSortedLyricText(selectedLines)}
                 forName={forName}
                 reflectionText={reflectionText}
                 showExpandedView={false}
@@ -188,7 +197,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
           <p className="text-sm text-gray-500 mb-4">Preview</p>
           <RecordPreview
             songData={songData}
-            lyricExcerpt={selectedLines.join('\n')}
+            lyricExcerpt={getSortedLyricText(selectedLines)}
             forName={forName}
             reflectionText={reflectionText}
             showExpandedView={false}
@@ -255,7 +264,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
 
                   {/* Lyric excerpt */}
                   <div className="text-gray-900 font-bold text-2xl leading-snug whitespace-pre-wrap">
-                    {selectedLines.join('\n') || 'Select lyrics to see preview...'}
+                    {getSortedLyricText(selectedLines) || 'Select lyrics to see preview...'}
                   </div>
                 </div>
 

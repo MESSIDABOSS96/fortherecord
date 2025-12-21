@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { splitLyricsIntoLines } from '@/utils/lyricSelection';
+import { SelectedLyric } from '@/hooks/useAddRecordState';
 
 interface LyricSelectorProps {
   songTitle: string;
   artist: string;
-  selectedLines: string[];
-  onSelectionChange: (lines: string[]) => void;
-  onConfirm: (lines: string[]) => void;
+  selectedLines: SelectedLyric[];
+  onSelectionChange: (lines: SelectedLyric[]) => void;
+  onConfirm: (lines: SelectedLyric[]) => void;
 }
 
 export default function LyricSelector({
@@ -54,22 +55,27 @@ export default function LyricSelector({
     fetchLyrics();
   }, [songTitle, artist]);
 
-  const handleLineClick = (line: string) => {
-    const isSelected = selectedLines.includes(line);
+  const handleLineClick = (line: string, index: number) => {
+    // Check if already selected
+    const existingIndex = selectedLines.findIndex(l => l.text === line);
 
-    if (isSelected) {
-      // Deselect
-      onSelectionChange(selectedLines.filter(l => l !== line));
+    if (existingIndex >= 0) {
+      // Deselect: remove from array
+      const newSelection = selectedLines.filter((_, i) => i !== existingIndex);
+      onSelectionChange(newSelection);
     } else {
-      // Select (if under limit)
+      // Select: add with original index
       if (selectedLines.length < 4) {
-        onSelectionChange([...selectedLines, line]);
+        const newSelection = [...selectedLines, { text: line, originalIndex: index }];
+        onSelectionChange(newSelection);
       }
     }
   };
 
   const getLineNumber = (line: string): number | null => {
-    const index = selectedLines.indexOf(line);
+    // Sort by original index first
+    const sorted = [...selectedLines].sort((a, b) => a.originalIndex - b.originalIndex);
+    const index = sorted.findIndex(l => l.text === line);
     return index >= 0 ? index + 1 : null;
   };
 
@@ -108,7 +114,7 @@ export default function LyricSelector({
           return (
             <button
               key={index}
-              onClick={() => handleLineClick(line)}
+              onClick={() => handleLineClick(line, index)}
               disabled={!isSelected && selectedLines.length >= 4}
               className={`w-full text-left px-4 py-3 rounded-lg border-2 transition-all ${
                 isSelected
