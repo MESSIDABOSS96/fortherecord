@@ -40,7 +40,7 @@ export default function HeaderNav() {
           </div>
 
           {/* Spacer for visual balance */}
-          <div className="w-12"></div>
+          <div className="w-[100px]"></div>
         </div>
       </nav>
     </header>
