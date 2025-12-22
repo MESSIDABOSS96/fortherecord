@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function HeaderNav() {
   return (
@@ -6,19 +7,14 @@ export default function HeaderNav() {
       <nav className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-12 h-12 bg-gray-900 rounded-md flex items-center justify-center transition-transform group-hover:scale-105">
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 32 32"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle cx="16" cy="16" r="13" stroke="white" strokeWidth="2" />
-                <circle cx="16" cy="16" r="5" fill="white" />
-              </svg>
-            </div>
+          <Link href="/" className="flex items-center group">
+            <Image
+              src="/logo.svg"
+              alt="For The Record"
+              width={60}
+              height={57}
+              className="transition-transform group-hover:scale-105"
+            />
           </Link>
 
           {/* Center Navigation */}
