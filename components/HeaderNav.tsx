@@ -5,9 +5,9 @@ export default function HeaderNav() {
   return (
     <header className="w-full py-8">
       <nav className="max-w-7xl mx-auto px-6">
-        <div className="flex justify-between items-center">
-          {/* Logo */}
-          <Link href="/" className="flex items-center group">
+        <div className="grid grid-cols-3 items-center">
+          {/* Logo - Left */}
+          <Link href="/" className="flex items-center group justify-start">
             <Image
               src="/logo.svg"
               alt="For The Record"
@@ -18,7 +18,7 @@ export default function HeaderNav() {
           </Link>
 
           {/* Center Navigation */}
-          <div className="flex gap-8 text-sm">
+          <div className="flex gap-8 text-sm justify-center">
             <Link
               href="/"
               className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
@@ -39,8 +39,8 @@ export default function HeaderNav() {
             </Link>
           </div>
 
-          {/* Spacer for visual balance */}
-          <div className="w-[100px]"></div>
+          {/* Empty right column for balance */}
+          <div></div>
         </div>
       </nav>
     </header>
