@@ -11,8 +11,8 @@ export default function HeaderNav() {
             <Image
               src="/logo.svg"
               alt="For The Record"
-              width={60}
-              height={57}
+              width={100}
+              height={95}
               className="transition-transform group-hover:scale-105"
             />
           </Link>
