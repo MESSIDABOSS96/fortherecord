@@ -13,9 +13,44 @@ interface LyricSelectorProps {
 
 // Parse lyrics into sections (Intro, Verse 1, etc.)
 interface LyricSection {
-  header: string;  // e.g., "[Verse 1]"
+  header: string;  // e.g., "Verse 1" (without brackets)
   lines: string[];
   startIndex: number;  // Track original index for selection
+}
+
+// Filter out non-lyric content from Genius
+function isNonLyricLine(line: string): boolean {
+  const trimmed = line.trim().toLowerCase();
+
+  // Filter out contributor info
+  if (trimmed.match(/\d+\s*contributors?/)) return true;
+
+  // Filter out "Embed" buttons
+  if (trimmed === 'embed') return true;
+
+  // Filter out view counts, share buttons, etc.
+  if (trimmed.match(/^\d+k?\s*(views?|shares?)/)) return true;
+
+  // Filter out "See [Artist] Live" type lines
+  if (trimmed.match(/see .* live/)) return true;
+
+  // Filter out "Get tickets as low as $X"
+  if (trimmed.match(/get tickets/)) return true;
+
+  // Filter out metadata like "Lyrics for this song..."
+  if (trimmed.match(/lyrics for this song/)) return true;
+
+  // Filter out long descriptive blocks (Genius annotations/descriptions)
+  // These are usually longer than typical lyric lines
+  if (trimmed.length > 150) return true;
+
+  // Filter out lines that look like descriptions (contain "is", "are", "was", "were" with lots of text)
+  if (trimmed.length > 80 && trimmed.match(/\b(is|are|was|were|the)\b.*\b(is|are|was|were|the)\b/)) return true;
+
+  // Filter out "Read More" links
+  if (trimmed.match(/read more/)) return true;
+
+  return false;
 }
 
 function parseLyricsIntoSections(lyrics: string[]): LyricSection[] {
@@ -24,22 +59,29 @@ function parseLyricsIntoSections(lyrics: string[]): LyricSection[] {
   let lineIndex = 0;
 
   for (const line of lyrics) {
+    // Skip non-lyric content
+    if (isNonLyricLine(line)) {
+      lineIndex++;
+      continue;
+    }
+
     // Check if line is a section header (e.g., [Verse 1], [Chorus])
-    if (line.match(/^\[.*\]$/)) {
-      // Save previous section
-      if (currentSection && currentSection.lines.length > 0) {
+    const headerMatch = line.match(/^\[(.+)\]$/);
+    if (headerMatch) {
+      // Save previous section (even if it has no lines, if it has a header)
+      if (currentSection) {
         sections.push(currentSection);
       }
-      // Start new section
+      // Start new section - remove brackets from header
       currentSection = {
-        header: line,
+        header: headerMatch[1],  // Extract text without brackets
         lines: [],
-        startIndex: lineIndex + 1  // Next line starts the section
+        startIndex: lineIndex
       };
     } else if (line.trim()) {
       // Add non-empty line to current section
       if (!currentSection) {
-        // No header yet, create default section
+        // No header yet, create default section without header
         currentSection = {
           header: '',
           lines: [],
@@ -51,8 +93,8 @@ function parseLyricsIntoSections(lyrics: string[]): LyricSection[] {
     lineIndex++;
   }
 
-  // Add final section
-  if (currentSection && currentSection.lines.length > 0) {
+  // Add final section (even if it has no lines, if it has a header)
+  if (currentSection) {
     sections.push(currentSection);
   }
 
@@ -144,51 +186,54 @@ export default function LyricSelector({
         {selectedLines.length} out of 4 lines selected
       </div>
 
-      {/* Lyrics display - Genius style */}
-      <div className="max-h-96 overflow-y-auto pr-2 mb-6">
-        {sections.map((section, sectionIdx) => {
-          let lineIndex = section.startIndex;
+      {/* Lyrics display - Rounded outlined box */}
+      <div className="border-2 border-gray-300 rounded-2xl p-6 mb-6">
+        <div className="max-h-96 overflow-y-auto pr-2">
+          {sections.map((section, sectionIdx) => {
+            let lineIndex = section.startIndex;
 
-          return (
-            <div key={sectionIdx} className="mb-8">
-              {/* Section header */}
-              {section.header && (
-                <h3 className="text-lg font-bold mb-4 text-gray-900">
-                  {section.header}
-                </h3>
-              )}
+            return (
+              <div key={sectionIdx} className="mb-8 last:mb-0">
+                {/* Section header - Bold, no brackets */}
+                {section.header && (
+                  <h3 className="text-base font-bold mb-3 text-gray-900">
+                    {section.header}
+                  </h3>
+                )}
 
-              {/* Lines in this section */}
-              <div className="space-y-1">
-                {section.lines.map((line, idx) => {
-                  const globalIndex = lineIndex + idx;
-                  const isSelected = isLineSelected(globalIndex);
-                  const isHovered = hoveredIndex === globalIndex;
+                {/* Lines in this section */}
+                <div className="space-y-1">
+                  {section.lines.map((line, idx) => {
+                    const globalIndex = lineIndex + idx;
+                    const isSelected = isLineSelected(globalIndex);
+                    const isHovered = hoveredIndex === globalIndex;
 
-                  return (
-                    <div
-                      key={idx}
-                      onClick={() => handleLineClick(line, globalIndex)}
-                      onMouseEnter={() => setHoveredIndex(globalIndex)}
-                      onMouseLeave={() => setHoveredIndex(null)}
-                      className={`
-                        px-3 py-2 rounded cursor-pointer transition-colors
-                        ${isSelected
-                          ? 'bg-gray-200 text-gray-900'
-                          : isHovered
-                            ? 'bg-gray-100 text-gray-900'
-                            : 'text-gray-700'
-                        }
-                      `}
-                    >
-                      {line}
-                    </div>
-                  );
-                })}
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => handleLineClick(line, globalIndex)}
+                        onMouseEnter={() => setHoveredIndex(globalIndex)}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                        className={`
+                          px-3 py-2 rounded cursor-pointer transition-colors
+                          ${isSelected
+                            ? 'text-white'
+                            : isHovered
+                              ? 'bg-gray-200 text-gray-900'
+                              : 'text-gray-700'
+                          }
+                        `}
+                        style={isSelected ? { backgroundColor: '#EA8484' } : {}}
+                      >
+                        {line}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* Continue button */}

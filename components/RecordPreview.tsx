@@ -44,12 +44,10 @@ export default function RecordPreview({
 
   return (
     <div className="sticky top-24">
-      <h3 className="text-lg font-semibold mb-4 text-gray-700">Preview</h3>
-
       <div className="space-y-6">
         {/* Grid Card Preview */}
         <div className="max-w-sm">
-          <RecordCard record={previewRecord} onClick={() => {}} />
+          <RecordCard record={previewRecord} onClick={() => { }} />
         </div>
 
         {/* Expanded Modal Preview */}
