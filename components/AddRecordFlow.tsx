@@ -78,15 +78,38 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
   return (
     <main className="max-w-7xl mx-auto px-6 py-12">
       {/* Progress indicator */}
-      <div className="max-w-sm mx-auto mb-6">
-        <div className="flex gap-2">
-          {[1, 2, 3, 4].map((s) => (
-            <div
-              key={s}
-              className={`h-0.5 flex-1 rounded-full transition-colors ${
-                s <= step ? 'bg-gray-800' : 'bg-gray-200'
-              }`}
-            />
+      <div className="max-w-2xl mx-auto mb-12">
+        <div className="flex items-center">
+          {[
+            { num: 1, label: 'The song' },
+            { num: 2, label: 'The person' },
+            { num: 3, label: 'The lyrics' },
+            { num: 4, label: 'The story' }
+          ].map((item, index) => (
+            <div key={item.num} className="flex items-center flex-1">
+              {/* Step circle and label */}
+              <div className="flex flex-col items-center">
+                {/* Circle with number */}
+                <div
+                  className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all ${
+                    item.num < step
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-white border-2 border-gray-900 text-gray-900'
+                  }`}
+                >
+                  {item.num}
+                </div>
+                {/* Label */}
+                <div className="text-sm font-medium text-gray-900 mt-2 text-center whitespace-nowrap">
+                  {item.label}
+                </div>
+              </div>
+
+              {/* Connecting line (not for last item) */}
+              {index < 3 && (
+                <div className="flex-1 h-0.5 bg-gray-900 mx-4" style={{ marginTop: '-28px' }} />
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -95,9 +118,9 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
       {step === 1 && (
         <div className="max-w-2xl mx-auto mt-12">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-3">Select a song</h2>
+            <h2 className="text-3xl font-bold mb-3">Select a Song</h2>
             <p className="text-gray-600 text-lg">
-              Search for the song that reminds you of someone
+              Find the song that reminds you of someone
             </p>
           </div>
           <SpotifySearch onSelectTrack={handleSongSelect} />

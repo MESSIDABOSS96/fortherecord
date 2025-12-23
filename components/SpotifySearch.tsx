@@ -90,31 +90,26 @@ export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
   return (
     <div className="space-y-4">
       {/* Search Input */}
-      <div>
-        <label className="block text-sm font-medium mb-2">
-          Search for a song *
-        </label>
-        <div className="relative">
-          <svg
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
-            width="18"
-            height="18"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" />
-            <path d="M12.5 12.5L16 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
-            placeholder="Search by song title, artist, or album..."
-            autoFocus
-          />
-        </div>
+      <div className="relative">
+        <svg
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+          width="18"
+          height="18"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M12.5 12.5L16 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+          placeholder="Songs, Albums or Artists"
+          autoFocus
+        />
       </div>
 
       {/* Loading State */}
