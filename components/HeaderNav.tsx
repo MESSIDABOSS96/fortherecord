@@ -3,16 +3,16 @@ import Image from "next/image";
 
 export default function HeaderNav() {
   return (
-    <header className="w-full py-8">
-      <nav className="max-w-7xl mx-auto px-6">
+    <header className="w-full py-6">
+      <nav className="max-w-7xl ml-0 mr-auto pr-6 pl-6">
         <div className="relative flex items-center">
           {/* Logo - Left */}
           <Link href="/" className="flex items-center group">
             <Image
-              src="/logo.svg"
+              src="/logo-v2.svg"
               alt="For The Record"
-              width={100}
-              height={95}
+              width={110}
+              height={122}
               className="transition-transform group-hover:scale-105"
             />
           </Link>
