@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { splitLyricsIntoLines } from '@/utils/lyricSelection';
 import { SelectedLyric } from '@/hooks/useAddRecordState';
 
 interface LyricSelectorProps {
@@ -12,6 +11,54 @@ interface LyricSelectorProps {
   onConfirm: (lines: SelectedLyric[]) => void;
 }
 
+// Parse lyrics into sections (Intro, Verse 1, etc.)
+interface LyricSection {
+  header: string;  // e.g., "[Verse 1]"
+  lines: string[];
+  startIndex: number;  // Track original index for selection
+}
+
+function parseLyricsIntoSections(lyrics: string[]): LyricSection[] {
+  const sections: LyricSection[] = [];
+  let currentSection: LyricSection | null = null;
+  let lineIndex = 0;
+
+  for (const line of lyrics) {
+    // Check if line is a section header (e.g., [Verse 1], [Chorus])
+    if (line.match(/^\[.*\]$/)) {
+      // Save previous section
+      if (currentSection && currentSection.lines.length > 0) {
+        sections.push(currentSection);
+      }
+      // Start new section
+      currentSection = {
+        header: line,
+        lines: [],
+        startIndex: lineIndex + 1  // Next line starts the section
+      };
+    } else if (line.trim()) {
+      // Add non-empty line to current section
+      if (!currentSection) {
+        // No header yet, create default section
+        currentSection = {
+          header: '',
+          lines: [],
+          startIndex: lineIndex
+        };
+      }
+      currentSection.lines.push(line);
+    }
+    lineIndex++;
+  }
+
+  // Add final section
+  if (currentSection && currentSection.lines.length > 0) {
+    sections.push(currentSection);
+  }
+
+  return sections;
+}
+
 export default function LyricSelector({
   songTitle,
   artist,
@@ -19,73 +66,13 @@ export default function LyricSelector({
   onSelectionChange,
   onConfirm,
 }: LyricSelectorProps) {
-  // Helper function to get min/max range of current selection
-  const getSelectionRange = (lines: SelectedLyric[]): { min: number; max: number } | null => {
-    if (lines.length === 0) return null;
-
-    const indices = lines.map(l => l.originalIndex).sort((a, b) => a - b);
-    return {
-      min: indices[0],
-      max: indices[indices.length - 1]
-    };
-  };
-
-  // Helper function to validate consecutiveness
-  const isConsecutiveSelection = (lines: SelectedLyric[]): boolean => {
-    if (lines.length <= 1) return true;
-
-    const indices = lines.map(l => l.originalIndex).sort((a, b) => a - b);
-
-    for (let i = 1; i < indices.length; i++) {
-      if (indices[i] !== indices[i - 1] + 1) {
-        return false;
-      }
-    }
-
-    return true;
-  };
-
-  // Helper function to check if a line can be selected
-  const canSelectLine = (
-    lineIndex: number,
-    currentSelection: SelectedLyric[]
-  ): boolean => {
-    // Empty selection: any line can start a new selection
-    if (currentSelection.length === 0) return true;
-
-    // Maximum 4 lines
-    if (currentSelection.length >= 4) return false;
-
-    // Get current range
-    const range = getSelectionRange(currentSelection);
-    if (!range) return true;
-
-    // Line must be adjacent to current range (extends min or max)
-    return lineIndex === range.min - 1 || lineIndex === range.max + 1;
-  };
-
-  // Helper function to check if a line can be deselected
-  const canDeselectLine = (
-    lineIndex: number,
-    currentSelection: SelectedLyric[]
-  ): boolean => {
-    if (currentSelection.length === 0) return false;
-
-    // Single line: always allow deselection
-    if (currentSelection.length === 1) return true;
-
-    const range = getSelectionRange(currentSelection);
-    if (!range) return false;
-
-    // Can only deselect from edges (first or last line)
-    return lineIndex === range.min || lineIndex === range.max;
-  };
-
-  const [lyrics, setLyrics] = useState<string[]>([]);
+  const [allLyrics, setAllLyrics] = useState<string[]>([]);
+  const [sections, setSections] = useState<LyricSection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  // Fetch lyrics on mount
+  // Fetch lyrics
   useEffect(() => {
     const fetchLyrics = async () => {
       setLoading(true);
@@ -102,13 +89,12 @@ export default function LyricSelector({
         }
 
         const data = await response.json();
+        const lines = data.lyrics.split('\n').filter((l: string) => l.trim());
 
-        // Split lyrics into lines using utility
-        const lines = splitLyricsIntoLines(data.lyrics);
-
-        setLyrics(lines);
+        setAllLyrics(lines);
+        setSections(parseLyricsIntoSections(lines));
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Could not load lyrics. Please try again.');
+        setError(err instanceof Error ? err.message : 'Could not load lyrics');
       } finally {
         setLoading(false);
       }
@@ -118,40 +104,20 @@ export default function LyricSelector({
   }, [songTitle, artist]);
 
   const handleLineClick = (line: string, index: number) => {
-    // Check if already selected
     const isSelected = selectedLines.some(l => l.originalIndex === index);
 
     if (isSelected) {
-      // DESELECTION: Only allow from edges
-      if (!canDeselectLine(index, selectedLines)) {
-        return; // Middle lines cannot be deselected
-      }
-
-      const newSelection = selectedLines.filter(l => l.originalIndex !== index);
-      onSelectionChange(newSelection);
+      // Deselect
+      onSelectionChange(selectedLines.filter(l => l.originalIndex !== index));
     } else {
-      // SELECTION: Must extend consecutive range
-      if (!canSelectLine(index, selectedLines)) {
-        return; // Non-adjacent lines cannot be selected
-      }
-
-      const newSelection = [...selectedLines, { text: line, originalIndex: index }];
-
-      // Safety check
-      if (!isConsecutiveSelection(newSelection)) {
-        console.error('Non-consecutive selection detected');
-        return;
-      }
-
-      onSelectionChange(newSelection);
+      // Select (if under 4 lines)
+      if (selectedLines.length >= 4) return;
+      onSelectionChange([...selectedLines, { text: line, originalIndex: index }]);
     }
   };
 
-  const getLineNumber = (line: string): number | null => {
-    // Sort by original index first
-    const sorted = [...selectedLines].sort((a, b) => a.originalIndex - b.originalIndex);
-    const index = sorted.findIndex(l => l.text === line);
-    return index >= 0 ? index + 1 : null;
+  const isLineSelected = (index: number) => {
+    return selectedLines.some(l => l.originalIndex === index);
   };
 
   if (loading) {
@@ -174,69 +140,58 @@ export default function LyricSelector({
   return (
     <div>
       {/* Selection counter */}
-      <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-        <p className="text-sm font-medium text-gray-700">
-          {selectedLines.length} of 4 lines selected
-        </p>
-        {selectedLines.length > 0 && (
-          <p className="text-xs text-gray-500 mt-1">
-            Select consecutive lines only. Click the first or last line to deselect.
-          </p>
-        )}
+      <div className="mb-6 text-sm text-gray-600">
+        {selectedLines.length} out of 4 lines selected
       </div>
 
-      {/* Lyric lines */}
-      <div className="space-y-2 max-h-96 overflow-y-auto mb-6 pr-2">
-        {lyrics.map((line, index) => {
-          const lineNumber = getLineNumber(line);
-          const isSelected = lineNumber !== null;
+      {/* Lyrics display - Genius style */}
+      <div className="max-h-96 overflow-y-auto pr-2 mb-6">
+        {sections.map((section, sectionIdx) => {
+          let lineIndex = section.startIndex;
 
           return (
-            <button
-              key={index}
-              onClick={() => handleLineClick(line, index)}
-              disabled={(() => {
-                const isSelected = getLineNumber(line) !== null;
+            <div key={sectionIdx} className="mb-8">
+              {/* Section header */}
+              {section.header && (
+                <h3 className="text-lg font-bold mb-4 text-gray-900">
+                  {section.header}
+                </h3>
+              )}
 
-                if (isSelected) {
-                  // Selected line: check if it can be deselected
-                  return !canDeselectLine(index, selectedLines);
-                } else {
-                  // Unselected line: check if it can be selected
-                  return !canSelectLine(index, selectedLines);
-                }
-              })()}
-              className={`w-full text-left px-4 py-3 rounded-lg border-2 transition-all ${
-                isSelected
-                  ? 'border-gray-900 bg-gray-50'
-                  : canSelectLine(index, selectedLines)
-                    ? 'border-gray-200 hover:border-gray-400 cursor-pointer'
-                    : 'border-gray-200 opacity-40 cursor-not-allowed'
-              } ${
-                isSelected && !canDeselectLine(index, selectedLines)
-                  ? 'opacity-60 cursor-not-allowed'
-                  : ''
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                {/* Selection badge */}
-                <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                  isSelected ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-400'
-                }`}>
-                  {lineNumber || ''}
-                </div>
+              {/* Lines in this section */}
+              <div className="space-y-1">
+                {section.lines.map((line, idx) => {
+                  const globalIndex = lineIndex + idx;
+                  const isSelected = isLineSelected(globalIndex);
+                  const isHovered = hoveredIndex === globalIndex;
 
-                {/* Lyric text */}
-                <span className={`flex-1 ${isSelected ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
-                  {line}
-                </span>
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => handleLineClick(line, globalIndex)}
+                      onMouseEnter={() => setHoveredIndex(globalIndex)}
+                      onMouseLeave={() => setHoveredIndex(null)}
+                      className={`
+                        px-3 py-2 rounded cursor-pointer transition-colors
+                        ${isSelected
+                          ? 'bg-gray-200 text-gray-900'
+                          : isHovered
+                            ? 'bg-gray-100 text-gray-900'
+                            : 'text-gray-700'
+                        }
+                      `}
+                    >
+                      {line}
+                    </div>
+                  );
+                })}
               </div>
-            </button>
+            </div>
           );
         })}
       </div>
 
-      {/* Confirm button */}
+      {/* Continue button */}
       <button
         onClick={() => onConfirm(selectedLines)}
         disabled={selectedLines.length === 0}
