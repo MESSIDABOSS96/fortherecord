@@ -8,6 +8,26 @@ const nextConfig: NextConfig = {
         hostname: 'i.scdn.co',
         pathname: '/image/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.imgur.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.genius.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.discogs.com',
+        pathname: '/**',
+      },
     ],
   },
 };

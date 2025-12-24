@@ -1,4 +1,4 @@
-import { Record, CardType } from '@/types/record';
+import { Record as RecordModel, CardType } from '@/types/record';
 
 export interface DistributionConfig {
   targetRatio: number;        // 0.2 - 0.3 (20-30%)
@@ -8,149 +8,153 @@ export interface DistributionConfig {
 
 /**
  * Intelligently distributes non-lyric cards among lyric cards
- * to achieve a target ratio while preventing clustering of same types
- * and ensuring even distribution across columns
+ * to achieve a target ratio while preventing clustering of same types.
+ * Uses a builder pattern to ensure column variety and spacing constraints.
  */
 export function distributeNonLyricCards(
-  lyricCards: Record[],
-  nonLyricCards: Record[],
+  lyricCards: RecordModel[],
+  nonLyricCards: RecordModel[],
   config: DistributionConfig = { targetRatio: 0.25, minSpacing: 3, columnCount: 4 }
-): Record[] {
+): RecordModel[] {
   // Edge case: no cards to distribute
   if (lyricCards.length === 0) return nonLyricCards;
   if (nonLyricCards.length === 0) return lyricCards;
 
-  const columnCount = config.columnCount || 4;
-
-  // Calculate how many non-lyric cards we should insert
+  // 1. Calculate Targets
   const targetNonLyricCount = Math.floor(
-    lyricCards.length * config.targetRatio / (1 - config.targetRatio)
+    (config.targetRatio * lyricCards.length) / (1 - config.targetRatio)
   );
 
-  // Limit to available non-lyric cards
-  const cardsToInsert = Math.min(targetNonLyricCount, nonLyricCards.length);
+  // Cap at available non-lyric cards
+  const insertCount = Math.min(targetNonLyricCount, nonLyricCards.length);
 
-  // If we have very few lyric cards, just append non-lyric cards
-  if (lyricCards.length < 10) {
-    return [...lyricCards, ...nonLyricCards.slice(0, cardsToInsert)];
-  }
+  if (insertCount === 0) return lyricCards;
 
-  // Group non-lyric cards by type for even distribution
+  // 2. Prepare Queues
+  const lyricQueue = [...lyricCards];
   const cardsByType = groupCardsByType(nonLyricCards);
+  let availableNonLyrics: RecordModel[] = [];
+  const types = Object.keys(cardsByType);
 
-  // Create a rotation queue of card types
-  const typeQueue = createTypeRotationQueue(cardsByType);
+  // Flatten randomly to create a supply pool
+  while (availableNonLyrics.length < insertCount) {
+    const validTypes = types.filter(t => cardsByType[t].length > 0);
+    if (validTypes.length === 0) break;
 
-  // Pre-calculate insertion positions that will give even column distribution
-  // Strategy: Divide the lyric cards into segments and place one non-lyric card per segment
-  const insertionPositions: number[] = [];
-  const columnUsage: number[] = new Array(columnCount).fill(0);
-
-  // Calculate ideal spacing between non-lyric cards for even vertical distribution
-  const idealSpacing = Math.floor(lyricCards.length / (cardsToInsert + 1));
-
-  // Generate candidate positions that are evenly spaced vertically
-  for (let i = 0; i < cardsToInsert; i++) {
-    // Find column with least usage
-    const targetColumn = columnUsage.indexOf(Math.min(...columnUsage));
-
-    // Start from ideal position for this segment
-    let basePosition = (i + 1) * idealSpacing;
-
-    // Search window around the ideal position to find one that maps to target column
-    // This ensures we maintain vertical distribution while achieving column balance
-    const searchRadius = Math.min(idealSpacing, 10);
-    let foundPosition = false;
-
-    // Try positions in a window around the ideal position
-    for (let offset = 0; offset <= searchRadius; offset++) {
-      // Alternate checking positions before and after ideal position
-      const positions = offset === 0 ? [basePosition] : [basePosition + offset, basePosition - offset];
-
-      for (const pos of positions) {
-        if (pos >= 0 && pos < lyricCards.length) {
-          const column = pos % columnCount;
-          if (column === targetColumn) {
-            // Check minimum spacing from previously placed cards
-            const hasGoodSpacing = insertionPositions.every(
-              prevPos => Math.abs(pos - prevPos) >= config.minSpacing
-            );
-
-            if (hasGoodSpacing) {
-              insertionPositions.push(pos);
-              columnUsage[targetColumn]++;
-              foundPosition = true;
-              break;
-            }
-          }
-        }
-      }
-
-      if (foundPosition) break;
-    }
-
-    // Fallback: if we couldn't find a position with perfect spacing, relax constraints
-    if (!foundPosition) {
-      for (let pos = basePosition; pos < lyricCards.length; pos++) {
-        const column = pos % columnCount;
-        if (column === targetColumn) {
-          insertionPositions.push(pos);
-          columnUsage[targetColumn]++;
-          foundPosition = true;
-          break;
-        }
-      }
-    }
-
-    // Last resort: just pick the next available position
-    if (!foundPosition && basePosition < lyricCards.length) {
-      insertionPositions.push(basePosition);
-    }
+    // Pick random type
+    const randomType = validTypes[Math.floor(Math.random() * validTypes.length)];
+    const card = cardsByType[randomType].shift()!;
+    availableNonLyrics.push(card);
   }
 
-  // Sort positions to insert from back to front (prevents position shifting)
-  insertionPositions.sort((a, b) => b - a);
+  const expectedTotalLength = lyricCards.length + insertCount;
 
-  // Build result array starting with lyric cards
-  const result: Record[] = [...lyricCards];
+  // 3. Generate Target Schedule
+  // Create a list of "ideal" indices where we want to place non-lyrics
+  // distinct from specific constraints.
+  const targetIndices: number[] = [];
+  const segmentSize = expectedTotalLength / insertCount;
 
-  // Track last position of each card type to prevent same-type clustering
-  const lastPositionByType: Map<string, number> = new Map();
-  let typeQueueIndex = 0;
+  for (let k = 0; k < insertCount; k++) {
+    // Target middle of segment with random jitter
+    const segmentStart = k * segmentSize;
+    const segmentEnd = (k + 1) * segmentSize;
+    const jitter = Math.random() * (segmentSize * 0.5) - (segmentSize * 0.25);
 
-  // Insert non-lyric cards at calculated positions (back to front)
-  for (const position of insertionPositions) {
-    let attempts = 0;
-    let insertedCard: Record | null = null;
+    let target = Math.floor(segmentStart + (segmentSize / 2) + jitter);
 
-    while (attempts < typeQueue.length && !insertedCard) {
-      const cardType = typeQueue[typeQueueIndex % typeQueue.length];
-      const cardsOfType = cardsByType[cardType];
+    // Ensure targets are at least somewhat spaced and don't start at 0
+    if (target < 1) target = 1;
+    if (targetIndices.length > 0 && target <= targetIndices[targetIndices.length - 1]) {
+      target = targetIndices[targetIndices.length - 1] + 1;
+    }
 
-      if (cardsOfType && cardsOfType.length > 0) {
-        const lastPos = lastPositionByType.get(cardType) ?? -Infinity;
+    targetIndices.push(target);
+  }
 
-        // Check if minimum spacing is satisfied
-        if (Math.abs(position - lastPos) >= config.minSpacing) {
-          // Insert the card
-          insertedCard = cardsOfType.shift()!;
-          result.splice(position, 0, insertedCard);
-          lastPositionByType.set(cardType, position);
+  // 4. Sequential Build
+  const result: RecordModel[] = [];
+  const columnCount = config.columnCount || 4;
+
+  // State tracking
+  let lastNonLyricIndex = -999;
+  let lastNonLyricCol = -1;
+  const typeHistory: string[] = [];
+
+  let nonLyricsPlaced = 0;
+
+  // We iterate through all potential slots
+  for (let i = 0; i < expectedTotalLength; i++) {
+    const currentCol = i % columnCount;
+
+    // Are we due for a placement?
+    // Use the next target index from our schedule
+    let isDue = false;
+    if (nonLyricsPlaced < insertCount) {
+      // Look at the "next" target. If we passed it, we are due.
+      // However, we strictly consume one target per placement.
+      const currentTarget = targetIndices[nonLyricsPlaced];
+      if (i >= currentTarget) {
+        isDue = true;
+      }
+    }
+
+    // Determine if we CAN place here
+    let canPlaceNonLyric = isDue && availableNonLyrics.length > 0;
+
+    // Constraint 0: Never at index 0
+    if (i === 0) canPlaceNonLyric = false;
+
+    // Constraint 1: Minimum Spacing
+    if (i - lastNonLyricIndex < config.minSpacing) {
+      canPlaceNonLyric = false;
+    }
+
+    // Constraint 2: Column Variety 
+    if (currentCol === lastNonLyricCol) {
+      canPlaceNonLyric = false;
+    }
+
+    // Emergency Override: If we run out of lyrics, we MUST place (or if strictly forced by end of array)
+    const remainingSlots = expectedTotalLength - i;
+    const remainingNonLyrics = availableNonLyrics.length;
+    if (remainingNonLyrics >= remainingSlots) {
+      canPlaceNonLyric = true;
+    }
+
+    if (canPlaceNonLyric) {
+      // PLACING NON-LYRIC
+
+      // Select best non-lyric
+      let bestIndex = 0;
+      for (let k = 0; k < availableNonLyrics.length; k++) {
+        const type = getCardTypeKey(availableNonLyrics[k]);
+        const recentTypes = typeHistory.slice(-config.minSpacing);
+        if (!recentTypes.includes(type)) {
+          bestIndex = k;
+          break;
         }
       }
 
-      typeQueueIndex++;
-      attempts++;
-    }
+      const card = availableNonLyrics[bestIndex];
+      availableNonLyrics.splice(bestIndex, 1);
 
-    // If we couldn't insert due to spacing, try with any remaining card
-    if (!insertedCard) {
-      for (const cards of Object.values(cardsByType)) {
-        if (cards.length > 0) {
-          insertedCard = cards.shift()!;
-          result.splice(position, 0, insertedCard);
-          break;
-        }
+      result.push(card);
+
+      // Update state
+      lastNonLyricIndex = i;
+      lastNonLyricCol = currentCol;
+      typeHistory.push(getCardTypeKey(card));
+      nonLyricsPlaced++;
+
+    } else {
+      // PLACING LYRIC
+      if (lyricQueue.length > 0) {
+        result.push(lyricQueue.shift()!);
+      } else if (availableNonLyrics.length > 0) {
+        // Fallback
+        result.push(availableNonLyrics.shift()!);
+        nonLyricsPlaced++; // Count this forced placement
       }
     }
   }
@@ -159,21 +163,24 @@ export function distributeNonLyricCards(
 }
 
 /**
+ * Helper to get a unique type key for a card
+ */
+function getCardTypeKey(card: RecordModel): string {
+  if (card.cardType === 'vinyl' && card.vinylImageUrl) {
+    const filename = card.vinylImageUrl.split('/').pop()?.split('.')[0] || 'vinyl';
+    return `vinyl-${filename}`;
+  }
+  return card.cardType || 'lyric';
+}
+
+/**
  * Groups cards by their detailed type (including vinyl variants)
  */
-function groupCardsByType(cards: Record[]): Record<string, Record[]> {
-  const grouped: Record<string, Record[]> = {};
+function groupCardsByType(cards: RecordModel[]): Record<string, RecordModel[]> {
+  const grouped: Record<string, RecordModel[]> = {}; // Explicitly typed
 
   for (const card of cards) {
-    let typeKey = card.cardType || 'lyric';
-
-    // For vinyl cards, create unique keys based on imageUrl to distribute variants
-    if (typeKey === 'vinyl' && card.vinylImageUrl) {
-      // Extract filename from URL to create unique type key
-      const filename = card.vinylImageUrl.split('/').pop()?.split('.')[0] || 'vinyl';
-      typeKey = `vinyl-${filename}`;
-    }
-
+    const typeKey = getCardTypeKey(card);
     if (!grouped[typeKey]) {
       grouped[typeKey] = [];
     }
@@ -181,19 +188,4 @@ function groupCardsByType(cards: Record[]): Record<string, Record[]> {
   }
 
   return grouped;
-}
-
-/**
- * Creates a rotation queue of card types, shuffled for variety
- */
-function createTypeRotationQueue(cardsByType: Record<string, Record[]>): string[] {
-  const types = Object.keys(cardsByType);
-
-  // Simple shuffle using Fisher-Yates
-  for (let i = types.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [types[i], types[j]] = [types[j], types[i]];
-  }
-
-  return types;
 }
