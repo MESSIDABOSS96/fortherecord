@@ -76,34 +76,25 @@ function LyricCard({ record, onClick }: RecordCardProps) {
 function LogoCard({ record, onClick }: RecordCardProps) {
   return (
     <div
-      onClick={onClick}
-      className="cursor-pointer rounded-2xl p-8 transition-all hover:scale-[1.01] hover:shadow-lg flex flex-col items-center justify-center min-h-[220px]"
+      className="rounded-2xl p-6 transition-opacity flex flex-col items-center justify-center min-h-[180px]"
       style={{
-        backgroundColor: record.background_color,
+        backgroundColor: '#f8f8f8',
         boxShadow: "var(--shadow-md)",
       }}
     >
-      {/* Vinyl icon */}
-      <svg
-        width="64"
-        height="64"
-        viewBox="0 0 64 64"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+      {/* Logo */}
+      <Image
+        src="/logo.svg"
+        alt="For The Record"
+        width={120}
+        height={144}
         className="mb-4"
-      >
-        <circle cx="32" cy="32" r="30" stroke="#1a1a1a" strokeWidth="2" />
-        <circle cx="32" cy="32" r="20" stroke="#1a1a1a" strokeWidth="1" />
-        <circle cx="32" cy="32" r="8" fill="#1a1a1a" />
-      </svg>
+      />
 
       {/* Logo text */}
       <div className="text-center">
-        <div className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-1">
-          Songs Remind
-        </div>
-        <div className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-          Me of You
+        <div className="text-sm font-bold text-gray-900 uppercase tracking-wide">
+          MUSIC REMINDS ME OF YOU
         </div>
       </div>
     </div>
@@ -114,28 +105,37 @@ function LogoCard({ record, onClick }: RecordCardProps) {
 function VinylCard({ record, onClick }: RecordCardProps) {
   return (
     <div
-      onClick={onClick}
-      className="cursor-pointer rounded-2xl p-8 transition-all hover:scale-[1.01] hover:shadow-lg flex items-center justify-center min-h-[280px]"
+      className="rounded-2xl p-6 transition-opacity flex items-center justify-center min-h-[240px]"
       style={{
-        backgroundColor: record.background_color,
+        backgroundColor: '#f8f8f8',
         boxShadow: "var(--shadow-md)",
       }}
     >
-      {/* Vinyl record graphic */}
-      <svg
-        width="180"
-        height="180"
-        viewBox="0 0 180 180"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle cx="90" cy="90" r="88" fill="#1a1a1a" stroke="#333" strokeWidth="2" />
-        <circle cx="90" cy="90" r="70" stroke="#444" strokeWidth="1" />
-        <circle cx="90" cy="90" r="50" stroke="#444" strokeWidth="1" />
-        <circle cx="90" cy="90" r="30" stroke="#444" strokeWidth="1" />
-        <circle cx="90" cy="90" r="15" fill="#666" />
-        <circle cx="90" cy="90" r="6" fill="#1a1a1a" />
-      </svg>
+      {/* Display user image if vinylImageUrl exists, otherwise show SVG */}
+      {record.vinylImageUrl ? (
+        <Image
+          src={record.vinylImageUrl}
+          alt={record.song_title || "Decorative"}
+          width={240}
+          height={240}
+          className="object-contain"
+        />
+      ) : (
+        <svg
+          width="180"
+          height="180"
+          viewBox="0 0 180 180"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle cx="90" cy="90" r="88" fill="#1a1a1a" stroke="#333" strokeWidth="2" />
+          <circle cx="90" cy="90" r="70" stroke="#444" strokeWidth="1" />
+          <circle cx="90" cy="90" r="50" stroke="#444" strokeWidth="1" />
+          <circle cx="90" cy="90" r="30" stroke="#444" strokeWidth="1" />
+          <circle cx="90" cy="90" r="15" fill="#666" />
+          <circle cx="90" cy="90" r="6" fill="#1a1a1a" />
+        </svg>
+      )}
     </div>
   );
 }
@@ -144,19 +144,18 @@ function VinylCard({ record, onClick }: RecordCardProps) {
 function ImageCard({ record, onClick }: RecordCardProps) {
   return (
     <div
-      onClick={onClick}
-      className="cursor-pointer rounded-2xl p-8 transition-all hover:scale-[1.01] hover:shadow-lg flex items-center justify-center min-h-[200px]"
+      className="rounded-2xl p-6 transition-opacity flex items-center justify-center min-h-[160px]"
       style={{
-        backgroundColor: record.background_color,
+        backgroundColor: '#f8f8f8',
         boxShadow: "var(--shadow-md)",
       }}
     >
       <div className="text-center">
-        <div className="text-3xl font-bold text-gray-900 mb-2" style={{ fontStyle: 'italic' }}>
+        <div className="text-3xl font-bold text-gray-900 mb-3" style={{ fontStyle: 'italic' }}>
           FOR THE RECORD
         </div>
-        <div className="text-sm text-gray-600">
-          {record.song_title || "Image Card"}
+        <div className="text-sm text-gray-600 font-medium">
+          EST 2025
         </div>
       </div>
     </div>

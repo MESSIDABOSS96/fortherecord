@@ -4,22 +4,44 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Record } from "@/types/record";
 import { seedRecords } from "@/data/seedRecords";
+import { distributeNonLyricCards } from "@/utils/cardDistribution";
 import HeaderNav from "@/components/HeaderNav";
 import MasonryGrid from "@/components/MasonryGrid";
 import RecordModal from "@/components/RecordModal";
 
 export default function Home() {
-  const [records, setRecords] = useState<Record[]>(seedRecords);
+  const [records, setRecords] = useState<Record[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
   const router = useRouter();
 
-  // Load records from localStorage on mount
+  // Load records from localStorage on mount and distribute non-lyric cards
   useEffect(() => {
-    const storedRecords = localStorage.getItem('records');
-    if (storedRecords) {
-      const parsed = JSON.parse(storedRecords);
-      setRecords(parsed);
+    // Load from localStorage or use seed data
+    let allRecords = seedRecords;
+
+    try {
+      const storedRecords = localStorage.getItem('records');
+      if (storedRecords) {
+        allRecords = JSON.parse(storedRecords);
+      }
+    } catch (error) {
+      // If localStorage is corrupted, clear it and use seed data
+      console.error('Error parsing localStorage:', error);
+      localStorage.removeItem('records');
     }
+
+    // Separate lyric and non-lyric cards
+    const lyricCards = allRecords.filter((r: Record) => r.cardType === 'lyric' || !r.cardType);
+    const nonLyricCards = allRecords.filter((r: Record) => r.cardType && r.cardType !== 'lyric');
+
+    // Distribute non-lyric cards among lyric cards intelligently
+    const distributed = distributeNonLyricCards(lyricCards, nonLyricCards, {
+      targetRatio: 0.25,  // 25% non-lyric cards
+      minSpacing: 3,      // Minimum 3 cards between same type
+      columnCount: 4      // Desktop: 4 columns for even distribution
+    });
+
+    setRecords(distributed);
   }, []);
 
   return (

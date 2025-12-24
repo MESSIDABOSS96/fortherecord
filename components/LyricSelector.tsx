@@ -20,35 +20,41 @@ interface LyricSection {
 
 // Filter out non-lyric content from Genius
 function isNonLyricLine(line: string): boolean {
-  const trimmed = line.trim().toLowerCase();
+  const trimmed = line.trim();
+
+  // IMPORTANT: Never filter out section headers
+  if (trimmed.match(/^\[.+\]$/)) {
+    return false; // Keep all section headers
+  }
+
+  const lowerTrimmed = trimmed.toLowerCase();
 
   // Filter out contributor info
-  if (trimmed.match(/\d+\s*contributors?/)) return true;
+  if (lowerTrimmed.match(/\d+\s*contributors?/)) return true;
 
   // Filter out "Embed" buttons
-  if (trimmed === 'embed') return true;
+  if (lowerTrimmed === 'embed') return true;
 
   // Filter out view counts, share buttons, etc.
-  if (trimmed.match(/^\d+k?\s*(views?|shares?)/)) return true;
+  if (lowerTrimmed.match(/^\d+k?\s*(views?|shares?)/)) return true;
 
   // Filter out "See [Artist] Live" type lines
-  if (trimmed.match(/see .* live/)) return true;
+  if (lowerTrimmed.match(/see .* live/)) return true;
 
   // Filter out "Get tickets as low as $X"
-  if (trimmed.match(/get tickets/)) return true;
+  if (lowerTrimmed.match(/get tickets/)) return true;
 
   // Filter out metadata like "Lyrics for this song..."
-  if (trimmed.match(/lyrics for this song/)) return true;
+  if (lowerTrimmed.match(/lyrics for this song/)) return true;
 
   // Filter out long descriptive blocks (Genius annotations/descriptions)
-  // These are usually longer than typical lyric lines
   if (trimmed.length > 150) return true;
 
-  // Filter out lines that look like descriptions (contain "is", "are", "was", "were" with lots of text)
-  if (trimmed.length > 80 && trimmed.match(/\b(is|are|was|were|the)\b.*\b(is|are|was|were|the)\b/)) return true;
+  // Filter out lines that look like descriptions
+  if (trimmed.length > 80 && lowerTrimmed.match(/\b(is|are|was|were|the)\b.*\b(is|are|was|were|the)\b/)) return true;
 
   // Filter out "Read More" links
-  if (trimmed.match(/read more/)) return true;
+  if (lowerTrimmed.match(/read more/)) return true;
 
   return false;
 }
@@ -58,8 +64,15 @@ function parseLyricsIntoSections(lyrics: string[]): LyricSection[] {
   let currentSection: LyricSection | null = null;
   let lineIndex = 0;
 
-  for (const line of lyrics) {
-    // Skip non-lyric content
+  for (let line of lyrics) {
+    // Extract section header if it's embedded in junk text (e.g., "146 Contributors...Read More [Intro]")
+    const embeddedHeaderMatch = line.match(/\[([^\]]+)\]\s*$/);
+    if (embeddedHeaderMatch && isNonLyricLine(line)) {
+      // Replace the junk line with just the header
+      line = `[${embeddedHeaderMatch[1]}]`;
+    }
+
+    // Skip non-lyric content (after extracting any embedded headers)
     if (isNonLyricLine(line)) {
       lineIndex++;
       continue;
@@ -134,7 +147,8 @@ export default function LyricSelector({
         const lines = data.lyrics.split('\n').filter((l: string) => l.trim());
 
         setAllLyrics(lines);
-        setSections(parseLyricsIntoSections(lines));
+        const parsedSections = parseLyricsIntoSections(lines);
+        setSections(parsedSections);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Could not load lyrics');
       } finally {
@@ -217,13 +231,12 @@ export default function LyricSelector({
                         className={`
                           px-3 py-2 rounded cursor-pointer transition-colors
                           ${isSelected
-                            ? 'text-white'
+                            ? 'bg-gray-700 text-white'
                             : isHovered
                               ? 'bg-gray-200 text-gray-900'
                               : 'text-gray-700'
                           }
                         `}
-                        style={isSelected ? { backgroundColor: '#EA8484' } : {}}
                       >
                         {line}
                       </div>
