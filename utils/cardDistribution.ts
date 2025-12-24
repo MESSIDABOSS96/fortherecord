@@ -7,8 +7,10 @@ export interface DistributionConfig {
 }
 
 /**
- * Intelligently distributes non-lyric cards among lyric cards
+ * Deterministically distributes non-lyric cards among lyric cards
  * to achieve a target ratio while preventing clustering of same types.
+ * Same input cards always produce the same output layout.
+ * Scales proportionally: more lyric cards = more non-lyric cards.
  * Uses a builder pattern to ensure column variety and spacing constraints.
  */
 export function distributeNonLyricCards(
@@ -25,26 +27,37 @@ export function distributeNonLyricCards(
     (config.targetRatio * lyricCards.length) / (1 - config.targetRatio)
   );
 
-  // Cap at available non-lyric cards
-  const insertCount = Math.min(targetNonLyricCount, nonLyricCards.length);
+  // Cap at available non-lyric cards AND at what's geometrically possible
+  // With adjacency constraint, we can have at most 1 non-lyric per 2 cards
+  const maxPossible = Math.floor(lyricCards.length / 2);
+  const insertCount = Math.min(targetNonLyricCount, nonLyricCards.length, maxPossible);
 
   if (insertCount === 0) return lyricCards;
 
   // 2. Prepare Queues
-  const lyricQueue = [...lyricCards];
-  const cardsByType = groupCardsByType(nonLyricCards);
+  // Sort cards by ID to ensure consistent ordering (deterministic)
+  const sortedLyricCards = [...lyricCards].sort((a, b) => a.id.localeCompare(b.id));
+  const sortedNonLyricCards = [...nonLyricCards].sort((a, b) => a.id.localeCompare(b.id));
+
+  const lyricQueue = [...sortedLyricCards];
+  const cardsByType = groupCardsByType(sortedNonLyricCards);
   let availableNonLyrics: RecordModel[] = [];
   const types = Object.keys(cardsByType);
 
-  // Flatten randomly to create a supply pool
+  // Sort types alphabetically for deterministic order
+  const sortedTypes = types.sort();
+  let typeIndex = 0;
+
+  // Use round-robin to create a deterministic supply pool
   while (availableNonLyrics.length < insertCount) {
-    const validTypes = types.filter(t => cardsByType[t].length > 0);
+    const validTypes = sortedTypes.filter(t => cardsByType[t].length > 0);
     if (validTypes.length === 0) break;
 
-    // Pick random type
-    const randomType = validTypes[Math.floor(Math.random() * validTypes.length)];
-    const card = cardsByType[randomType].shift()!;
+    // Round-robin through types deterministically
+    const selectedType = validTypes[typeIndex % validTypes.length];
+    const card = cardsByType[selectedType].shift()!;
     availableNonLyrics.push(card);
+    typeIndex++;
   }
 
   const expectedTotalLength = lyricCards.length + insertCount;
@@ -56,12 +69,11 @@ export function distributeNonLyricCards(
   const segmentSize = expectedTotalLength / insertCount;
 
   for (let k = 0; k < insertCount; k++) {
-    // Target middle of segment with random jitter
+    // Target middle of segment (deterministic, no jitter)
     const segmentStart = k * segmentSize;
-    const segmentEnd = (k + 1) * segmentSize;
-    const jitter = Math.random() * (segmentSize * 0.5) - (segmentSize * 0.25);
 
-    let target = Math.floor(segmentStart + (segmentSize / 2) + jitter);
+    // Use fixed position at segment middle
+    let target = Math.floor(segmentStart + (segmentSize / 2));
 
     // Ensure targets are at least somewhat spaced and don't start at 0
     if (target < 1) target = 1;
@@ -105,21 +117,20 @@ export function distributeNonLyricCards(
     // Constraint 0: Never at index 0
     if (i === 0) canPlaceNonLyric = false;
 
-    // Constraint 1: Minimum Spacing
+    // Constraint 1: CRITICAL - Never allow adjacent non-lyric cards
+    // This check must NEVER be bypassed
+    if (i - lastNonLyricIndex < 2) {
+      canPlaceNonLyric = false;
+    }
+
+    // Constraint 2: Minimum Spacing for same card types
     if (i - lastNonLyricIndex < config.minSpacing) {
       canPlaceNonLyric = false;
     }
 
-    // Constraint 2: Column Variety 
-    if (currentCol === lastNonLyricCol) {
+    // Constraint 3: Column Variety (relaxed to allow more flexibility)
+    if (currentCol === lastNonLyricCol && i - lastNonLyricIndex < 4) {
       canPlaceNonLyric = false;
-    }
-
-    // Emergency Override: If we run out of lyrics, we MUST place (or if strictly forced by end of array)
-    const remainingSlots = expectedTotalLength - i;
-    const remainingNonLyrics = availableNonLyrics.length;
-    if (remainingNonLyrics >= remainingSlots) {
-      canPlaceNonLyric = true;
     }
 
     if (canPlaceNonLyric) {
