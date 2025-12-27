@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { extractDominantColor } from '@/utils/colorExtraction';
-import { matchColorToPalette, getRandomPaletteColor } from '@/utils/colorPalette';
 
 interface SpotifyTrack {
   id: string;
@@ -65,17 +63,24 @@ export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
   }, [query]);
 
   const handleSelectTrack = async (track: SpotifyTrack) => {
-    let matchedColor: string;
+    let matchedColor = '#A39A91'; // Default fallback (kinari-2)
 
     try {
-      // Extract dominant color from album art
-      const dominantColor = await extractDominantColor(track.albumArtMedium);
-      // Match to closest palette color
-      matchedColor = matchColorToPalette(dominantColor);
+      // Use server-side color extraction API for deterministic, CORS-safe results
+      const response = await fetch('/api/colors/extract', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: track.albumArtMedium }),
+      });
+
+      if (response.ok) {
+        const colorData = await response.json();
+        matchedColor = colorData.bgColor;
+      } else {
+        console.error('Color extraction API failed:', await response.text());
+      }
     } catch (error) {
       console.error('Color extraction failed:', error);
-      // Graceful fallback to random palette color
-      matchedColor = getRandomPaletteColor();
     }
 
     onSelectTrack({
