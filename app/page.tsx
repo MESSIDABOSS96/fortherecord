@@ -5,12 +5,16 @@ import { useRouter } from "next/navigation";
 import { Record } from "@/types/record";
 import { seedRecords } from "@/data/seedRecords";
 import { distributeNonLyricCards } from "@/utils/cardDistribution";
+import { searchRecords, FilterType } from "@/utils/searchRecords";
 import HeaderNav from "@/components/HeaderNav";
 import MasonryGrid from "@/components/MasonryGrid";
 import RecordModal from "@/components/RecordModal";
 
 export default function Home() {
   const [records, setRecords] = useState<Record[]>([]);
+  const [allRecords, setAllRecords] = useState<Record[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
   const router = useRouter();
 
@@ -39,6 +43,9 @@ export default function Home() {
       localStorage.removeItem('records');
     }
 
+    // Save unfiltered records to state
+    setAllRecords(allRecords);
+
     // Separate lyric and non-lyric cards
     const lyricCards = allRecords.filter((r: Record) => r.cardType === 'lyric' || !r.cardType);
     const nonLyricCards = allRecords.filter((r: Record) => r.cardType && r.cardType !== 'lyric');
@@ -52,6 +59,29 @@ export default function Home() {
 
     setRecords(distributed);
   }, []);
+
+  // Debounced search effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Filter records based on search query and active filter
+      const filtered = searchRecords(allRecords, searchQuery, activeFilter);
+
+      // Separate lyric and non-lyric cards
+      const lyricCards = filtered.filter((r: Record) => r.cardType === 'lyric' || !r.cardType);
+      const nonLyricCards = filtered.filter((r: Record) => r.cardType && r.cardType !== 'lyric');
+
+      // Distribute non-lyric cards among lyric cards intelligently
+      const distributed = distributeNonLyricCards(lyricCards, nonLyricCards, {
+        targetRatio: 0.25,  // 25% non-lyric cards
+        minSpacing: 3,      // Minimum 3 cards between same type
+        columnCount: 4      // Desktop: 4 columns for even distribution
+      });
+
+      setRecords(distributed);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, activeFilter, allRecords]);
 
   return (
     <div className="min-h-screen">
@@ -78,15 +108,40 @@ export default function Home() {
               </svg>
               <input
                 type="text"
-                placeholder="Search for a person, a story, a lyric, or a song"
+                placeholder="Search songs, lyrics, people, or stories…"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-11 pr-4 py-3.5 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-sm placeholder:text-gray-500"
-                disabled
               />
             </div>
           </div>
 
+          {/* Filter pills - only show when searching */}
+          {searchQuery && (
+            <div className="flex justify-center gap-2 mb-4">
+              {(['all', 'songs', 'lyrics', 'stories', 'people'] as FilterType[]).map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => setActiveFilter(filter)}
+                  className={
+                    activeFilter === filter
+                      ? "px-4 py-1.5 text-sm rounded-full bg-gray-900 text-white font-semibold cursor-pointer"
+                      : "px-4 py-1.5 text-sm rounded-full border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
+                  }
+                >
+                  {filter.charAt(0).toUpperCase() + filter.slice(1)}
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Record count */}
-          <p className="text-sm text-gray-600">{records.length} Records Archived</p>
+          <p className="text-sm text-gray-600">
+            {searchQuery
+              ? `${records.length} result${records.length !== 1 ? 's' : ''}`
+              : `${allRecords.length} Records Archived`
+            }
+          </p>
         </div>
 
         {/* Add button (absolute position) */}
@@ -97,8 +152,15 @@ export default function Home() {
           Add
         </button>
 
-        {/* Masonry Grid */}
-        <MasonryGrid records={records} onCardClick={setSelectedRecord} />
+        {/* Masonry Grid with empty state */}
+        {searchQuery && records.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-gray-500 mb-2">No records found for "{searchQuery}"</p>
+            <p className="text-sm text-gray-400">Try different keywords or change your filter</p>
+          </div>
+        ) : (
+          <MasonryGrid records={records} onCardClick={setSelectedRecord} />
+        )}
       </main>
 
       {/* Modals */}
@@ -106,6 +168,7 @@ export default function Home() {
         <RecordModal
           record={selectedRecord}
           onClose={() => setSelectedRecord(null)}
+          searchQuery={searchQuery}
         />
       )}
     </div>
