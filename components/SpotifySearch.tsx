@@ -66,8 +66,8 @@ export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
     let matchedColor = '#A39A91'; // Default fallback (kinari-2)
 
     try {
-      // Use server-side color extraction API for deterministic, CORS-safe results
-      const response = await fetch('/api/colors/extract', {
+      // Use bucket color extraction API (10-color deterministic system)
+      const response = await fetch('/api/bucket-extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imageUrl: track.albumArtMedium }),
@@ -77,10 +77,10 @@ export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
         const colorData = await response.json();
         matchedColor = colorData.bgColor;
       } else {
-        console.error('Color extraction API failed:', await response.text());
+        console.error('Bucket extraction API failed:', await response.text());
       }
     } catch (error) {
-      console.error('Color extraction failed:', error);
+      console.error('Bucket extraction failed:', error);
     }
 
     onSelectTrack({
@@ -169,7 +169,7 @@ export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
       {/* Empty State */}
       {!loading && query.trim() && results.length === 0 && !error && (
         <div className="text-center py-8 text-gray-500">
-          <p className="text-sm">No results found for "{query}"</p>
+          <p className="text-sm">No results found for &quot;{query}&quot;</p>
           <p className="text-xs mt-1">Try searching with different keywords</p>
         </div>
       )}

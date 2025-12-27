@@ -29,6 +29,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
   } = useAddRecordState();
 
   const [tempName, setTempName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Helper function to sort lyrics by original song position
   const getSortedLyricText = (lyrics: SelectedLyric[]): string => {
@@ -64,7 +65,9 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
   };
 
   const handleSubmit = () => {
-    if (!songData || selectedLines.length === 0) return;
+    if (!songData || selectedLines.length === 0 || isSubmitting) return;
+
+    setIsSubmitting(true);
 
     onSubmit({
       ...songData,
@@ -327,10 +330,10 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
               <div className="mt-8 flex justify-center">
                 <button
                   onClick={handleSubmit}
-                  disabled={reflectionText.trim() === ''}
+                  disabled={reflectionText.trim() === '' || isSubmitting}
                   className="px-12 py-4 bg-gray-900 text-white rounded-full font-semibold text-base hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md"
                 >
-                  Publish Record
+                  {isSubmitting ? 'Publishing...' : 'Publish Record'}
                 </button>
               </div>
             </div>

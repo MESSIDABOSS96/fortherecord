@@ -3,27 +3,7 @@
 import { useState, useEffect } from 'react';
 import { seedRecords } from '@/data/seedRecords';
 import Image from 'next/image';
-import { BUCKET_COLORS, type BucketName } from '@/lib/color/bucketSystem';
-
-type BucketResult = {
-  bgColor: string;
-  textColor: '#111111';
-  bucket: BucketName;
-  bucketType: 'majority' | 'accent';
-  debug: {
-    neutralPercent: number;
-    darkPercent: number;
-    lightPercent: number;
-    warmTendency: number;
-    baseCharacteristics: string;
-    accentDetected: boolean;
-    accentFamily?: string;
-    accentShare?: number;
-    accentDeltaE?: number;
-    topHueCounts: Record<string, number>;
-    majorityFamily?: string;
-  };
-};
+import { BUCKET_COLORS, type BucketName, type BucketResult } from '@/lib/color/bucketTypes';
 
 type TestRecord = {
   artist: string;

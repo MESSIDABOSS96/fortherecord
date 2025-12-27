@@ -35,9 +35,9 @@ export function distributeNonLyricCards(
   if (insertCount === 0) return lyricCards;
 
   // 2. Prepare Queues
-  // Sort cards by ID to ensure consistent ordering (deterministic)
-  const sortedLyricCards = [...lyricCards].sort((a, b) => a.id.localeCompare(b.id));
-  const sortedNonLyricCards = [...nonLyricCards].sort((a, b) => a.id.localeCompare(b.id));
+  // Preserve insertion order (user records first, then seed records)
+  const sortedLyricCards = [...lyricCards];
+  const sortedNonLyricCards = [...nonLyricCards];
 
   const lyricQueue = [...sortedLyricCards];
   const cardsByType = groupCardsByType(sortedNonLyricCards);

@@ -38,6 +38,10 @@ async function getSpotifyToken(): Promise<string> {
   // Set expiry to 5 minutes before actual expiry for safety
   tokenExpiry = Date.now() + (data.expires_in - 300) * 1000;
 
+  if (!cachedToken) {
+    throw new Error('Failed to get access token from Spotify');
+  }
+
   return cachedToken;
 }
 

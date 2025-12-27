@@ -16,13 +16,22 @@ export default function Home() {
 
   // Load records from localStorage on mount and distribute non-lyric cards
   useEffect(() => {
-    // Load from localStorage or use seed data
+    // Load from localStorage and merge with seed data
     let allRecords = seedRecords;
 
     try {
       const storedRecords = localStorage.getItem('records');
       if (storedRecords) {
-        allRecords = JSON.parse(storedRecords);
+        const userRecords = JSON.parse(storedRecords);
+
+        // Convert created_at strings back to Date objects
+        const recordsWithDates = userRecords.map((r: any) => ({
+          ...r,
+          created_at: new Date(r.created_at)
+        }));
+
+        // MERGE: User records first, then seed records
+        allRecords = [...recordsWithDates, ...seedRecords];
       }
     } catch (error) {
       // If localStorage is corrupted, clear it and use seed data

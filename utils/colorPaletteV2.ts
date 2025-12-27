@@ -9,9 +9,7 @@ export type ColorFamily =
   | 'Neutrals-Cool'
   | 'Reds-Pinks'
   | 'Oranges-Browns'
-  | 'Yellows-Och
-
-res'
+  | 'Yellows-Ochres'
   | 'Greens'
   | 'Teals-Cyans'
   | 'Blues'

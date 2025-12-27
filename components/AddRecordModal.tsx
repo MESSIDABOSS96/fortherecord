@@ -127,7 +127,7 @@ export default function AddRecordModal({
               <div>
                 <h2 className="text-2xl font-bold mb-2">Select a song</h2>
                 <p className="text-gray-600">
-                  Search Spotify's library for the song that reminds you of someone
+                  Search Spotify&apos;s library for the song that reminds you of someone
                 </p>
               </div>
 

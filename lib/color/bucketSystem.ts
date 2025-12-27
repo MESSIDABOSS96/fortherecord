@@ -1,76 +1,20 @@
 /**
  * Bucket-based color system for lyric cards
  * Maps album covers to 10 fixed colors using MAJORITY vs ACCENT logic
+ * SERVER-SIDE ONLY - uses Sharp for image processing
  */
 
 import { fetchImageToBuffer } from './imageFetcher';
 import { sampleImageAndComputeStats, type PixelHSL } from './imageSampling';
 import { hexToLab } from './colorConversion';
 import { deltaE2000 } from './colorDistance';
-
-// 10 Fixed bucket colors (ONLY allowed outputs)
-export const BUCKET_COLORS = {
-  MAJORITY_DARK: '#898989',
-  MAJORITY_LIGHT_NEUTRAL: '#E0E0E0',
-  MAJORITY_WARM_NEUTRAL: '#D6B588',
-  MAJORITY_RED: '#D94446',
-  MAJORITY_PINK: '#FF85B3',
-  MAJORITY_PURPLE: '#E0B0FF',
-  MAJORITY_BLUE: '#6395EE',
-  MAJORITY_GREEN: '#3CAE63',
-  MAJORITY_ORANGE: '#FF7518',
-  MAJORITY_YELLOW: '#FFD32C',
-} as const;
-
-export type BucketName = keyof typeof BUCKET_COLORS;
-
-// Tunable thresholds (confirmed defaults)
-export const BUCKET_THRESHOLDS = {
-  // Neutral detection
-  S_NEUTRAL: 0.12,
-  NEUTRAL_PERCENT: 0.65,
-
-  // Base type detection
-  L_DARK: 0.18,
-  L_LIGHT: 0.85,
-  DARK_PERCENT: 0.55,
-  LIGHT_PERCENT: 0.55,
-
-  // Accent detection
-  S_ACCENT: 0.25,
-  MIN_ACCENT_SHARE: 0.10,
-  MIN_ACCENT_SAT: 0.30,
-  MIN_DELTA_E: 20,
-
-  // Majority hue detection
-  S_MAJORITY: 0.18,
-
-  // White detection (conservative)
-  WHITE_S_MAX: 0.05,
-  WHITE_L_MIN: 0.95,
-};
-
-export type HueFamily = 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink';
-
-export type BucketResult = {
-  bgColor: string;
-  textColor: '#111111';
-  bucket: BucketName;
-  bucketType: 'majority' | 'accent';
-  debug: {
-    neutralPercent: number;
-    darkPercent: number;
-    lightPercent: number;
-    warmTendency: number;
-    baseCharacteristics: string;
-    accentDetected: boolean;
-    accentFamily?: HueFamily;
-    accentShare?: number;
-    accentDeltaE?: number;
-    topHueCounts: Record<HueFamily, number>;
-    majorityFamily?: HueFamily;
-  };
-};
+import {
+  BUCKET_COLORS,
+  BUCKET_THRESHOLDS,
+  type BucketName,
+  type HueFamily,
+  type BucketResult,
+} from './bucketTypes';
 
 /**
  * Check if pixel is white (non-contrasting)
@@ -82,15 +26,17 @@ function isWhite(pixel: PixelHSL): boolean {
 
 /**
  * Map hue (0-360) to color family
+ * Updated ranges based on real-world album color perception
+ * Round 2: Expanded red/purple to fix The Weeknd (magenta-red) vs Jeff Buckley (violet-purple)
  */
 function mapHueToFamily(hue: number): HueFamily {
-  if (hue >= 345 || hue <= 15) return 'red'; // 345-360, 0-15
-  if (hue > 15 && hue <= 30) return 'orange'; // 15-30
-  if (hue > 30 && hue <= 60) return 'yellow'; // 30-60
+  if (hue >= 330 || hue <= 15) return 'red'; // 330-360, 0-15 (expanded to include magenta-reds)
+  if (hue > 15 && hue <= 45) return 'orange'; // 15-45 (expanded to catch more oranges)
+  if (hue > 45 && hue <= 60) return 'yellow'; // 45-60 (narrower but adequate)
   if (hue > 60 && hue <= 165) return 'green'; // 60-165
   if (hue > 165 && hue <= 250) return 'blue'; // 165-250
-  if (hue > 250 && hue <= 290) return 'purple'; // 250-290
-  if (hue > 290 && hue <= 345) return 'pink'; // 290-345
+  if (hue > 250 && hue < 300) return 'purple'; // 250-299 (true purples/violets)
+  if (hue >= 300 && hue < 330) return 'pink'; // 300-329 (hot pinks/magentas)
   return 'blue'; // fallback
 }
 
@@ -130,8 +76,13 @@ export async function getBucketFromAlbumCover(
 
     const { pixels, totalPixels, neutralPercent, darkPercent, lightPercent, warmTendency } = stats;
 
-    // STEP 2: Determine base characteristics (if neutral-dominant)
-    if (neutralPercent > BUCKET_THRESHOLDS.NEUTRAL_PERCENT) {
+    // STEP 1.5: Check for HIGH-CONTRAST accents FIRST (before neutral check)
+    // This allows dark-neutral albums with bright accents (like Coldplay) to be detected
+    const accentResult = detectContrastingAccent(pixels, totalPixels);
+    const isHighContrastAccent = accentResult && accentResult.deltaE > 30;
+
+    // STEP 2: Determine base characteristics (if neutral-dominant AND no high-contrast accent)
+    if (neutralPercent > BUCKET_THRESHOLDS.NEUTRAL_PERCENT && !isHighContrastAccent) {
       // Majority neutral cover
       let bucket: BucketName;
       let baseDesc: string;
@@ -172,9 +123,31 @@ export async function getBucketFromAlbumCover(
       };
     }
 
-    // STEP 3: Detect contrasting accent (CRITICAL)
-    const accentResult = detectContrastingAccent(pixels, totalPixels);
+    // STEP 2.5: Dark album special handling (prevents false accents on black covers)
+    // If album is very dark (like 2Pac), skip accent detection and return MAJORITY_DARK
+    if (darkPercent > 0.65 && neutralPercent > 0.50) {
+      const topHueCounts = countHuesByFamily(
+        pixels.filter((p) => p.s >= BUCKET_THRESHOLDS.S_MAJORITY)
+      );
 
+      return {
+        bgColor: BUCKET_COLORS.MAJORITY_DARK,
+        textColor: '#111111',
+        bucket: 'MAJORITY_DARK',
+        bucketType: 'majority',
+        debug: {
+          neutralPercent,
+          darkPercent,
+          lightPercent,
+          warmTendency,
+          baseCharacteristics: 'very dark album (accent detection skipped)',
+          accentDetected: false,
+          topHueCounts,
+        },
+      };
+    }
+
+    // STEP 3: Use accent result (already computed above)
     if (accentResult) {
       const bucket = accentResult.bucket;
       const topHueCounts = countHuesByFamily(
