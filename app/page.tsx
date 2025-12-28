@@ -99,7 +99,7 @@ export default function Home() {
         {/* Title and Search */}
         <div className="text-center mb-14">
           <h1 className="text-6xl font-bold mb-4 tracking-tight">FOR THE RECORD</h1>
-          <p className="text-xl text-gray-600 mb-[60px]">An archive of lyrics that bring loved ones to mind</p>
+          <p className="text-xl text-gray-600 mb-[60px]">An archive of lyrics that bring someone to mind</p>
 
           {/* Search bar */}
           <div className="max-w-xl mx-auto mb-4">
@@ -152,14 +152,6 @@ export default function Home() {
             }
           </p>
         </div>
-
-        {/* Add button (absolute position) */}
-        <button
-          onClick={() => router.push('/add')}
-          className="absolute top-10 right-10 px-8 py-3 bg-transparent border-2 border-gray-900 rounded-full font-semibold text-sm hover:bg-gray-900 hover:text-white transition-colors z-40 shadow-md"
-        >
-          Add
-        </button>
 
         {/* Masonry Grid with empty state */}
         {searchQuery && records.length === 0 ? (

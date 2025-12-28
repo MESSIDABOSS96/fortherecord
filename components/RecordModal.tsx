@@ -126,7 +126,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
             <div className="text-base font-medium italic text-gray-800 uppercase tracking-wide mb-4 text-center">
               FOR {record.for_name.toUpperCase()}
             </div>
-            <div className="text-gray-900 leading-relaxed overflow-y-auto max-h-[350px]">
+            <div className="text-gray-900 leading-relaxed overflow-y-auto max-h-[500px]">
               {record.reflection_text}
             </div>
           </div>

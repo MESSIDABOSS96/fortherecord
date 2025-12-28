@@ -48,6 +48,9 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
       spotify_track_id: song.spotify_track_id,
       background_color: song.background_color,
     });
+    // Clear selected lyrics and reflection when changing songs
+    setSelectedLines([]);
+    setReflectionText('');
     // Auto-advance to step 2
     setTimeout(() => setStep(2), 500);
   };
@@ -305,7 +308,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
                       value={reflectionText}
                       onChange={(e) => setReflectionText(e.target.value)}
                       placeholder="Why do these lyrics remind you of them? Tell their story..."
-                      className="text-gray-900 leading-relaxed overflow-y-auto max-h-[350px] bg-transparent border-none focus:outline-none focus:ring-0 resize-none w-full placeholder:text-gray-500 placeholder:italic"
+                      className="text-gray-900 leading-relaxed overflow-y-auto max-h-[500px] bg-transparent border-none focus:outline-none focus:ring-0 resize-none w-full placeholder:text-gray-900 placeholder:italic"
                       style={{ minHeight: '200px' }}
                     />
                   </div>
