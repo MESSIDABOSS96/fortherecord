@@ -1,14 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
 
-export default function HeaderNav() {
+export default function HeaderNav({ onReset }: { onReset?: () => void }) {
   return (
     <header className="w-full py-3">
       <nav className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
           {/* Left: Logo */}
           <div className="justify-self-start -ml-20 mt-3">
-            <Link href="/" className="flex items-center group">
+            <Link href="/" onClick={onReset} className="flex items-center group">
               <Image
                 src="/logo.svg"
                 alt="For The Record"
@@ -23,6 +23,7 @@ export default function HeaderNav() {
           <div className="flex gap-8 text-sm">
             <Link
               href="/"
+              onClick={onReset}
               className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
             >
               Collection

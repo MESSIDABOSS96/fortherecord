@@ -83,9 +83,16 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [searchQuery, activeFilter, allRecords]);
 
+  // Handle reset to initial state
+  const handleReset = () => {
+    setSearchQuery('');
+    setActiveFilter('all');
+    setSelectedRecord(null);
+  };
+
   return (
     <div className="min-h-screen">
-      <HeaderNav />
+      <HeaderNav onReset={handleReset} />
 
       <main className="max-w-7xl mx-auto px-6 pb-16">
         {/* Title and Search */}
@@ -138,7 +145,7 @@ export default function Home() {
           {/* Record count */}
           <p className="text-sm text-gray-600">
             {searchQuery
-              ? `${records.length} result${records.length !== 1 ? 's' : ''}`
+              ? `${records.length} record${records.length !== 1 ? 's' : ''} found`
               : `${allRecords.length} Records Archived`
             }
           </p>
@@ -155,7 +162,7 @@ export default function Home() {
         {/* Masonry Grid with empty state */}
         {searchQuery && records.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-gray-500 mb-2">No records found for "{searchQuery}"</p>
+            <p className="text-gray-500 mb-2">No records found for &quot;{searchQuery}&quot;</p>
             <p className="text-sm text-gray-400">Try different keywords or change your filter</p>
           </div>
         ) : (
@@ -168,7 +175,6 @@ export default function Home() {
         <RecordModal
           record={selectedRecord}
           onClose={() => setSelectedRecord(null)}
-          searchQuery={searchQuery}
         />
       )}
     </div>

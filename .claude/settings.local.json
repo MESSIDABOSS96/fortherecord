@@ -11,7 +11,17 @@
       "WebFetch(domain:open.spotify.com)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd Spotify integration for song search and selection\n\nReplace manual song entry with Spotify search in AddRecordModal, allowing users to search and select tracks directly from Spotify''s catalog. Added spotify_track_id field to track data model and updated card styling for improved presentation.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git commit:*)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:theunsentproject.com)",
+      "Bash(curl:*)",
+      "Bash(lsof:*)",
+      "Bash(find:*)",
+      "Bash(npx tsx:*)",
+      "Bash(node:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm i:*)"
     ]
   }
 }
