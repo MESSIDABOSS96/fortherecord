@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.89.0",
     "fast-average-color": "^9.5.0",
     "genius-lyrics-api": "^3.2.1",
     "next": "^15",

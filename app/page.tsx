@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Record } from "@/types/record";
-import { seedRecords } from "@/data/seedRecords";
 import { distributeNonLyricCards } from "@/utils/cardDistribution";
 import { searchRecords, FilterType } from "@/utils/searchRecords";
 import HeaderNav from "@/components/HeaderNav";
@@ -18,46 +17,48 @@ export default function Home() {
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
   const router = useRouter();
 
-  // Load records from localStorage on mount and distribute non-lyric cards
+  // Load records from API on mount and distribute non-lyric cards
   useEffect(() => {
-    // Load from localStorage and merge with seed data
-    let allRecords = seedRecords;
+    async function fetchRecords() {
+      try {
+        const response = await fetch('/api/records');
+        if (!response.ok) {
+          throw new Error('Failed to fetch records');
+        }
 
-    try {
-      const storedRecords = localStorage.getItem('records');
-      if (storedRecords) {
-        const userRecords = JSON.parse(storedRecords);
+        const data = await response.json();
 
         // Convert created_at strings back to Date objects
-        const recordsWithDates = userRecords.map((r: any) => ({
+        const recordsWithDates = data.map((r: any) => ({
           ...r,
+          cardType: r.card_type || r.cardType,
           created_at: new Date(r.created_at)
         }));
 
-        // MERGE: User records first, then seed records
-        allRecords = [...recordsWithDates, ...seedRecords];
+        // Save unfiltered records to state
+        setAllRecords(recordsWithDates);
+
+        // Separate lyric and non-lyric cards
+        const lyricCards = recordsWithDates.filter((r: Record) => r.cardType === 'lyric' || !r.cardType);
+        const nonLyricCards = recordsWithDates.filter((r: Record) => r.cardType && r.cardType !== 'lyric');
+
+        // Distribute non-lyric cards among lyric cards intelligently
+        const distributed = distributeNonLyricCards(lyricCards, nonLyricCards, {
+          targetRatio: 0.25,  // 25% non-lyric cards
+          minSpacing: 3,      // Minimum 3 cards between same type
+          columnCount: 4      // Desktop: 4 columns for even distribution
+        });
+
+        setRecords(distributed);
+      } catch (error) {
+        console.error('Error fetching records:', error);
+        // Set empty state on error
+        setAllRecords([]);
+        setRecords([]);
       }
-    } catch (error) {
-      // If localStorage is corrupted, clear it and use seed data
-      console.error('Error parsing localStorage:', error);
-      localStorage.removeItem('records');
     }
 
-    // Save unfiltered records to state
-    setAllRecords(allRecords);
-
-    // Separate lyric and non-lyric cards
-    const lyricCards = allRecords.filter((r: Record) => r.cardType === 'lyric' || !r.cardType);
-    const nonLyricCards = allRecords.filter((r: Record) => r.cardType && r.cardType !== 'lyric');
-
-    // Distribute non-lyric cards among lyric cards intelligently
-    const distributed = distributeNonLyricCards(lyricCards, nonLyricCards, {
-      targetRatio: 0.25,  // 25% non-lyric cards
-      minSpacing: 3,      // Minimum 3 cards between same type
-      columnCount: 4      // Desktop: 4 columns for even distribution
-    });
-
-    setRecords(distributed);
+    fetchRecords();
   }, []);
 
   // Debounced search effect
@@ -97,7 +98,8 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-6 pb-16">
         {/* Title and Search */}
         <div className="text-center mb-14">
-          <h1 className="text-6xl font-bold mb-6 tracking-tight">FOR THE RECORD</h1>
+          <h1 className="text-6xl font-bold mb-4 tracking-tight">FOR THE RECORD</h1>
+          <p className="text-xl text-gray-600 mb-[60px]">An archive of lyrics that bring loved ones to mind</p>
 
           {/* Search bar */}
           <div className="max-w-xl mx-auto mb-4">
@@ -118,7 +120,7 @@ export default function Home() {
                 placeholder="Search songs, lyrics, people, or stories…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-3.5 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-sm placeholder:text-gray-500"
+                className="w-full pl-11 pr-4 py-3.5 bg-[#f5f3f0] border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-sm placeholder:text-gray-500"
               />
             </div>
           </div>

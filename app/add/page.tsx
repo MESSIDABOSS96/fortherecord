@@ -13,20 +13,33 @@ export default function AddPage() {
   };
 
   const handleSubmit = async (recordData: Omit<Record, 'id' | 'created_at'>) => {
-    // Create record with ID and timestamp
-    const newRecord: Record = {
-      ...recordData,
-      id: Date.now().toString(),
-      created_at: new Date(),
-    };
+    try {
+      // Create record with ID and timestamp
+      const newRecord: Record = {
+        ...recordData,
+        id: Date.now().toString(),
+        created_at: new Date(),
+      };
 
-    // Store in localStorage temporarily
-    const existingRecords = localStorage.getItem('records');
-    const records = existingRecords ? JSON.parse(existingRecords) : [];
-    localStorage.setItem('records', JSON.stringify([newRecord, ...records]));
+      // Save to database via API
+      const response = await fetch('/api/records', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newRecord),
+      });
 
-    // Navigate back to home
-    router.push('/');
+      if (!response.ok) {
+        throw new Error('Failed to create record');
+      }
+
+      // Navigate back to home
+      router.push('/');
+    } catch (error) {
+      console.error('Error creating record:', error);
+      alert('Failed to create record. Please try again.');
+    }
   };
 
   return (
