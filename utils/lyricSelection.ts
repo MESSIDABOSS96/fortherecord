@@ -72,3 +72,42 @@ export function formatLyricExcerpt(lines: SelectedLyric[]): string {
     .map(l => l.text)
     .join('\n');
 }
+
+/**
+ * Normalizes lyric subheaders to their root form
+ * Falls back to original header if normalization produces empty or invalid result
+ *
+ * Examples:
+ * - "Verse 1" → "Verse"
+ * - "Chorus 2" → "Chorus"
+ * - "Pre-Chorus 1" → "Pre-Chorus"
+ * - "Intro" → "Intro" (unchanged)
+ * - "Skit: Mommy" → "Skit"
+ *
+ * Safety: Returns original header if normalization would produce empty string
+ */
+export function normalizeSubheader(header: string): string {
+  if (!header) return header;
+
+  const original = header.trim();
+  let normalized = original;
+
+  // Step 1: Remove numbered suffixes (e.g., "Verse 1" → "Verse")
+  normalized = normalized.replace(/\s+\d+$/i, '');
+
+  // Step 2: Remove descriptors after colons (e.g., "Skit: Mommy" → "Skit")
+  // Only if there's actual content before the colon
+  if (normalized.includes(':') && normalized.indexOf(':') > 0) {
+    normalized = normalized.split(':')[0].trim();
+  }
+
+  // Step 3: Remove parenthetical annotations (e.g., "Verse (Live)" → "Verse")
+  normalized = normalized.replace(/\s*\(.+\)$/i, '');
+
+  // Safety check: If we ended up with empty string or very short result, return original
+  if (!normalized || normalized.length < 2) {
+    return original;
+  }
+
+  return normalized.trim();
+}

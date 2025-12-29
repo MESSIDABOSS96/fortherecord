@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 
 interface SpotifyTrack {
@@ -30,6 +30,8 @@ export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
   const [results, setResults] = useState<SpotifyTrack[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const selectedRef = useRef<HTMLButtonElement>(null);
 
   // Debounced search
   useEffect(() => {
@@ -61,6 +63,54 @@ export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
 
     return () => clearTimeout(timer);
   }, [query]);
+
+  // Reset selected index when results change
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [results]);
+
+  // Scroll selected item into view
+  useEffect(() => {
+    if (selectedIndex >= 0 && selectedRef.current) {
+      selectedRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  }, [selectedIndex]);
+
+  // Keyboard navigation handler
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (results.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex((prev) =>
+          prev < results.length - 1 ? prev + 1 : 0 // Wrap to top
+        );
+        break;
+
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex((prev) =>
+          prev > 0 ? prev - 1 : results.length - 1 // Wrap to bottom
+        );
+        break;
+
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0) {
+          handleSelectTrack(results[selectedIndex]);
+        }
+        break;
+
+      case 'Escape':
+        e.preventDefault();
+        setSelectedIndex(-1); // Clear selection
+        break;
+    }
+  };
 
   const handleSelectTrack = async (track: SpotifyTrack) => {
     let matchedColor = '#A39A91'; // Default fallback (kinari-2)
@@ -111,6 +161,7 @@ export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
           className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
           placeholder="Songs, Albums or Artists"
           autoFocus
@@ -136,11 +187,16 @@ export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
       {!loading && results.length > 0 && (
         <div className="space-y-2 max-h-96 overflow-y-auto">
           <p className="text-sm text-gray-600">{results.length} results</p>
-          {results.map((track) => (
+          {results.map((track, index) => (
             <button
               key={track.id}
+              ref={selectedIndex === index ? selectedRef : null}
               onClick={() => handleSelectTrack(track)}
-              className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left border border-gray-200 hover:border-gray-900"
+              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left ${
+                selectedIndex === index
+                  ? 'bg-gray-200 shadow-sm'
+                  : 'hover:bg-gray-100'
+              }`}
             >
               {/* Album Art */}
               <div className="w-14 h-14 bg-gray-200 rounded flex-shrink-0 overflow-hidden">

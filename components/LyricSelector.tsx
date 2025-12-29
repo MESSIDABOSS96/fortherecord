@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { SelectedLyric } from '@/hooks/useAddRecordState';
+import { normalizeSubheader } from '@/utils/lyricSelection';
 
 interface LyricSelectorProps {
   songTitle: string;
@@ -97,9 +98,10 @@ function parseLyricsIntoSections(lyrics: string[]): LyricSection[] {
       if (currentSection) {
         sections.push(currentSection);
       }
-      // Start new section - remove brackets from header
+      // Start new section - remove brackets and normalize header
+      const rawHeader = headerMatch[1];
       currentSection = {
-        header: headerMatch[1],  // Extract text without brackets
+        header: normalizeSubheader(rawHeader),  // Apply safe normalization
         lines: [],
         startIndex: lineIndex
       };
