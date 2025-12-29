@@ -33,6 +33,7 @@ export function cleanSongTitle(title: string): string {
     // Version types with dash
     .replace(/\s*-\s*\w+\s+Remastered(\s+\d{4})?$/gi, '')   // - Buddha Remastered 2001, - Columbia Remastered 2009
     .replace(/\s*-\s*Remastered(\s+\d{4})?$/gi, '')         // - Remastered, - Remastered 2009
+    .replace(/\s*-\s*\d{4}\s+Remaster(ed)?(\s+Edition)?$/gi, '')  // - 2011 Remaster, - 2011 Remastered Edition
     .replace(/\s*-\s*Live(\s+at\s+[^-]+)?$/gi, '')          // - Live, - Live at Venue
     .replace(/\s*-\s*(Radio|Album|Single)\s+(Edit|Version)$/gi, '') // - Radio Edit, - Album Version
     .replace(/\s*-\s*Explicit(\s+Version)?$/gi, '')     // - Explicit, - Explicit Version

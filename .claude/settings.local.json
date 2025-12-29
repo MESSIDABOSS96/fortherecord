@@ -23,7 +23,8 @@
       "Bash(npm run build:*)",
       "Bash(npm i:*)",
       "Bash(xargs kill:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(git log:*)"
     ]
   }
 }
