@@ -1,6 +1,7 @@
 "use client";
 
 import { Record } from "@/types/record";
+import { cleanSongTitle } from "@/utils/cleanSongTitle";
 import Image from "next/image";
 import { useEffect } from "react";
 
@@ -74,7 +75,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
           <div className="md:w-1/2 p-8 flex flex-col">
             {/* Album art + Song info */}
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 bg-black/20 rounded-xl flex-shrink-0 overflow-hidden">
+              <div className="w-16 h-16 bg-black/20 rounded-sm flex-shrink-0 overflow-hidden">
                 {record.album_art_url ? (
                   <Image
                     src={record.album_art_url}
@@ -106,7 +107,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="font-bold text-xl text-gray-900">
-                  {record.song_title}
+                  {cleanSongTitle(record.song_title)}
                 </div>
                 <div className="text-gray-700">{record.artist}</div>
               </div>
@@ -126,7 +127,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
             <div className="text-base font-medium italic text-gray-800 uppercase tracking-wide mb-4 text-center">
               FOR {record.for_name.toUpperCase()}
             </div>
-            <div className="text-gray-900 leading-relaxed overflow-y-auto max-h-[500px]">
+            <div className="text-gray-900 leading-relaxed overflow-y-auto flex-1">
               {record.reflection_text}
             </div>
           </div>

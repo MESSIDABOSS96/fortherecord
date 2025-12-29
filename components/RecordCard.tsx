@@ -2,6 +2,7 @@
 
 import { Record } from "@/types/record";
 import { calculateCardSize, CARD_SIZE_CONFIG } from "@/utils/cardSizing";
+import { cleanSongTitle } from "@/utils/cleanSongTitle";
 import Image from "next/image";
 
 interface RecordCardProps {
@@ -9,8 +10,8 @@ interface RecordCardProps {
   onClick: () => void;
 }
 
-// Component for lyric-type cards
-function LyricCard({ record, onClick }: RecordCardProps) {
+// Main lyric card component
+export default function RecordCard({ record, onClick }: RecordCardProps) {
   const cardSize = calculateCardSize(record.lyric_excerpt);
   const sizeConfig = CARD_SIZE_CONFIG[cardSize];
 
@@ -51,7 +52,7 @@ function LyricCard({ record, onClick }: RecordCardProps) {
         </div>
         <div className="min-w-0 flex-1">
           <div className="font-bold text-[14px] text-gray-900 truncate leading-tight">
-            {record.song_title}
+            {cleanSongTitle(record.song_title)}
           </div>
           <div className="text-[12px] text-gray-700 truncate leading-tight mt-1">
             {record.artist}
@@ -70,112 +71,4 @@ function LyricCard({ record, onClick }: RecordCardProps) {
       </div>
     </div>
   );
-}
-
-// Component for logo-type cards
-function LogoCard({ record, onClick }: RecordCardProps) {
-  return (
-    <div
-      className="rounded-2xl p-6 transition-opacity flex flex-col items-center justify-center min-h-[180px]"
-      style={{
-        backgroundColor: '#f8f8f8',
-        boxShadow: "var(--shadow-md)",
-      }}
-    >
-      {/* Logo */}
-      <Image
-        src="/logo.svg"
-        alt="For The Record"
-        width={120}
-        height={144}
-        className="mb-4"
-      />
-
-      {/* Logo text */}
-      <div className="text-center">
-        <div className="text-sm font-bold text-gray-900 uppercase tracking-wide">
-          MUSIC REMINDS ME OF YOU
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Component for vinyl-type cards
-function VinylCard({ record, onClick }: RecordCardProps) {
-  return (
-    <div
-      className="rounded-2xl p-6 transition-opacity flex items-center justify-center min-h-[240px]"
-      style={{
-        backgroundColor: '#f8f8f8',
-        boxShadow: "var(--shadow-md)",
-      }}
-    >
-      {/* Display user image if vinylImageUrl exists, otherwise show SVG */}
-      {record.vinylImageUrl ? (
-        <Image
-          src={record.vinylImageUrl}
-          alt={record.song_title || "Decorative"}
-          width={240}
-          height={240}
-          className="object-contain"
-        />
-      ) : (
-        <svg
-          width="180"
-          height="180"
-          viewBox="0 0 180 180"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle cx="90" cy="90" r="88" fill="#1a1a1a" stroke="#333" strokeWidth="2" />
-          <circle cx="90" cy="90" r="70" stroke="#444" strokeWidth="1" />
-          <circle cx="90" cy="90" r="50" stroke="#444" strokeWidth="1" />
-          <circle cx="90" cy="90" r="30" stroke="#444" strokeWidth="1" />
-          <circle cx="90" cy="90" r="15" fill="#666" />
-          <circle cx="90" cy="90" r="6" fill="#1a1a1a" />
-        </svg>
-      )}
-    </div>
-  );
-}
-
-// Component for image-type cards
-function ImageCard({ record, onClick }: RecordCardProps) {
-  return (
-    <div
-      className="rounded-2xl p-6 transition-opacity flex items-center justify-center min-h-[160px]"
-      style={{
-        backgroundColor: '#f8f8f8',
-        boxShadow: "var(--shadow-md)",
-      }}
-    >
-      <div className="text-center">
-        <div className="text-3xl font-bold text-gray-900 mb-3" style={{ fontStyle: 'italic' }}>
-          FOR THE RECORD
-        </div>
-        <div className="text-sm text-gray-600 font-medium">
-          EST 2025
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Main RecordCard component with type routing
-export default function RecordCard({ record, onClick }: RecordCardProps) {
-  const cardType = record.cardType || 'lyric';
-
-  switch (cardType) {
-    case 'lyric':
-      return <LyricCard record={record} onClick={onClick} />;
-    case 'logo':
-      return <LogoCard record={record} onClick={onClick} />;
-    case 'vinyl':
-      return <VinylCard record={record} onClick={onClick} />;
-    case 'image':
-      return <ImageCard record={record} onClick={onClick} />;
-    default:
-      return <LyricCard record={record} onClick={onClick} />;
-  }
 }

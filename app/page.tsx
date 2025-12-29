@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Record } from "@/types/record";
-import { distributeNonLyricCards } from "@/utils/cardDistribution";
 import { searchRecords, FilterType } from "@/utils/searchRecords";
 import HeaderNav from "@/components/HeaderNav";
 import MasonryGrid from "@/components/MasonryGrid";
@@ -17,7 +16,7 @@ export default function Home() {
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
   const router = useRouter();
 
-  // Load records from API on mount and distribute non-lyric cards
+  // Load records from API on mount
   useEffect(() => {
     async function fetchRecords() {
       try {
@@ -29,27 +28,18 @@ export default function Home() {
         const data = await response.json();
 
         // Convert created_at strings back to Date objects
-        const recordsWithDates = data.map((r: any) => ({
-          ...r,
-          cardType: r.card_type || r.cardType,
-          created_at: new Date(r.created_at)
-        }));
+        // Only keep lyric cards (filter out any non-lyric cards that might remain)
+        const recordsWithDates = data
+          .filter((r: any) => r.card_type === 'lyric' || !r.card_type)
+          .map((r: any) => ({
+            ...r,
+            cardType: r.card_type || r.cardType,
+            created_at: new Date(r.created_at)
+          }));
 
         // Save unfiltered records to state
         setAllRecords(recordsWithDates);
-
-        // Separate lyric and non-lyric cards
-        const lyricCards = recordsWithDates.filter((r: Record) => r.cardType === 'lyric' || !r.cardType);
-        const nonLyricCards = recordsWithDates.filter((r: Record) => r.cardType && r.cardType !== 'lyric');
-
-        // Distribute non-lyric cards among lyric cards intelligently
-        const distributed = distributeNonLyricCards(lyricCards, nonLyricCards, {
-          targetRatio: 0.25,  // 25% non-lyric cards
-          minSpacing: 3,      // Minimum 3 cards between same type
-          columnCount: 4      // Desktop: 4 columns for even distribution
-        });
-
-        setRecords(distributed);
+        setRecords(recordsWithDates);
       } catch (error) {
         console.error('Error fetching records:', error);
         // Set empty state on error
@@ -66,19 +56,7 @@ export default function Home() {
     const timer = setTimeout(() => {
       // Filter records based on search query and active filter
       const filtered = searchRecords(allRecords, searchQuery, activeFilter);
-
-      // Separate lyric and non-lyric cards
-      const lyricCards = filtered.filter((r: Record) => r.cardType === 'lyric' || !r.cardType);
-      const nonLyricCards = filtered.filter((r: Record) => r.cardType && r.cardType !== 'lyric');
-
-      // Distribute non-lyric cards among lyric cards intelligently
-      const distributed = distributeNonLyricCards(lyricCards, nonLyricCards, {
-        targetRatio: 0.25,  // 25% non-lyric cards
-        minSpacing: 3,      // Minimum 3 cards between same type
-        columnCount: 4      // Desktop: 4 columns for even distribution
-      });
-
-      setRecords(distributed);
+      setRecords(filtered);
     }, 300);
 
     return () => clearTimeout(timer);

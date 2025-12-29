@@ -57,7 +57,7 @@ export async function POST(request: Request) {
       .from('records')
       .insert([{
         id: body.id,
-        card_type: body.cardType || body.card_type || 'lyric',
+        card_type: 'lyric',
         for_name: body.for_name,
         song_title: body.song_title,
         artist: body.artist,
@@ -66,10 +66,7 @@ export async function POST(request: Request) {
         lyric_excerpt: body.lyric_excerpt,
         reflection_text: body.reflection_text,
         background_color: body.background_color,
-        created_at: body.created_at || new Date().toISOString(),
-        image_url: body.imageUrl || body.image_url || null,
-        logo_text: body.logoText || body.logo_text || null,
-        vinyl_image_url: body.vinylImageUrl || body.vinyl_image_url || null
+        created_at: body.created_at || new Date().toISOString()
       }])
       .select();
 

@@ -68,7 +68,7 @@ export default function RecordPreview({
                 <div className="md:w-1/2 p-8 flex flex-col">
                   {/* Album art + Song info */}
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-16 h-16 bg-black/20 rounded-xl flex-shrink-0 overflow-hidden">
+                    <div className="w-16 h-16 bg-black/20 rounded-sm flex-shrink-0 overflow-hidden">
                       {songData.album_art_url ? (
                         <Image
                           src={songData.album_art_url}

@@ -5,6 +5,7 @@ import LyricSelector from './LyricSelector';
 import RecordPreview from './RecordPreview';
 import AddRecordInputs from './AddRecordInputs';
 import { useAddRecordState, SelectedLyric } from '@/hooks/useAddRecordState';
+import { cleanSongTitle } from '@/utils/cleanSongTitle';
 import { Record } from '@/types/record';
 import { useState } from 'react';
 import Image from 'next/image';
@@ -262,7 +263,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
                   <div className="md:w-1/2 p-8 flex flex-col">
                     {/* Album art + Song info */}
                     <div className="flex items-center gap-4 mb-6">
-                      <div className="w-16 h-16 bg-black/20 rounded-xl flex-shrink-0 overflow-hidden">
+                      <div className="w-16 h-16 bg-black/20 rounded-sm flex-shrink-0 overflow-hidden">
                         {songData.album_art_url ? (
                           <Image
                             src={songData.album_art_url}
@@ -282,7 +283,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="font-bold text-xl text-gray-900">
-                          {songData.song_title}
+                          {cleanSongTitle(songData.song_title)}
                         </div>
                         <div className="text-gray-700">{songData.artist}</div>
                       </div>

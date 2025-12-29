@@ -56,6 +56,18 @@ function isNonLyricLine(line: string): boolean {
   // Filter out "Read More" links
   if (lowerTrimmed.match(/read more/)) return true;
 
+  // NEW FILTERS - catch more non-lyric content:
+
+  // Filter album names with dates (e.g., "- Contraband (15.9.2023)")
+  if (trimmed.match(/^-\s*.+\s*\(\d{1,2}\.\d{1,2}\.\d{4}\)$/)) return true;
+
+  // Filter historical/academic text patterns
+  if (lowerTrimmed.match(/aryan|atlantis|veda|varuna|hymn to/)) return true;
+  if (trimmed.match(/^[A-Z]{2,}.*FROM\s+[A-Z]{2,}/)) return true; // "THE ARYAN COLONIES FROM ATLANTIS"
+
+  // Filter Q&A format ("WE come now to another question:")
+  if (trimmed.match(/^[A-Z]{2,}\s+come now to/)) return true;
+
   return false;
 }
 
@@ -150,7 +162,18 @@ export default function LyricSelector({
         const parsedSections = parseLyricsIntoSections(lines);
         setSections(parsedSections);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Could not load lyrics');
+        const errorMessage = err instanceof Error ? err.message : 'Could not load lyrics';
+
+        // Provide more specific error messages based on the error
+        if (errorMessage.includes('validation failed')) {
+          setError('Unable to find reliable lyrics for this song. The lyrics may not be available on Genius, or there may be multiple versions causing confusion.');
+        } else if (errorMessage.includes('not found')) {
+          setError('Lyrics not found. This song may not be available on Genius, or it may be protected by licensing restrictions.');
+        } else if (errorMessage.toLowerCase().includes('network') || errorMessage.toLowerCase().includes('fetch')) {
+          setError('Network error. Please check your internet connection and try again.');
+        } else {
+          setError(errorMessage);
+        }
       } finally {
         setLoading(false);
       }
@@ -158,6 +181,51 @@ export default function LyricSelector({
 
     fetchLyrics();
   }, [songTitle, artist]);
+
+  // Retry function
+  const handleRetry = () => {
+    setError('');
+    setLoading(true);
+    // Re-trigger the fetch by updating a dependency (useEffect will re-run)
+    const fetchLyrics = async () => {
+      setLoading(true);
+      setError('');
+
+      try {
+        const response = await fetch(
+          `/api/genius/lyrics?title=${encodeURIComponent(songTitle)}&artist=${encodeURIComponent(artist)}`
+        );
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Failed to fetch lyrics');
+        }
+
+        const data = await response.json();
+        const lines = data.lyrics.split('\n').filter((l: string) => l.trim());
+
+        setAllLyrics(lines);
+        const parsedSections = parseLyricsIntoSections(lines);
+        setSections(parsedSections);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Could not load lyrics';
+
+        if (errorMessage.includes('validation failed')) {
+          setError('Unable to find reliable lyrics for this song. The lyrics may not be available on Genius, or there may be multiple versions causing confusion.');
+        } else if (errorMessage.includes('not found')) {
+          setError('Lyrics not found. This song may not be available on Genius, or it may be protected by licensing restrictions.');
+        } else if (errorMessage.toLowerCase().includes('network') || errorMessage.toLowerCase().includes('fetch')) {
+          setError('Network error. Please check your internet connection and try again.');
+        } else {
+          setError(errorMessage);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLyrics();
+  };
 
   const handleLineClick = (line: string, index: number) => {
     const isSelected = selectedLines.some(l => l.originalIndex === index);
@@ -187,8 +255,14 @@ export default function LyricSelector({
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-        {error}
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <p className="text-red-800 text-sm mb-3">{error}</p>
+        <button
+          onClick={handleRetry}
+          className="text-sm text-red-600 hover:text-red-800 underline font-medium transition-colors"
+        >
+          Try Again
+        </button>
       </div>
     );
   }

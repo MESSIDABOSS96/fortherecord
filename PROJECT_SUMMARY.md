@@ -1,33 +1,39 @@
 # Project Status & Recent Changes
 
-**Date:** December 23, 2025
-**Feature Focus:** Grid Distribution, Seed Data, and Layout Refinement
+**Date:** December 28, 2025
+**Feature Focus:** Lyric Card Display and Layout Optimization
 
 ## Summary
-Recent work has focused on optimizing the home page experience for "For The Record," specifically refining how cards are distributed in the masonry grid and expanding the seed content.
+Recent work has focused on simplifying the home page experience for "For The Record," removing complexity and restoring the clean, simple grid layout of lyric cards.
 
 ## Key Changes
 
-### 1. Grid Distribution Logic
-- **Algorithm**: Implemented a "Target Schedule" algorithm in `utils/cardDistribution.ts`.
-- **Constraint**: The grid strict never starts with a non-lyric card.
-- **Constraint**: Non-lyric cards (vinyls, images) are evenly dispersed (~25% ratio) and never clumped.
-- **Constraint**: Prevented "vertical stacking" where non-lyric cards appear in the same column consecutively.
+### 1. Simplified Grid Layout
+- **Removed**: Complex distribution algorithm for non-lyric cards
+- **Current**: Simple chronological display of lyric cards only
+- **Benefit**: Cleaner layout with less white space, cards display in creation order
+- **Implementation**: Masonry grid handles layout naturally without artificial spacing constraints
 
-### 2. Seed Data Expansion
-- **New Songs**: Added 22 user-requested songs (Pink Floyd, Jeff Buckley, Frank Ocean, etc.) to `data/seedRecords.ts`.
-- **Metadata**: Each valid record now includes correct artist, title, and sentiment-appropriate placeholder lyrics.
-- **Album Art**: Configured `next.config.ts` to allow images from external domains (`i.scdn.co`, `fastly.net`, `wikimedia.org`, etc.).
+### 2. Lyric Cards Only
+- **Focus**: Single card type (lyric cards) for consistent, personal storytelling
+- **Removed**: Non-lyric decorative cards (vinyl, logo, image types)
+- **Current State**: 12 user-created lyric cards in database
+- **Card Features**: Album art, song title, artist, lyric excerpt, personal reflection, recipient name
 
-### 3. Layout Improvements
-- **Add Record Flow**: Refined the specific "Select Lyrics" step for better alignment and spacing.
-- **Preview Card**: Aligned the live preview card directly with the selection interface.
+### 3. Code Simplification
+- **Types**: Simplified Record interface to only lyric card fields
+- **Components**: Removed multi-type card rendering, kept single LyricCard component
+- **API**: Restored simple validation requiring all fields for lyric cards
+- **Distribution Logic**: Removed `utils/cardDistribution.ts` and all related code
 
 ## Current State
-- **Server Restart Required**: The `next.config.ts` file was updated. The development server must be restarted for new album art to load correctly.
-- **Verification**: The distribution logic has been verified to meet all constraints (0 violations, perfect ratio).
+- **Database**: 12 lyric cards (all user-created)
+- **Layout**: Simple chronological grid with masonry layout
+- **Card Type**: Lyric cards only (song + lyric + reflection + recipient)
+- **Grid Behavior**: Cards display newest first, masonry handles column distribution
 
 ## Files of Interest
-- `utils/cardDistribution.ts`: Core logic for the target schedule algorithm.
-- `data/seedRecords.ts`: The expanded dataset.
-- `next.config.ts`: Image domain configuration.
+- `app/page.tsx`: Main home page with simplified fetch and display logic
+- `components/RecordCard.tsx`: Single lyric card component
+- `types/record.ts`: Simplified Record interface
+- `app/api/records/route.ts`: Simple validation for lyric cards
