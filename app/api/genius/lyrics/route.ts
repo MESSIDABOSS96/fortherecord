@@ -212,9 +212,6 @@ function validateLyricsContent(lyrics: string, title: string, artist: string): b
     { pattern: /\d+\s*contributors?/, description: 'Genius UI elements' },
     { pattern: /get tickets|see .* live/i, description: 'Promotional content' },
     { pattern: /lyrics for this song/i, description: 'Genius descriptions' },
-    { pattern: /(described|mentioned|explained|talked about|said|stated).*(interview|conversation|magazine|publication|article)/i, description: 'Interview annotations' },
-    { pattern: /^[A-Z][a-z]+\s+(described|mentioned|explained|talked about|said|stated)/im, description: 'Artist descriptions' },
-    { pattern: /^skit:\s*.+$/im, description: 'Skit markers' },
   ];
 
   for (const { pattern, description } of suspiciousPatterns) {

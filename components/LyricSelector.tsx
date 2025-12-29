@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { SelectedLyric } from '@/hooks/useAddRecordState';
-import { normalizeSubheader } from '@/utils/lyricSelection';
 
 interface LyricSelectorProps {
   songTitle: string;
@@ -69,15 +68,6 @@ function isNonLyricLine(line: string): boolean {
   // Filter Q&A format ("WE come now to another question:")
   if (trimmed.match(/^[A-Z]{2,}\s+come now to/)) return true;
 
-  // Filter annotation descriptions (interview context, etc.)
-  if (/(described|mentioned|explained|talked about|said|stated).*(interview|conversation|magazine|publication|article)/i.test(trimmed)) return true;
-
-  // Filter skit markers when standalone (not as section headers)
-  if (/^skit:\s*.+$/i.test(lowerTrimmed)) return true;
-
-  // Filter artist name + verb + description pattern
-  if (/^[A-Z][a-z]+\s+(described|mentioned|explained|talked about|said|stated)/i.test(trimmed)) return true;
-
   return false;
 }
 
@@ -107,10 +97,9 @@ function parseLyricsIntoSections(lyrics: string[]): LyricSection[] {
       if (currentSection) {
         sections.push(currentSection);
       }
-      // Start new section - remove brackets and normalize header
-      const rawHeader = headerMatch[1];
+      // Start new section - remove brackets from header
       currentSection = {
-        header: normalizeSubheader(rawHeader),  // Apply normalization
+        header: headerMatch[1],  // Extract text without brackets
         lines: [],
         startIndex: lineIndex
       };

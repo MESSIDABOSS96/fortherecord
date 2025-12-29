@@ -72,29 +72,3 @@ export function formatLyricExcerpt(lines: SelectedLyric[]): string {
     .map(l => l.text)
     .join('\n');
 }
-
-/**
- * Normalizes lyric subheaders to their root form
- * Examples:
- * - "Verse 1" → "Verse"
- * - "Chorus 2" → "Chorus"
- * - "Pre-Chorus 1" → "Pre-Chorus"
- * - "Skit: Mommy" → "Skit"
- * - "Intro" → "Intro" (unchanged)
- */
-export function normalizeSubheader(header: string): string {
-  if (!header) return header;
-
-  const trimmed = header.trim();
-
-  // Remove numbered suffixes (e.g., "Verse 1" → "Verse")
-  const withoutNumber = trimmed.replace(/\s+\d+$/i, '');
-
-  // Remove descriptors after colons (e.g., "Skit: Mommy" → "Skit")
-  const withoutDescriptor = withoutNumber.replace(/:\s*.+$/, '');
-
-  // Remove parenthetical annotations (e.g., "Verse (Live)" → "Verse")
-  const withoutParens = withoutDescriptor.replace(/\s*\(.+\)$/, '');
-
-  return withoutParens.trim();
-}
