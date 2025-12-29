@@ -4,7 +4,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen">
       <HeaderNav />
-      <main className="max-w-3xl mx-auto px-6 py-12">
+      <main className="max-w-3xl mx-auto px-6 pb-12">
         <h1 className="text-4xl font-bold mb-6">About For the Record</h1>
 
         <div className="prose prose-lg max-w-none">
