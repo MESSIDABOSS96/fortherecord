@@ -480,8 +480,8 @@ export const FAMILY_HUE_RANGES: Record<
   pinks: { min: 315, max: 345 },
   purples: { min: 270, max: 315 },
   blues: { min: 195, max: 275 }, // Expanded from 200-270 for better blue coverage
-  greens: { min: 70, max: 195 }, // Adjusted from 75-200 for blue-green boundary
-  ochres: { min: 35, max: 75 },
+  greens: { min: 60, max: 195 }, // Expanded to start at 60° to capture yellow-greens
+  ochres: { min: 40, max: 60 }, // Further narrowed to 40-60° to avoid yellow-greens
   warmNeutrals: { min: 15, max: 35 }, // orange-beige range
   coolNeutrals: { min: 0, max: 360 }, // fallback for low saturation
 };
