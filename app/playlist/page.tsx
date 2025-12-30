@@ -11,7 +11,7 @@ export default function PlaylistPage() {
         {/* Title Section */}
         <div className="text-center mb-10">
           <h1 className="text-5xl font-bold mb-4 tracking-tight">
-            PLAYLIST OF THE MONTH
+            Playlist of the Month
           </h1>
           <p className="text-xl text-gray-600 mb-8">
             A playlist of every song added to the collection this month
