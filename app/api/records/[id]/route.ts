@@ -45,7 +45,7 @@ export async function GET(
 // PUT /api/records/[id] - Update a record
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
   try {
     const { id } = await context.params;
@@ -98,7 +98,7 @@ export async function PUT(
 // DELETE /api/records/[id] - Delete a record
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
   try {
     const { id } = await context.params;
