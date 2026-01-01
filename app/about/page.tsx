@@ -37,15 +37,19 @@ export default function AboutPage() {
           </p>
 
           <p className="text-gray-600 leading-relaxed mb-6">
-            Music is special because we get to shape its meaning around our own lives. The same song can mean completely different things to two different people, because we each pour our own memories, moments, and emotions into it. That&apos;s why certain songs feel like they were written for us. And while music can attach itself to all kinds of experiences, the most powerful version of that is when it attaches to a person. A parent. A sibling. A friend. A lover, past or present. Even a ten-minute interaction with a stranger that changed your perspective. We all have those songs that somehow capture someone perfectly, like they were written for our relationship with them.
+            Music is special because we get to shape its meaning around our own lives. The same song can mean completely different things to two different people, because we each pour our own memories, moments, and emotions into it.
           </p>
 
           <p className="text-gray-600 leading-relaxed mb-6">
-            For the Record is a platform to share a song, the lyrics that matter, and the person they bring to mind. Pick a song. Choose a few lines. Write what you remember, what you miss, or what you never got to say. Or scroll through the collection and learn about the songs people hold on to and why.
+            And while music can attach itself to all kinds of experiences, the most powerful version of that is when it attaches to a person. A parent. A friend. A lover, past or present. A stranger who changed your perspective. We all have those songs that seem like they were written for your relationship with someone.
           </p>
 
           <p className="text-gray-600 leading-relaxed mb-6">
-            As it grows, the hope is that For the Record becomes a place to feel understood through someone else&apos;s story and more connected through music.
+            For the Record is a platform to share a song, the lyrics that matter, and the person they bring to mind. Or scroll through the collection and discover the songs people hold on to and why.
+          </p>
+
+          <p className="text-gray-600 leading-relaxed mb-6">
+            As it grows, For the Record becomes a place to feel understood through someone else&apos;s story and more connected to each other through music.
           </p>
         </div>
 
