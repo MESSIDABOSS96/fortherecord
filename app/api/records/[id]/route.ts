@@ -1,17 +1,20 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-type RouteContext = {
-  params: Promise<{ id: string }>;
-};
-
 // GET /api/records/[id] - Fetch a single record
-export async function GET(
-  request: Request,
-  context: RouteContext
-) {
+export async function GET(request: Request) {
   try {
-    const { id } = await context.params;
+    // Extract ID from URL instead of params to avoid Next.js 15 type issues
+    const url = new URL(request.url);
+    const id = url.pathname.split('/').pop();
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Record ID is required' },
+        { status: 400 }
+      );
+    }
+
     const { data, error } = await supabase
       .from('records')
       .select('*')
@@ -43,12 +46,19 @@ export async function GET(
 }
 
 // PUT /api/records/[id] - Update a record
-export async function PUT(
-  request: Request,
-  context: RouteContext
-) {
+export async function PUT(request: Request) {
   try {
-    const { id } = await context.params;
+    // Extract ID from URL
+    const url = new URL(request.url);
+    const id = url.pathname.split('/').pop();
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Record ID is required' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
 
     const { data, error } = await supabase
@@ -96,12 +106,19 @@ export async function PUT(
 }
 
 // DELETE /api/records/[id] - Delete a record
-export async function DELETE(
-  request: Request,
-  context: RouteContext
-) {
+export async function DELETE(request: Request) {
   try {
-    const { id } = await context.params;
+    // Extract ID from URL
+    const url = new URL(request.url);
+    const id = url.pathname.split('/').pop();
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Record ID is required' },
+        { status: 400 }
+      );
+    }
+
     const { error } = await supabase
       .from('records')
       .delete()
