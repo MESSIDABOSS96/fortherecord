@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cleanSongTitle } from '@/utils/cleanSongTitle';
 
+// Increase timeout for Vercel serverless function (requires Pro plan)
+// Hobby plan max is 10s, Pro allows up to 60s
+export const maxDuration = 60;
+
 // TypeScript interfaces for Genius API
 interface GeniusSearchResult {
   result: {
