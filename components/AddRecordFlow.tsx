@@ -99,13 +99,13 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
       </div>
 
       {/* Main content */}
-      <main className="max-w-7xl mx-auto px-6 pb-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 pb-8">
         {/* Step 1: Centered song selection */}
         {step === 1 && (
-          <div className="max-w-2xl mx-auto mt-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-3">Select a Song</h2>
-              <p className="text-gray-600 text-lg">
+          <div className="max-w-2xl mx-auto mt-6 sm:mt-8">
+            <div className="text-center mb-8 sm:mb-12 px-4">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Select a Song</h2>
+              <p className="text-gray-600 text-base sm:text-lg">
                 Find the song that reminds you of someone
               </p>
             </div>
@@ -116,31 +116,31 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
         {/* Step 2: Who are you thinking of? */}
         {step === 2 && songData && (
           <div className="relative">
-            {/* Back button - absolutely positioned on left, doesn't affect layout flow */}
-            <div className="absolute left-0 top-0">
+            {/* Back button - responsive positioning */}
+            <div className="absolute left-0 sm:left-0 top-0">
               <button
                 onClick={() => setStep(1)}
-                className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-white hover:bg-gray-700 transition-colors"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-900 flex items-center justify-center text-white hover:bg-gray-700 transition-colors"
               >
-                <svg width="24" height="24" viewBox="0 0 20 20" fill="none">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M16 10H6M10 6L6 10L10 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
             </div>
 
             {/* Content container - positioned independently, same as Step 1 */}
-            <div className="max-w-2xl mx-auto mt-8">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold mb-3">Who are you thinking of?</h2>
+            <div className="max-w-2xl mx-auto mt-6 sm:mt-8">
+              <div className="text-center mb-8 sm:mb-12 px-4">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Who are you thinking of?</h2>
               </div>
 
-              <div className="max-w-xl mx-auto space-y-6">
+              <div className="max-w-xl mx-auto space-y-4 sm:space-y-6 px-4">
                 <input
                   type="text"
                   value={tempName}
                   onChange={(e) => setTempName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleNameSubmit()}
-                  className="w-full px-6 py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-lg text-center"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-base sm:text-lg text-center"
                   placeholder="Mom, Sarah, my best friend..."
                   autoFocus
                 />
@@ -148,7 +148,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
                 <button
                   onClick={handleNameSubmit}
                   disabled={!tempName.trim()}
-                  className="w-full px-6 py-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold text-lg"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold text-base sm:text-lg"
                 >
                   Continue
                 </button>
@@ -173,18 +173,18 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
             </div>
 
             {/* Centered title section - matching steps 1 and 2 */}
-            <div className="max-w-2xl mx-auto mt-8">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold mb-3">Select lyrics</h2>
-                <p className="text-gray-600 text-lg">
+            <div className="max-w-2xl mx-auto mt-6 sm:mt-8">
+              <div className="text-center mb-8 sm:mb-12 px-4">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Select lyrics</h2>
+                <p className="text-gray-600 text-base sm:text-lg">
                   Click up to 4 lines that remind you of {forName}
                 </p>
               </div>
             </div>
 
             {/* Content grid - lyrics and preview side by side */}
-            <div className="max-w-7xl mx-auto px-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-36 items-start">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 lg:gap-24 xl:gap-36 items-start">
                 {/* Left: Lyric Selector */}
                 <div className="flex justify-end">
                   <div className="w-full max-w-xl">
@@ -249,18 +249,18 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
             </div>
 
             {/* Expanded card - matches RecordModal structure */}
-            <div className="max-w-4xl mx-auto mt-8">
+            <div className="max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto mt-6 sm:mt-8 px-4">
               <div
-                className="rounded-3xl overflow-hidden flex flex-col p-8"
+                className="rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col p-4 sm:p-6 md:p-8 max-h-[90vh] overflow-y-auto"
                 style={{
                   backgroundColor: songData.background_color,
                   boxShadow: "var(--shadow-lg)",
                 }}
               >
                 {/* Two-panel content */}
-                <div className="flex flex-col md:flex-row mb-8 relative">
+                <div className="flex flex-col md:flex-row mb-6 sm:mb-8 relative">
                   {/* Left panel: Song info + Lyrics */}
-                  <div className="md:w-1/2 p-8 flex flex-col">
+                  <div className="md:w-1/2 p-4 sm:p-6 md:p-8 flex flex-col">
                     {/* Album art + Song info */}
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-16 h-16 bg-black/20 rounded-sm flex-shrink-0 overflow-hidden">
@@ -298,9 +298,12 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
                   {/* Vertical divider */}
                   <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-4/5 w-px bg-black/20"></div>
 
+                  {/* Horizontal divider for mobile */}
+                  <div className="md:hidden h-px bg-black/20 my-4"></div>
+
                   {/* Right panel: Inline editing area */}
-                  <div className="md:w-1/2 p-8 flex flex-col">
-                    <div className="text-base font-medium italic text-gray-800 uppercase tracking-wide mb-4 text-center">
+                  <div className="md:w-1/2 p-4 sm:p-6 md:p-8 flex flex-col">
+                    <div className="text-sm sm:text-base font-medium italic text-gray-800 uppercase tracking-wide mb-3 sm:mb-4 text-center">
                       FOR {forName.toUpperCase() || 'YOUR NAME'}
                     </div>
 
@@ -309,33 +312,33 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
                       value={reflectionText}
                       onChange={(e) => setReflectionText(e.target.value)}
                       placeholder="Why do these lyrics remind you of them? Tell their story..."
-                      className="text-gray-900 leading-relaxed overflow-y-auto max-h-[500px] bg-transparent border-none focus:outline-none focus:ring-0 resize-none w-full placeholder:text-gray-900 placeholder:italic"
-                      style={{ minHeight: '200px' }}
+                      className="text-sm sm:text-base text-gray-900 leading-relaxed overflow-y-auto max-h-[400px] sm:max-h-[500px] bg-transparent border-none focus:outline-none focus:ring-0 resize-none w-full placeholder:text-gray-900 placeholder:italic"
+                      style={{ minHeight: '150px' }}
                     />
                   </div>
                 </div>
 
                 {/* Footer */}
                 <div className="text-center">
-                  <div className="text-sm font-bold uppercase tracking-wide text-gray-900">
+                  <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-gray-900">
                     Posted on {new Date().toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
                     })}
                   </div>
-                  <div className="text-sm font-bold uppercase tracking-wide text-gray-900">
+                  <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-gray-900">
                     For {forName || 'Your Name'}
                   </div>
                 </div>
               </div>
 
               {/* Publish button - below the card */}
-              <div className="mt-8 flex justify-center">
+              <div className="mt-6 sm:mt-8 flex justify-center px-4">
                 <button
                   onClick={handleSubmit}
                   disabled={reflectionText.trim() === '' || isSubmitting}
-                  className="px-12 py-4 bg-gray-900 text-white rounded-full font-semibold text-base hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md"
+                  className="w-full sm:w-auto px-8 sm:px-12 py-3 sm:py-4 bg-gray-900 text-white rounded-full font-semibold text-sm sm:text-base hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md"
                 >
                   {isSubmitting ? 'Publishing...' : 'Publish Record'}
                 </button>

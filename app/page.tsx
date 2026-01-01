@@ -73,14 +73,14 @@ export default function Home() {
     <div className="min-h-screen">
       <HeaderNav onReset={handleReset} />
 
-      <main className="max-w-7xl mx-auto px-6 pb-16">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pb-16">
         {/* Title and Search */}
-        <div className="text-center mb-14">
-          <h1 className="text-6xl font-bold mb-4 tracking-tight">For the Record</h1>
-          <p className="text-xl text-gray-600 mb-[60px]">An archive of lyrics that bring someone to mind</p>
+        <div className="text-center mb-10 sm:mb-12 md:mb-14">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4">For the Record</h1>
+          <p className="text-lg sm:text-xl text-gray-600 mb-8 sm:mb-12 md:mb-[60px] px-4">An archive of lyrics that bring someone to mind</p>
 
           {/* Search bar */}
-          <div className="max-w-xl mx-auto mb-4">
+          <div className="max-w-xl mx-auto mb-4 px-4">
             <div className="relative">
               <svg
                 className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -98,22 +98,22 @@ export default function Home() {
                 placeholder="Search songs, lyrics, people, or stories…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-3.5 bg-[#f5f3f0] border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-sm placeholder:text-gray-500"
+                className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-[#f5f3f0] border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-sm placeholder:text-gray-500"
               />
             </div>
           </div>
 
           {/* Filter pills - only show when searching */}
           {searchQuery && (
-            <div className="flex justify-center gap-2 mb-4">
+            <div className="flex flex-wrap justify-center gap-2 mb-4 px-4">
               {(['all', 'songs', 'lyrics', 'stories', 'people'] as FilterType[]).map((filter) => (
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
                   className={
                     activeFilter === filter
-                      ? "px-4 py-1.5 text-sm rounded-full bg-gray-900 text-white font-semibold cursor-pointer"
-                      : "px-4 py-1.5 text-sm rounded-full border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
+                      ? "px-3 sm:px-4 py-1.5 text-xs sm:text-sm rounded-full bg-gray-900 text-white font-semibold cursor-pointer"
+                      : "px-3 sm:px-4 py-1.5 text-xs sm:text-sm rounded-full border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
                   }
                 >
                   {filter.charAt(0).toUpperCase() + filter.slice(1)}

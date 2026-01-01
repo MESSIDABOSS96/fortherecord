@@ -36,11 +36,11 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-6 blur-background"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 blur-background"
       onClick={onClose}
     >
       <div
-        className="relative max-w-4xl w-full rounded-3xl overflow-hidden flex flex-col p-8"
+        className="relative max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl w-full rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col p-4 sm:p-6 md:p-8 max-h-[90vh] overflow-y-auto"
         style={{
           backgroundColor: record.background_color,
           boxShadow: "var(--shadow-lg)",
@@ -50,7 +50,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 border-black hover:bg-black/10 flex items-center justify-center transition-colors"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 w-8 h-8 sm:w-6 sm:h-6 rounded-full border-2 border-black hover:bg-black/10 flex items-center justify-center transition-colors"
           aria-label="Close"
         >
           <svg
@@ -70,12 +70,12 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
         </button>
 
         {/* Content box */}
-        <div className="flex flex-col md:flex-row mb-8 relative">
+        <div className="flex flex-col md:flex-row mb-6 sm:mb-8 relative">
           {/* Left panel: Song info + Lyrics */}
-          <div className="md:w-1/2 p-8 flex flex-col">
+          <div className="md:w-1/2 p-4 sm:p-6 md:p-8 flex flex-col">
             {/* Album art + Song info */}
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 bg-black/20 rounded-sm flex-shrink-0 overflow-hidden">
+            <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-black/20 rounded-sm flex-shrink-0 overflow-hidden">
                 {record.album_art_url ? (
                   <Image
                     src={record.album_art_url}
@@ -106,15 +106,15 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="font-bold text-xl text-gray-900">
+                <div className="font-bold text-lg sm:text-xl text-gray-900">
                   {cleanSongTitle(record.song_title)}
                 </div>
-                <div className="text-gray-700">{record.artist}</div>
+                <div className="text-sm sm:text-base text-gray-700">{record.artist}</div>
               </div>
             </div>
 
             {/* Lyric excerpt */}
-            <div className="text-gray-900 font-bold text-2xl leading-snug whitespace-pre-wrap">
+            <div className="text-gray-900 font-bold text-xl sm:text-2xl leading-snug whitespace-pre-wrap">
               {record.lyric_excerpt}
             </div>
           </div>
@@ -122,12 +122,15 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
           {/* Vertical divider */}
           <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-4/5 w-px bg-black/20"></div>
 
+          {/* Horizontal divider for mobile */}
+          <div className="md:hidden h-px bg-black/20 my-4"></div>
+
           {/* Right panel: Reflection */}
-          <div className="md:w-1/2 p-8 flex flex-col">
-            <div className="text-base font-medium italic text-gray-800 uppercase tracking-wide mb-4 text-center">
+          <div className="md:w-1/2 p-4 sm:p-6 md:p-8 flex flex-col">
+            <div className="text-sm sm:text-base font-medium italic text-gray-800 uppercase tracking-wide mb-3 sm:mb-4 text-center">
               FOR {record.for_name.toUpperCase()}
             </div>
-            <div className="text-gray-900 leading-relaxed overflow-y-auto flex-1">
+            <div className="text-sm sm:text-base text-gray-900 leading-relaxed overflow-y-auto flex-1">
               {record.reflection_text}
             </div>
           </div>
@@ -135,10 +138,10 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
 
         {/* Footer - outside the bordered box */}
         <div className="text-center">
-          <div className="text-sm font-bold uppercase tracking-wide text-gray-900">
+          <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-gray-900">
             Posted on {formattedDate}
           </div>
-          <div className="text-sm font-bold uppercase tracking-wide text-gray-900">
+          <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-gray-900">
             For {record.for_name}
           </div>
         </div>

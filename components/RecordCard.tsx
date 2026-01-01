@@ -18,15 +18,15 @@ export default function RecordCard({ record, onClick }: RecordCardProps) {
   return (
     <div
       onClick={onClick}
-      className="cursor-pointer rounded-[20px] p-6 transition-all hover:scale-[1.01] hover:shadow-lg flex flex-col"
+      className="cursor-pointer rounded-[16px] sm:rounded-[20px] p-4 sm:p-5 md:p-6 transition-all hover:scale-[1.01] hover:shadow-lg flex flex-col"
       style={{
         backgroundColor: record.background_color,
         boxShadow: "var(--shadow-md)",
       }}
     >
       {/* Header: Album art + Song info */}
-      <div className="flex items-center gap-3 mb-5 flex-shrink-0">
-        <div className="w-[46px] h-[46px] bg-black/20 rounded-sm flex-shrink-0 overflow-hidden">
+      <div className="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-5 flex-shrink-0">
+        <div className="w-[40px] h-[40px] sm:w-[46px] sm:h-[46px] bg-black/20 rounded-sm flex-shrink-0 overflow-hidden">
           {record.album_art_url ? (
             <Image
               src={record.album_art_url}
@@ -62,12 +62,12 @@ export default function RecordCard({ record, onClick }: RecordCardProps) {
       </div>
 
       {/* Lyric excerpt - full display, no truncation */}
-      <div className="text-gray-900 font-bold text-[20px] leading-[1.35] mb-5 flex-1 whitespace-pre-line">
+      <div className="text-gray-900 font-bold text-lg sm:text-[20px] leading-[1.35] mb-4 sm:mb-5 flex-1 whitespace-pre-line">
         {record.lyric_excerpt}
       </div>
 
       {/* For label */}
-      <div className="text-[11px] font-medium italic text-gray-900/70 uppercase tracking-wide flex-shrink-0">
+      <div className="text-[10px] sm:text-[11px] font-medium italic text-gray-900/70 uppercase tracking-wide flex-shrink-0">
         FOR {record.for_name.toUpperCase()}
       </div>
     </div>
