@@ -25,7 +25,7 @@ export default function AboutPage() {
         {/* Title and subheading */}
         <div className="text-center mb-8">
           <h1 className="text-6xl font-bold mb-4 tracking-tight">
-            FOR THE RECORD
+            For the Record
           </h1>
           <p className="text-xl text-gray-600 mb-8">An archive of lyrics that bring someone to mind</p>
         </div>

@@ -76,7 +76,7 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-6 pb-16">
         {/* Title and Search */}
         <div className="text-center mb-14">
-          <h1 className="text-6xl font-bold mb-4 tracking-tight">FOR THE RECORD</h1>
+          <h1 className="text-6xl font-bold mb-4 tracking-tight">For the Record</h1>
           <p className="text-xl text-gray-600 mb-[60px]">An archive of lyrics that bring someone to mind</p>
 
           {/* Search bar */}
