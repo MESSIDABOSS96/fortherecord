@@ -196,7 +196,7 @@ export default function AddRecordModal({
                   onChange={(e) =>
                     setFormData({ ...formData, for_name: e.target.value })
                   }
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+                  className="w-full px-4 py-3.5 bg-[#f5f3f0] border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-sm placeholder:text-gray-500"
                   placeholder="e.g., Emma"
                   required
                 />
@@ -225,7 +225,7 @@ export default function AddRecordModal({
               <button
                 type="button"
                 onClick={() => setStep(step - 1)}
-                className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-6 py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition-colors font-semibold"
               >
                 Back
               </button>
@@ -233,7 +233,7 @@ export default function AddRecordModal({
             <button
               type="submit"
               disabled={!canProceed()}
-              className="flex-1 px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 px-6 py-3 bg-gray-900 text-white rounded-full hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold"
             >
               {step < 3 ? "Continue" : "Publish"}
             </button>
