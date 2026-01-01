@@ -1,5 +1,6 @@
 export interface Record {
   id: string;
+  card_type?: string;
   for_name: string;
   song_title: string;
   artist: string;

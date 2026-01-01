@@ -4,13 +4,14 @@ import { supabase } from '@/lib/supabase';
 // GET /api/records/[id] - Fetch a single record
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { data, error } = await supabase
       .from('records')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (error) {
@@ -40,9 +41,10 @@ export async function GET(
 // PUT /api/records/[id] - Update a record
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
 
     const { data, error } = await supabase
@@ -61,7 +63,7 @@ export async function PUT(
         logo_text: body.logoText || body.logo_text,
         vinyl_image_url: body.vinylImageUrl || body.vinyl_image_url
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select();
 
     if (error) {
@@ -92,13 +94,14 @@ export async function PUT(
 // DELETE /api/records/[id] - Delete a record
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { error } = await supabase
       .from('records')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (error) {
       console.error('Supabase delete error:', error);

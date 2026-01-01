@@ -268,7 +268,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Dynamic import of extractLyrics
-    const extractLyrics = (await import('genius-lyrics-api/lib/utils/extractLyrics')).default;
+    const extractLyrics = (await import('genius-lyrics-api/lib/utils/extractLyrics' as any)).default as any;
 
     // Try best match first, then fallback to second-best if needed
     for (let i = 0; i < Math.min(scoredResults.length, 3); i++) {

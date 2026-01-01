@@ -78,7 +78,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
       lyric_excerpt: getSortedLyricText(selectedLines),
       for_name: forName,
       reflection_text: reflectionText,
-      cardType: 'lyric',
+      card_type: 'lyric',
     });
   };
 

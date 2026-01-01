@@ -33,7 +33,7 @@ export default function RecordPreview({
     for_name: forName || 'Your Name',
     reflection_text: reflectionText || 'Your reflection will appear here...',
     created_at: new Date(),
-    cardType: 'lyric',
+    card_type: 'lyric',
   };
 
   const formattedDate = previewRecord.created_at.toLocaleDateString("en-US", {

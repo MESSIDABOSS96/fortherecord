@@ -25,8 +25,8 @@ async function migrateToBuckets() {
     const progress = `[${i + 1}/${seedRecords.length}]`;
 
     // Skip non-lyric cards
-    if (record.cardType && record.cardType !== 'lyric') {
-      console.log(`${progress} ⏭️  Skipping ${record.cardType} card: ${record.song_title || record.logoText || record.id}`);
+    if (record.card_type && record.card_type !== 'lyric') {
+      console.log(`${progress} ⏭️  Skipping ${record.card_type} card: ${record.song_title || record.id}`);
       updatedRecords.push(record);
       continue;
     }

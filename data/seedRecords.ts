@@ -7,7 +7,7 @@ import { Record } from "@/types/record";
 export const seedRecords: Record[] = [
   {
     "id": "6",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Isabel",
     "song_title": "Weird Fishes / Arpeggi",
     "artist": "Radiohead",
@@ -19,7 +19,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "51",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Victoria",
     "song_title": "On the Sea",
     "artist": "Beach House",
@@ -31,7 +31,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "5",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Ryan",
     "song_title": "Rock 'n' Roll Suicide",
     "artist": "David Bowie",
@@ -43,7 +43,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "4",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Matt",
     "song_title": "Eyes Without a Face",
     "artist": "Billy Idol",
@@ -55,7 +55,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "1",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Emma",
     "song_title": "505",
     "artist": "Arctic Monkeys",
@@ -67,7 +67,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "2",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Jack",
     "song_title": "Messy",
     "artist": "Olivia Dean",
@@ -79,11 +79,10 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "3",
-    "cardType": "logo",
+    "card_type": "logo",
     "for_name": "",
     "song_title": "Songs Remind Me of You",
     "artist": "The Memorial Archive",
-    "logoText": "THE MEMORIAL ARCHIVE",
     "lyric_excerpt": "",
     "reflection_text": "",
     "background_color": "#f8f8f8",
@@ -91,11 +90,10 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "7",
-    "cardType": "vinyl",
+    "card_type": "vinyl",
     "for_name": "",
     "song_title": "Dancing with Music",
     "artist": "Various",
-    "vinylImageUrl": "/dancing-music-notes.png",
     "lyric_excerpt": "",
     "reflection_text": "",
     "background_color": "#f8f8f8",
@@ -103,7 +101,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "8",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Sam",
     "song_title": "Reminder",
     "artist": "The Weeknd",
@@ -115,7 +113,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "13",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Alex",
     "song_title": "The Night We Met",
     "artist": "Lord Huron",
@@ -127,7 +125,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "14",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Morgan",
     "song_title": "Ribs",
     "artist": "Lorde",
@@ -139,7 +137,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "15",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Casey",
     "song_title": "Motion Sickness",
     "artist": "Phoebe Bridgers",
@@ -151,7 +149,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "16",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Jordan",
     "song_title": "Ivy",
     "artist": "Frank Ocean",
@@ -163,7 +161,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "23",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Sage",
     "song_title": "Lovers Rock",
     "artist": "TV Girl",
@@ -175,7 +173,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "26",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Skylar",
     "song_title": "Slow Dancing in a Burning Room",
     "artist": "John Mayer",
@@ -187,11 +185,10 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "10",
-    "cardType": "image",
+    "card_type": "image",
     "for_name": "",
     "song_title": "FOR THE RECORD",
     "artist": "",
-    "imageUrl": "",
     "lyric_excerpt": "",
     "reflection_text": "",
     "background_color": "#f8f8f8",
@@ -199,11 +196,10 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "11",
-    "cardType": "vinyl",
+    "card_type": "vinyl",
     "for_name": "",
     "song_title": "Vinyl Heart Record",
     "artist": "",
-    "vinylImageUrl": "/vinyl-heart-record.png",
     "lyric_excerpt": "",
     "reflection_text": "",
     "background_color": "#f8f8f8",
@@ -211,11 +207,10 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "12",
-    "cardType": "vinyl",
+    "card_type": "vinyl",
     "for_name": "",
     "song_title": "DJ Vinyl",
     "artist": "",
-    "vinylImageUrl": "/dj-vinyl.png",
     "lyric_excerpt": "",
     "reflection_text": "",
     "background_color": "#f8f8f8",
@@ -223,11 +218,10 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "28",
-    "cardType": "logo",
+    "card_type": "logo",
     "for_name": "",
     "song_title": "Music Reminds Me of You",
     "artist": "",
-    "logoText": "MUSIC REMINDS ME OF YOU",
     "lyric_excerpt": "",
     "reflection_text": "",
     "background_color": "#f8f8f8",
@@ -235,11 +229,10 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "29",
-    "cardType": "image",
+    "card_type": "image",
     "for_name": "",
     "song_title": "FOR THE RECORD EST 2025",
     "artist": "",
-    "imageUrl": "",
     "lyric_excerpt": "",
     "reflection_text": "",
     "background_color": "#f8f8f8",
@@ -247,7 +240,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "30",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Syd",
     "song_title": "Wish You Were Here",
     "artist": "Pink Floyd",
@@ -259,7 +252,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "31",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Jeff",
     "song_title": "Grace",
     "artist": "Jeff Buckley",
@@ -271,7 +264,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "32",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Daniel",
     "song_title": "Who Knows",
     "artist": "Daniel Caesar",
@@ -283,7 +276,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "33",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Dave",
     "song_title": "Raindance",
     "artist": "Dave",
@@ -295,7 +288,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "34",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Jorja",
     "song_title": "With You",
     "artist": "Jorja Smith",
@@ -307,7 +300,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "35",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Thom",
     "song_title": "Life in a Glasshouse",
     "artist": "Radiohead",
@@ -319,7 +312,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "36",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Adele",
     "song_title": "Daydreamer",
     "artist": "Adele",
@@ -331,7 +324,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "37",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Damon",
     "song_title": "Empire Ants",
     "artist": "Gorillaz",
@@ -343,7 +336,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "38",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Mac",
     "song_title": "Preoccupied",
     "artist": "Mac DeMarco",
@@ -355,7 +348,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "39",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "King",
     "song_title": "Baby Blue",
     "artist": "King Krule",
@@ -367,7 +360,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "40",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Alex",
     "song_title": "Do Me a Favour",
     "artist": "Arctic Monkeys",
@@ -379,7 +372,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "41",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Jeff",
     "song_title": "How to Fight Loneliness",
     "artist": "Wilco",
@@ -391,7 +384,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "42",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Tupac",
     "song_title": "Do for Love",
     "artist": "2Pac",
@@ -403,7 +396,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "43",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Dijon",
     "song_title": "Annie",
     "artist": "Dijon",
@@ -415,7 +408,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "44",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Anthony",
     "song_title": "I Could Die For You",
     "artist": "Red Hot Chili Peppers",
@@ -427,7 +420,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "45",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Lupe",
     "song_title": "Superstar",
     "artist": "Lupe Fiasco",
@@ -439,7 +432,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "46",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Chris",
     "song_title": "We Never Change",
     "artist": "Coldplay",
@@ -451,7 +444,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "47",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Ravyn",
     "song_title": "Days",
     "artist": "Ravyn Lenae",
@@ -463,7 +456,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "48",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Maria",
     "song_title": "Love You Anyway",
     "artist": "The Marias",
@@ -475,7 +468,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "49",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Post",
     "song_title": "Stay",
     "artist": "Post Malone",
@@ -487,7 +480,7 @@ export const seedRecords: Record[] = [
   },
   {
     "id": "50",
-    "cardType": "lyric",
+    "card_type": "lyric",
     "for_name": "Frank",
     "song_title": "Crack Rock",
     "artist": "Frank Ocean",

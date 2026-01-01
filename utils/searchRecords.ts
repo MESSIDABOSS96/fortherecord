@@ -26,7 +26,7 @@ export function searchRecords(
 
   return records.filter((record) => {
     // Skip non-lyric decorative cards from search
-    if (record.cardType && record.cardType !== 'lyric') {
+    if (record.card_type && record.card_type !== 'lyric') {
       return false;
     }
 

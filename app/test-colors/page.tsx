@@ -44,7 +44,7 @@ export default function TestColorsPage() {
     async function loadTestData() {
       try {
         // Take first 6 lyric cards from seed data
-        const lyricCards = seedRecords.filter((r) => (!r.cardType || r.cardType === 'lyric') && r.album_art_url);
+        const lyricCards = seedRecords.filter((r: any) => (!r.cardType || r.cardType === 'lyric') && r.album_art_url);
         const sampleSeeds = lyricCards.slice(0, 6);
 
         // Fetch color data for each

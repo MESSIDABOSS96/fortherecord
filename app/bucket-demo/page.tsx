@@ -24,7 +24,7 @@ export default function BucketDemoPage() {
     async function loadBucketData() {
       // Get lyric cards with album art
       const lyricCards = seedRecords.filter(
-        (r) => (!r.cardType || r.cardType === 'lyric') && r.album_art_url
+        (r: any) => (!r.cardType || r.cardType === 'lyric') && r.album_art_url
       );
 
       const initialRecords: TestRecord[] = lyricCards.map((r) => ({
