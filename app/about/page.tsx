@@ -42,6 +42,10 @@ export default function AboutPage() {
           <p className="text-gray-600 leading-relaxed mb-6">
             For the Record is a platform to share a song, the lyrics that matter, and the person they bring to mind. Or scroll through the collection and discover the songs people hold on to and why.
           </p>
+
+          <p className="text-gray-600 leading-relaxed mb-6">
+            As it grows, For the Record hopes to become a place to be more connected to each other through music.
+          </p>
         </div>
 
         {/* Example lyric card */}
