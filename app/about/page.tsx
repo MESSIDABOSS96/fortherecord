@@ -50,7 +50,7 @@ export default function AboutPage() {
 
         {/* Example lyric card */}
         <div className="flex justify-center">
-          <div style={{ width: '340px' }}>
+          <div style={{ transform: 'scale(1.3)', transformOrigin: 'center' }}>
             <RecordCard
               record={exampleRecord}
               onClick={() => {}}
