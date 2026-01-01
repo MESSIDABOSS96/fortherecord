@@ -23,7 +23,7 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between">
           {/* Logo - Left */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 md:-ml-16 lg:-ml-20">
             <Link href="/" onClick={handleNavClick} className="flex items-center group">
               <Image
                 src="/logo.svg"
