@@ -1,47 +1,61 @@
+"use client";
+
 import HeaderNav from "@/components/HeaderNav";
+import RecordCard from "@/components/RecordCard";
+import { Record } from "@/types/record";
 
 export default function AboutPage() {
+  const exampleRecord: Record = {
+    id: 'about-example',
+    for_name: 'For the Record',
+    song_title: 'For the Record',
+    artist: 'Anonymous',
+    album_art_url: '/logo.svg',
+    spotify_track_id: undefined,
+    lyric_excerpt: 'music reminds me of you',
+    reflection_text: '',
+    background_color: '#E2E4E6',
+    created_at: new Date(),
+  };
+
   return (
     <div className="min-h-screen">
       <HeaderNav />
       <main className="max-w-3xl mx-auto px-6 pb-12">
-        <h1 className="text-4xl font-bold mb-6">About For the Record</h1>
+        {/* Title - matching home page style */}
+        <h1 className="text-6xl font-bold mb-6 tracking-tight text-center">
+          For the Record
+        </h1>
 
-        <div className="prose prose-lg max-w-none">
+        {/* New blurb content */}
+        <div className="prose prose-lg max-w-none mb-12">
           <p className="text-gray-600 text-lg leading-relaxed mb-6">
-            For the Record is an anonymous collection of songs, lyrics, and the
-            stories behind why they remind us of the people in our lives.
+            For the Record is an anonymous collection of the lyrics that remind you of someone and the stories behind them.
           </p>
 
           <p className="text-gray-600 leading-relaxed mb-6">
-            Sometimes a lyric hits differently. It captures a feeling, a moment,
-            or a person in a way that stays with you. This is a space to share
-            those connections—the songs that make you think of someone, and the
-            stories of why.
+            Music is special because we get to shape its meaning around our own lives. The same song can mean completely different things to two different people, because we each pour our own memories, moments, and emotions into it. That&apos;s why certain songs feel like they were written for us.
           </p>
 
           <p className="text-gray-600 leading-relaxed mb-6">
-            No profiles. No likes. No comments. Just honest reflections, shared
-            anonymously.
+            And while music can attach itself to all kinds of experiences, the most powerful version of that is when it attaches to a person. A parent. A sibling. A friend. A lover, past or present. Even a ten-minute interaction with a stranger that changed your perspective. We all have those songs that somehow capture someone perfectly, like they were written for our relationship with them.
           </p>
 
-          <div className="mt-12 p-8 bg-gray-100 rounded-2xl">
-            <h2 className="text-2xl font-bold mb-4">How it works</h2>
-            <ol className="space-y-4 text-gray-700">
-              <li>
-                <strong>1. Pick a song</strong> that reminds you of someone
-              </li>
-              <li>
-                <strong>2. Select the lyrics</strong> that capture why
-              </li>
-              <li>
-                <strong>3. Write your story</strong> about what it means
-              </li>
-              <li>
-                <strong>4. Share it</strong> anonymously with the community
-              </li>
-            </ol>
-          </div>
+          <p className="text-gray-600 leading-relaxed mb-6">
+            For the Record is a platform to share a song, the lyrics that matter, and the person they bring to mind. Pick a song. Choose a few lines. Write what you remember, what you miss, or what you never got to say. Or scroll through the collection and learn about the songs people hold on to and why.
+          </p>
+
+          <p className="text-gray-600 leading-relaxed mb-6">
+            As it grows, the hope is that For the Record becomes a place to feel understood through someone else&apos;s story and more connected through music.
+          </p>
+        </div>
+
+        {/* Example lyric card */}
+        <div className="flex justify-center">
+          <RecordCard
+            record={exampleRecord}
+            onClick={() => {}}
+          />
         </div>
       </main>
     </div>
