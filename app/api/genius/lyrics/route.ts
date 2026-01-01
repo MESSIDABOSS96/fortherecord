@@ -196,42 +196,18 @@ async function findBestSongMatch(
 }
 
 // Validate lyrics content to detect obviously wrong results
+// Simplified for speed to avoid Vercel timeout
 function validateLyricsContent(lyrics: string, title: string, artist: string): boolean {
-  // Check 1: Minimum/maximum length
+  // Basic check: Minimum length only
   const lineCount = lyrics.split('\n').filter(l => l.trim()).length;
   if (lineCount < 5) {
     console.warn(`Lyrics validation failed for "${title}" by ${artist}: too short (${lineCount} lines)`);
     return false;
   }
-  if (lineCount > 500) {
-    console.warn(`Lyrics validation failed for "${title}" by ${artist}: too long (${lineCount} lines, likely scraped annotations)`);
-    return false;
-  }
 
-  // Check 2: Detect common non-lyric patterns
-  const lowerLyrics = lyrics.toLowerCase();
-  const suspiciousPatterns: Array<{ pattern: RegExp; description: string }> = [
-    { pattern: /aryan|atlantis|veda|varuna/i, description: 'Historical/mythology text' },
-    { pattern: /contraband.*\d{1,2}\.\d{1,2}\.\d{4}/, description: 'Album metadata with dates' },
-    { pattern: /\d+\s*contributors?/, description: 'Genius UI elements' },
-    { pattern: /get tickets|see .* live/i, description: 'Promotional content' },
-    { pattern: /lyrics for this song/i, description: 'Genius descriptions' },
-  ];
-
-  for (const { pattern, description } of suspiciousPatterns) {
-    if (pattern.test(lyrics)) {
-      console.warn(`Lyrics validation failed for "${title}" by ${artist}: matched pattern ${description}`);
-      return false;
-    }
-  }
-
-  // Check 3: Typical lyric patterns (verses, choruses, repetition)
-  const hasTypicalStructure =
-    /\[verse|chorus|intro|outro|bridge|pre-chorus\]/i.test(lyrics) ||
-    lyrics.includes('\n\n'); // Multiple paragraphs
-
-  if (!hasTypicalStructure) {
-    console.warn(`Lyrics validation failed for "${title}" by ${artist}: no typical structure`);
+  // Quick check for obvious Genius UI elements
+  if (lyrics.includes('Contributors') && lineCount < 10) {
+    console.warn(`Lyrics validation failed for "${title}" by ${artist}: appears to be metadata`);
     return false;
   }
 
@@ -274,8 +250,8 @@ export async function GET(request: NextRequest) {
     // Dynamic import of extractLyrics
     const extractLyrics = (await import('genius-lyrics-api/lib/utils/extractLyrics' as any)).default as any;
 
-    // Try best match first, then fallback to second-best if needed
-    for (let i = 0; i < Math.min(scoredResults.length, 3); i++) {
+    // Only try the best match to save time (Vercel Hobby has 10s timeout)
+    for (let i = 0; i < Math.min(scoredResults.length, 1); i++) {
       const candidate = scoredResults[i];
 
       console.log(`Trying match ${i + 1}: "${candidate.title}" by ${candidate.artist} (score: ${candidate.score})`);
