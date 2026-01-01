@@ -195,7 +195,7 @@ export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
               className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left ${
                 selectedIndex === index
                   ? 'bg-gray-200 shadow-sm'
-                  : 'hover:bg-gray-100'
+                  : 'hover:bg-gray-200 hover:shadow-sm'
               }`}
             >
               {/* Album Art */}
