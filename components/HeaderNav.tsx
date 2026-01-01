@@ -21,9 +21,9 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
   return (
     <header className="w-full py-3 relative">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between relative">
           {/* Logo - Left */}
-          <div className="flex-shrink-0 md:-ml-16 lg:-ml-20">
+          <div className="flex-shrink-0 -ml-12 sm:-ml-16 md:-ml-20 mt-3">
             <Link href="/" onClick={handleNavClick} className="flex items-center group">
               <Image
                 src="/logo.svg"
@@ -37,7 +37,7 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
           </div>
 
           {/* Desktop Navigation - Center (hidden on mobile) */}
-          <div className="hidden md:flex gap-6 lg:gap-8 text-sm absolute left-1/2 transform -translate-x-1/2">
+          <div className="hidden md:flex gap-6 lg:gap-8 text-sm absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <Link
               href="/"
               onClick={onReset}
@@ -74,42 +74,39 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
             </Link>
           </div>
 
-          {/* Right side - Add button + Hamburger */}
-          <div className="flex items-center gap-3">
-            {/* Add button */}
-            {pathname !== '/add' && (
-              <button
-                onClick={() => router.push('/add')}
-                className="px-4 sm:px-6 md:px-8 py-2 md:py-3 bg-transparent border-2 border-gray-900 rounded-full font-semibold text-xs sm:text-sm hover:bg-gray-900 hover:text-white transition-colors shadow-md"
-              >
-                Add
-              </button>
-            )}
-
-            {/* Hamburger Menu Button - Mobile only */}
-            <button
-              onClick={toggleMobileMenu}
-              className="md:hidden p-2 text-gray-900 hover:text-gray-600 transition-colors"
-              aria-label="Toggle menu"
+          {/* Hamburger Menu Button - Mobile only */}
+          <button
+            onClick={toggleMobileMenu}
+            className="md:hidden p-2 text-gray-900 hover:text-gray-600 transition-colors"
+            aria-label="Toggle menu"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                {isMobileMenuOpen ? (
-                  <path d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          </div>
+              {isMobileMenuOpen ? (
+                <path d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
+
+        {/* Add button - Absolute positioned like original */}
+        {pathname !== '/add' && (
+          <button
+            onClick={() => router.push('/add')}
+            className="absolute top-8 right-6 sm:right-8 md:right-10 px-6 sm:px-8 py-2.5 sm:py-3 bg-transparent border-2 border-gray-900 rounded-full font-semibold text-sm hover:bg-gray-900 hover:text-white transition-colors z-40 shadow-md"
+          >
+            Add
+          </button>
+        )}
 
         {/* Mobile Menu Overlay */}
         {isMobileMenuOpen && (
