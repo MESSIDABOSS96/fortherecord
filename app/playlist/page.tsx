@@ -10,7 +10,7 @@ export default function PlaylistPage() {
       <main className="max-w-7xl mx-auto px-6 pb-12">
         {/* Title Section */}
         <div className="text-center mb-10">
-          <h1 className="text-5xl font-bold mb-4 tracking-tight">
+          <h1 className="text-6xl font-bold mb-4 tracking-tight">
             Playlist of the Month
           </h1>
           <p className="text-xl text-gray-600 mb-8">

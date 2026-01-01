@@ -30,32 +30,29 @@ export default function AboutPage() {
           <p className="text-xl text-gray-600 mb-8">An archive of lyrics that bring someone to mind</p>
         </div>
 
-        {/* New blurb content */}
-        <div className="prose max-w-none mb-12 text-center">
-          <p className="text-gray-600 text-lg leading-relaxed mb-6">
-            For the Record is an anonymous collection of the lyrics that remind you of someone and the stories behind them.
-          </p>
+        {/* Content layout - text on left, card on right */}
+        <div className="flex gap-12 items-center">
+          {/* New blurb content */}
+          <div className="flex-1 prose max-w-none">
+            <p className="text-gray-600 text-lg leading-relaxed mb-6">
+              For the Record is an anonymous collection of the lyrics that remind you of someone and the stories behind them.
+            </p>
 
-          <p className="text-gray-600 leading-relaxed mb-6">
-            Music is special because we get to shape its meaning around our own lives. The same song can mean completely different things to two different people, because we each pour our own memories, moments, and emotions into it.
-          </p>
+            <p className="text-gray-600 leading-relaxed mb-6">
+              Music is special because we get to shape its meaning around our own lives. The same song can mean completely different things to two different people, because we each pour our own memories, moments, and emotions into it. And while music can attach itself to all kinds of experiences, the most powerful version of that is when it attaches to a person. A parent. A friend. A lover, past or present. A stranger who changed your perspective. We all have those songs that seem like they were written for your relationship with someone.
+            </p>
 
-          <p className="text-gray-600 leading-relaxed mb-6">
-            And while music can attach itself to all kinds of experiences, the most powerful version of that is when it attaches to a person. A parent. A friend. A lover, past or present. A stranger who changed your perspective. We all have those songs that seem like they were written for your relationship with someone.
-          </p>
+            <p className="text-gray-600 leading-relaxed mb-6">
+              For the Record is a platform to share a song, the lyrics that matter, and the person they bring to mind. Or scroll through the collection and discover the songs people hold on to and why.
+            </p>
 
-          <p className="text-gray-600 leading-relaxed mb-6">
-            For the Record is a platform to share a song, the lyrics that matter, and the person they bring to mind. Or scroll through the collection and discover the songs people hold on to and why.
-          </p>
+            <p className="text-gray-600 leading-relaxed mb-6">
+              As it grows, For the Record becomes a place to feel understood through someone else&apos;s story and more connected to each other through music.
+            </p>
+          </div>
 
-          <p className="text-gray-600 leading-relaxed mb-6">
-            As it grows, For the Record becomes a place to feel understood through someone else&apos;s story and more connected to each other through music.
-          </p>
-        </div>
-
-        {/* Example lyric card */}
-        <div className="flex justify-center">
-          <div style={{ minWidth: '320px' }}>
+          {/* Example lyric card */}
+          <div className="flex-shrink-0" style={{ minWidth: '320px' }}>
             <RecordCard
               record={exampleRecord}
               onClick={() => {}}
