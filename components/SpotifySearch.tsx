@@ -192,7 +192,7 @@ export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
               key={track.id}
               ref={selectedIndex === index ? selectedRef : null}
               onClick={() => handleSelectTrack(track)}
-              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left ${
+              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left border border-gray-300 ${
                 selectedIndex === index
                   ? 'bg-gray-200 shadow-sm'
                   : 'hover:bg-gray-200 hover:shadow-sm'
