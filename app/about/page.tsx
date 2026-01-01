@@ -21,14 +21,14 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen">
       <HeaderNav />
-      <main className="max-w-3xl mx-auto px-6 pb-12">
+      <main className="max-w-5xl mx-auto px-6 pb-12">
         {/* Title - matching home page style */}
-        <h1 className="text-6xl font-bold mb-6 tracking-tight text-center">
-          For the Record
+        <h1 className="text-5xl font-bold mb-6 tracking-tight text-center">
+          FOR THE RECORD
         </h1>
 
         {/* New blurb content */}
-        <div className="prose prose-lg max-w-none mb-12">
+        <div className="prose max-w-none mb-12">
           <p className="text-gray-600 text-lg leading-relaxed mb-6">
             For the Record is an anonymous collection of the lyrics that remind you of someone and the stories behind them.
           </p>
@@ -52,10 +52,12 @@ export default function AboutPage() {
 
         {/* Example lyric card */}
         <div className="flex justify-center">
-          <RecordCard
-            record={exampleRecord}
-            onClick={() => {}}
-          />
+          <div style={{ minWidth: '320px' }}>
+            <RecordCard
+              record={exampleRecord}
+              onClick={() => {}}
+            />
+          </div>
         </div>
       </main>
     </div>
