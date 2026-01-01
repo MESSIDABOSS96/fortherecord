@@ -24,7 +24,9 @@
       "Bash(npm i:*)",
       "Bash(xargs kill:*)",
       "Bash(test:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(git revert:*)",
+      "Bash(grep:*)"
     ]
   }
 }

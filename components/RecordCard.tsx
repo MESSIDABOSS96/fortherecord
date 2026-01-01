@@ -33,6 +33,7 @@ export default function RecordCard({ record, onClick }: RecordCardProps) {
               alt={record.song_title}
               width={46}
               height={46}
+              loading="lazy"
               className="w-full h-full object-cover"
             />
           ) : (

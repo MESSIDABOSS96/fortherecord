@@ -20,6 +20,7 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
                 alt="For The Record"
                 width={110}
                 height={133}
+                priority
                 className="transition-transform group-hover:scale-105"
               />
             </Link>
@@ -30,6 +31,7 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
             <Link
               href="/"
               onClick={onReset}
+              prefetch={true}
               className={`transition-colors ${
                 pathname === '/'
                   ? 'font-bold text-gray-900'
@@ -40,6 +42,7 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
             </Link>
             <Link
               href="/playlist"
+              prefetch={true}
               className={`transition-colors ${
                 pathname === '/playlist'
                   ? 'font-bold text-gray-900'
@@ -50,6 +53,7 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
             </Link>
             <Link
               href="/about"
+              prefetch={true}
               className={`transition-colors ${
                 pathname === '/about'
                   ? 'font-bold text-gray-900'

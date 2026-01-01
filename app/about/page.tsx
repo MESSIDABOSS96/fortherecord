@@ -44,7 +44,7 @@ export default function AboutPage() {
           </p>
 
           <p className="text-gray-600 leading-relaxed mb-6">
-            As it grows, For the Record hopes to become a place to be more connected to each other through music.
+            As it grows, For the Record hopes to bring people closer through music.
           </p>
         </div>
 

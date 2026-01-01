@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+// Revalidate every 60 seconds
+export const revalidate = 60;
+
 // GET /api/records - Fetch all records
 export async function GET() {
   try {
@@ -17,7 +20,11 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json(data || []);
+    return NextResponse.json(data || [], {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+      },
+    });
   } catch (error) {
     console.error('Unexpected error:', error);
     return NextResponse.json(
