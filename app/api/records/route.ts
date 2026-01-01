@@ -7,6 +7,10 @@ export const revalidate = 60;
 // GET /api/records - Fetch all records
 export async function GET() {
   try {
+    // Debug: Log environment variables
+    console.log('SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'SET' : 'MISSING');
+    console.log('SUPABASE_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'MISSING');
+
     const { data, error } = await supabase
       .from('records')
       .select('*')
@@ -15,7 +19,7 @@ export async function GET() {
     if (error) {
       console.error('Supabase error:', error);
       return NextResponse.json(
-        { error: 'Failed to fetch records' },
+        { error: 'Failed to fetch records', details: error.message },
         { status: 500 }
       );
     }
