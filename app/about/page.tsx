@@ -30,7 +30,7 @@ export default function AboutPage() {
         </div>
 
         {/* New blurb content */}
-        <div className="prose max-w-none mb-12 text-center">
+        <div className="prose max-w-none mb-16 text-center">
           <p className="text-gray-600 text-lg leading-relaxed mb-6 font-semibold">
             For the Record is an anonymous collection of the lyrics that remind you of someone and the stories behind them.
           </p>
