@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
 // Revalidate every 60 seconds
 export const revalidate = 60;
@@ -7,9 +7,23 @@ export const revalidate = 60;
 // GET /api/records - Fetch all records
 export async function GET() {
   try {
+    // Initialize Supabase client directly in the API route
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
     // Debug: Log environment variables
-    console.log('SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'SET' : 'MISSING');
-    console.log('SUPABASE_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'MISSING');
+    console.log('SUPABASE_URL:', supabaseUrl ? 'SET' : 'MISSING');
+    console.log('SUPABASE_KEY:', supabaseKey ? 'SET' : 'MISSING');
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing environment variables');
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { data, error } = await supabase
       .from('records')
@@ -41,6 +55,19 @@ export async function GET() {
 // POST /api/records - Create a new record
 export async function POST(request: Request) {
   try {
+    // Initialize Supabase client
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+    if (!supabaseUrl || !supabaseKey) {
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     const body = await request.json();
 
     // Validate required fields

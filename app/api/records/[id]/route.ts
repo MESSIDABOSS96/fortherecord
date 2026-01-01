@@ -1,9 +1,22 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
 // GET /api/records/[id] - Fetch a single record
 export async function GET(request: Request) {
   try {
+    // Initialize Supabase client
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+    if (!supabaseUrl || !supabaseKey) {
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     // Extract ID from URL instead of params to avoid Next.js 15 type issues
     const url = new URL(request.url);
     const id = url.pathname.split('/').pop();
@@ -48,6 +61,19 @@ export async function GET(request: Request) {
 // PUT /api/records/[id] - Update a record
 export async function PUT(request: Request) {
   try {
+    // Initialize Supabase client
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+    if (!supabaseUrl || !supabaseKey) {
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     // Extract ID from URL
     const url = new URL(request.url);
     const id = url.pathname.split('/').pop();
@@ -108,6 +134,19 @@ export async function PUT(request: Request) {
 // DELETE /api/records/[id] - Delete a record
 export async function DELETE(request: Request) {
   try {
+    // Initialize Supabase client
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+    if (!supabaseUrl || !supabaseKey) {
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     // Extract ID from URL
     const url = new URL(request.url);
     const id = url.pathname.split('/').pop();
