@@ -8,8 +8,9 @@ export const revalidate = 60;
 export async function GET() {
   try {
     // Initialize Supabase client directly in the API route
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    // Use server-side env vars (without NEXT_PUBLIC_ prefix) for API routes
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
     // Debug: Log environment variables
     console.log('SUPABASE_URL:', supabaseUrl ? 'SET' : 'MISSING');
@@ -56,8 +57,8 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     // Initialize Supabase client
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
     if (!supabaseUrl || !supabaseKey) {
       return NextResponse.json(
