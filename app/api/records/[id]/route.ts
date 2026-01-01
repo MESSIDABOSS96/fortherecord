@@ -1,13 +1,17 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
 // GET /api/records/[id] - Fetch a single record
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const { data, error } = await supabase
       .from('records')
       .select('*')
@@ -44,7 +48,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const body = await request.json();
 
     const { data, error } = await supabase
@@ -97,7 +101,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const { error } = await supabase
       .from('records')
       .delete()
