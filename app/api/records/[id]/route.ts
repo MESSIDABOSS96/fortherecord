@@ -5,8 +5,8 @@ import { createClient } from '@supabase/supabase-js';
 export async function GET(request: Request) {
   try {
     // Initialize Supabase client
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://ygpnkvwretilfrmeirtp.supabase.co';
+    const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncG5rdndyZXRpbGZybWVpcnRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY4OTgzNTUsImV4cCI6MjA4MjQ3NDM1NX0.Cqc7J68bQotQ1lQa61_PKc7thX_QUrQz7ahkAILxOOM';
 
     if (!supabaseUrl || !supabaseKey) {
       return NextResponse.json(
@@ -62,8 +62,8 @@ export async function GET(request: Request) {
 export async function PUT(request: Request) {
   try {
     // Initialize Supabase client
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://ygpnkvwretilfrmeirtp.supabase.co';
+    const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncG5rdndyZXRpbGZybWVpcnRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY4OTgzNTUsImV4cCI6MjA4MjQ3NDM1NX0.Cqc7J68bQotQ1lQa61_PKc7thX_QUrQz7ahkAILxOOM';
 
     if (!supabaseUrl || !supabaseKey) {
       return NextResponse.json(
@@ -135,8 +135,8 @@ export async function PUT(request: Request) {
 export async function DELETE(request: Request) {
   try {
     // Initialize Supabase client
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://ygpnkvwretilfrmeirtp.supabase.co';
+    const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncG5rdndyZXRpbGZybWVpcnRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY4OTgzNTUsImV4cCI6MjA4MjQ3NDM1NX0.Cqc7J68bQotQ1lQa61_PKc7thX_QUrQz7ahkAILxOOM';
 
     if (!supabaseUrl || !supabaseKey) {
       return NextResponse.json(
