@@ -7,12 +7,12 @@ import { Record } from "@/types/record";
 export default function AboutPage() {
   const exampleRecord: Record = {
     id: 'about-example',
-    for_name: 'For the Record',
+    for_name: 'the Record',
     song_title: 'For the Record',
     artist: 'Anonymous',
     album_art_url: '/logo.svg',
     spotify_track_id: undefined,
-    lyric_excerpt: 'music reminds me of you',
+    lyric_excerpt: 'Music reminds me of you',
     reflection_text: '',
     background_color: '#E2E4E6',
     created_at: new Date(),
@@ -24,7 +24,7 @@ export default function AboutPage() {
       <main className="max-w-5xl mx-auto px-6 pb-12">
         {/* Title and subheading */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold mb-4 tracking-tight">
+          <h1 className="text-6xl font-bold mb-4 tracking-tight">
             FOR THE RECORD
           </h1>
           <p className="text-xl text-gray-600 mb-8">An archive of lyrics that bring someone to mind</p>
