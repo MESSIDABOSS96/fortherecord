@@ -21,20 +21,19 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen">
       <HeaderNav />
-      <main className="max-w-5xl mx-auto px-6 pb-12">
-        {/* Title and subheading */}
-        <div className="text-center mb-8">
-          <h1 className="text-6xl font-bold mb-4 tracking-tight">
-            For the Record
+      <main className="max-w-7xl mx-auto px-6 pb-12">
+        {/* Title */}
+        <div className="text-center mb-16">
+          <h1 className="text-6xl font-bold tracking-tight">
+            About
           </h1>
-          <p className="text-xl text-gray-600 mb-8">An archive of lyrics that bring someone to mind</p>
         </div>
 
         {/* Content layout - text on left, card on right */}
-        <div className="flex gap-12 items-center">
+        <div className="flex gap-16 items-start ml-12">
           {/* New blurb content */}
           <div className="flex-1 prose max-w-none">
-            <p className="text-gray-600 text-lg leading-relaxed mb-6">
+            <p className="text-gray-600 text-lg leading-relaxed mb-6 font-semibold">
               For the Record is an anonymous collection of the lyrics that remind you of someone and the stories behind them.
             </p>
 
@@ -45,14 +44,10 @@ export default function AboutPage() {
             <p className="text-gray-600 leading-relaxed mb-6">
               For the Record is a platform to share a song, the lyrics that matter, and the person they bring to mind. Or scroll through the collection and discover the songs people hold on to and why.
             </p>
-
-            <p className="text-gray-600 leading-relaxed mb-6">
-              As it grows, For the Record becomes a place to feel understood through someone else&apos;s story and more connected to each other through music.
-            </p>
           </div>
 
           {/* Example lyric card */}
-          <div className="flex-shrink-0" style={{ minWidth: '320px' }}>
+          <div className="flex-shrink-0" style={{ minWidth: '400px' }}>
             <RecordCard
               record={exampleRecord}
               onClick={() => {}}
