@@ -31,6 +31,8 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
 
   const [tempName, setTempName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isValidatingLyrics, setIsValidatingLyrics] = useState(false);
+  const [lyricError, setLyricError] = useState('');
 
   // Helper function to sort lyrics by original song position
   const getSortedLyricText = (lyrics: SelectedLyric[]): string => {
@@ -41,7 +43,32 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
       .join('\n');
   };
 
+  const checkLyricsAvailability = async (title: string, artist: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`/api/genius/lyrics?title=${encodeURIComponent(title)}&artist=${encodeURIComponent(artist)}`);
+      if (!response.ok) {
+        return false;
+      }
+      const data = await response.json();
+      return !!data.lyrics;
+    } catch (error) {
+      console.error('Error checking lyrics:', error);
+      return false;
+    }
+  };
+
   const handleSongSelect = async (song: any) => {
+    setIsValidatingLyrics(true);
+    setLyricError('');
+
+    const hasLyrics = await checkLyricsAvailability(song.song_title, song.artist);
+
+    if (!hasLyrics) {
+      setIsValidatingLyrics(false);
+      setLyricError("We couldn't find lyrics for this song. Please pick another.");
+      return;
+    }
+
     setSongData({
       song_title: song.song_title,
       artist: song.artist,
@@ -52,9 +79,12 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
     // Clear selected lyrics and reflection when changing songs
     setSelectedLines([]);
     setReflectionText('');
+    setIsValidatingLyrics(false);
+
     // Auto-advance to step 2
     setTimeout(() => setStep(2), 500);
   };
+
 
   const handleNameSubmit = () => {
     if (tempName.trim()) {
@@ -109,7 +139,11 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
                 Find the song that reminds you of someone
               </p>
             </div>
-            <SpotifySearch onSelectTrack={handleSongSelect} />
+            <SpotifySearch
+              onSelectTrack={handleSongSelect}
+              isValidating={isValidatingLyrics}
+              validationError={lyricError}
+            />
           </div>
         )}
 

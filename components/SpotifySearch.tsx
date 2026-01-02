@@ -23,9 +23,11 @@ interface SpotifySearchProps {
     spotify_track_id: string;
     background_color: string;
   }) => void;
+  isValidating?: boolean;
+  validationError?: string;
 }
 
-export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
+export default function SpotifySearch({ onSelectTrack, isValidating = false, validationError = '' }: SpotifySearchProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SpotifyTrack[]>([]);
   const [loading, setLoading] = useState(false);
@@ -177,9 +179,14 @@ export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
       )}
 
       {/* Error State */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">
-          {error}
+      {(error || validationError) && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm flex items-center gap-3">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18Z" stroke="currentColor" strokeWidth="2" />
+            <path d="M10 6V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M10 14H10.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          {error || validationError}
         </div>
       )}
 
@@ -187,38 +194,52 @@ export default function SpotifySearch({ onSelectTrack }: SpotifySearchProps) {
       {!loading && results.length > 0 && (
         <div className="space-y-2 max-h-96 overflow-y-auto">
           <p className="text-sm text-gray-600">{results.length} results</p>
-          {results.map((track, index) => (
-            <button
-              key={track.id}
-              ref={selectedIndex === index ? selectedRef : null}
-              onClick={() => handleSelectTrack(track)}
-              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left border border-gray-300 ${
-                selectedIndex === index
-                  ? 'bg-gray-200 shadow-sm'
-                  : 'hover:bg-gray-200 hover:shadow-sm'
-              }`}
-            >
-              {/* Album Art */}
-              <div className="w-14 h-14 bg-gray-200 rounded flex-shrink-0 overflow-hidden">
-                {track.albumArtSmall && (
-                  <Image
-                    src={track.albumArtSmall}
-                    alt={track.album}
-                    width={56}
-                    height={56}
-                    className="w-full h-full object-cover"
-                  />
-                )}
-              </div>
+          {results.map((track, index) => {
+            const isSelected = selectedIndex === index;
+            // Check if this specific track is the one being validated
+            // We can approximate this by checking if validation is active and this is the selected item
+            const isBeingValidated = isValidating && isSelected;
 
-              {/* Track Info */}
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-gray-900 truncate">{track.name}</div>
-                <div className="text-sm text-gray-600 truncate">{track.artists}</div>
-                <div className="text-xs text-gray-500 truncate">{track.album}</div>
-              </div>
-            </button>
-          ))}
+            return (
+              <button
+                key={track.id}
+                ref={isSelected ? selectedRef : null}
+                onClick={() => !isValidating && handleSelectTrack(track)}
+                disabled={isValidating}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left border border-gray-300 ${isSelected
+                    ? 'bg-gray-200 shadow-sm'
+                    : 'hover:bg-gray-200 hover:shadow-sm'
+                  } ${isValidating ? 'opacity-75 cursor-wait' : ''}`}
+              >
+                {/* Album Art */}
+                <div className="w-14 h-14 bg-gray-200 rounded flex-shrink-0 overflow-hidden relative">
+                  {track.albumArtSmall && (
+                    <Image
+                      src={track.albumArtSmall}
+                      alt={track.album}
+                      width={56}
+                      height={56}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+
+                  {/* Overlay loading spinner if this track is being validated */}
+                  {isBeingValidated && (
+                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Track Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-gray-900 truncate">{track.name}</div>
+                  <div className="text-sm text-gray-600 truncate">{track.artists}</div>
+                  <div className="text-xs text-gray-500 truncate">{track.album}</div>
+                </div>
+              </button>
+            )
+          })}
         </div>
       )}
 
