@@ -16,7 +16,7 @@ export default function AboutPage() {
         </div>
 
         {/* Two-column layout: Text on left, Card on right */}
-        <div className="flex flex-col md:flex-row gap-16 md:gap-20 items-start mb-16">
+        <div className="flex flex-col md:flex-row gap-16 md:gap-20 items-center mb-16">
           {/* Left: Text content - pushed more left */}
           <div className="flex-[1.2] prose max-w-none md:-ml-8">
             <p className="text-gray-600 text-lg leading-relaxed mb-6 font-semibold">
