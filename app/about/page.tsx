@@ -20,7 +20,7 @@ export default function AboutPage() {
           {/* Left: Text content - pushed more left */}
           <div className="flex-[1.2] prose max-w-none md:-ml-8">
             <p className="text-gray-600 text-lg leading-relaxed mb-6 font-semibold">
-              For the Record is an anonymous collection of the lyrics that remind you of someone and the stories behind them.
+              For the Record is an anonymous collection of lyrics that bring someone to mind, and the stories behind them.
             </p>
 
             <p className="text-gray-600 leading-relaxed mb-6">
@@ -32,12 +32,12 @@ export default function AboutPage() {
             </p>
 
             <p className="text-gray-600 leading-relaxed mb-6">
-              For the Record is a place to share the lyrics that bring someone to mind, and to discover the songs other people hold on to and why. As it grows, For the Record hopes to bring people closer through music.
+              For the Record is a place to share a lyric that reminds you of someone, and to discover the songs other people hold on to and why. As it grows, For the Record hopes to bring people closer through music.
             </p>
           </div>
 
           {/* Right: Custom About page card - aligned with center of text */}
-          <div className="flex items-center flex-shrink-0 md:mr-8">
+          <div className="flex items-center flex-shrink-0 md:mr-8 md:-mt-12">
             <div
               className="rounded-[16px] sm:rounded-[20px] p-4 sm:p-5 md:p-6 flex flex-col"
               style={{

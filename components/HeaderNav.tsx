@@ -31,7 +31,7 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
                 width={110}
                 height={133}
                 priority
-                className="w-20 sm:w-[90px] md:w-[100px]"
+                className="w-16 sm:w-18 md:w-20"
                 style={{ mixBlendMode: 'multiply' }}
               />
             </Link>
