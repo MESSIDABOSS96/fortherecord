@@ -181,8 +181,8 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
       {/* Error State */}
       {(error || validationError) && (
         <div className={`rounded-lg p-4 text-sm flex items-center gap-3 ${validationError
-            ? 'bg-blue-50 border border-blue-100 text-blue-700' // Softer blue for validation "info"
-            : 'bg-red-50 border border-red-200 text-red-700'    // Keep red for actual system errors
+          ? 'bg-gray-50 border border-gray-200 text-gray-600' // Neutral gray to match aesthetic
+          : 'bg-red-50 border border-red-200 text-red-700'    // Keep red for actual system errors
           }`}>
           {validationError ? (
             // Info Icon for validation messages
