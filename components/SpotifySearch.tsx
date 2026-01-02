@@ -180,13 +180,26 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
 
       {/* Error State */}
       {(error || validationError) && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm flex items-center gap-3">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18Z" stroke="currentColor" strokeWidth="2" />
-            <path d="M10 6V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <path d="M10 14H10.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          {error || validationError}
+        <div className={`rounded-lg p-4 text-sm flex items-center gap-3 ${validationError
+            ? 'bg-blue-50 border border-blue-100 text-blue-700' // Softer blue for validation "info"
+            : 'bg-red-50 border border-red-200 text-red-700'    // Keep red for actual system errors
+          }`}>
+          {validationError ? (
+            // Info Icon for validation messages
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M12 8V13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M11.9945 16H12.0035" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          ) : (
+            // Warning/Error Icon for system errors
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18Z" stroke="currentColor" strokeWidth="2" />
+              <path d="M10 6V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M10 14H10.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          )}
+          <span className="font-medium">{error || validationError}</span>
         </div>
       )}
 
@@ -207,8 +220,8 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
                 onClick={() => !isValidating && handleSelectTrack(track)}
                 disabled={isValidating}
                 className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left border border-gray-300 ${isSelected
-                    ? 'bg-gray-200 shadow-sm'
-                    : 'hover:bg-gray-200 hover:shadow-sm'
+                  ? 'bg-gray-200 shadow-sm'
+                  : 'hover:bg-gray-200 hover:shadow-sm'
                   } ${isValidating ? 'opacity-75 cursor-wait' : ''}`}
               >
                 {/* Album Art */}

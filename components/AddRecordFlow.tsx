@@ -65,7 +65,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
 
     if (!hasLyrics) {
       setIsValidatingLyrics(false);
-      setLyricError("We couldn't find lyrics for this song. Please pick another.");
+      setLyricError("We couldn’t find lyrics for this song. Try a different one.");
       return;
     }
 
