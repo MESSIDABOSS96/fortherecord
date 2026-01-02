@@ -250,23 +250,25 @@ export async function GET(request: NextRequest) {
     // Dynamic import of extractLyrics
     const extractLyrics = (await import('genius-lyrics-api/lib/utils/extractLyrics' as any)).default as any;
 
-    // Only try the best match to save time (Vercel Hobby has 10s timeout)
-    for (let i = 0; i < Math.min(scoredResults.length, 1); i++) {
+    // Try up to 2 matches with detailed error logging
+    for (let i = 0; i < Math.min(scoredResults.length, 2); i++) {
       const candidate = scoredResults[i];
 
-      console.log(`Trying match ${i + 1}: "${candidate.title}" by ${candidate.artist} (score: ${candidate.score})`);
+      console.log(`[${i + 1}] Attempting: "${candidate.title}" by ${candidate.artist} (score: ${candidate.score}) - URL: ${candidate.url}`);
 
       try {
         const lyrics = await extractLyrics(candidate.url);
 
         if (!lyrics) {
-          console.warn(`No lyrics extracted from "${candidate.title}"`);
+          console.error(`[${i + 1}] extractLyrics returned null/undefined for "${candidate.title}"`);
           continue; // Try next candidate
         }
 
+        console.log(`[${i + 1}] Extracted ${lyrics.length} chars from "${candidate.title}"`);
+
         // Validate lyrics content
         if (!validateLyricsContent(lyrics, title, artist)) {
-          console.warn(`Validation failed for "${candidate.title}", trying next...`);
+          console.warn(`[${i + 1}] Validation failed for "${candidate.title}"`);
           continue; // Try next candidate
         }
 
@@ -278,7 +280,8 @@ export async function GET(request: NextRequest) {
           matchedArtist: candidate.artist
         });
       } catch (err) {
-        console.error(`Error extracting lyrics from "${candidate.title}":`, err);
+        console.error(`[${i + 1}] Exception extracting lyrics from "${candidate.title}":`, err);
+        console.error(`[${i + 1}] Error stack:`, err instanceof Error ? err.stack : 'No stack trace');
         continue; // Try next candidate
       }
     }
