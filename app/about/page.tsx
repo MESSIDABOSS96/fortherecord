@@ -1,27 +1,13 @@
 "use client";
 
 import HeaderNav from "@/components/HeaderNav";
-import RecordCard from "@/components/RecordCard";
-import { Record } from "@/types/record";
+import Image from "next/image";
 
 export default function AboutPage() {
-  const exampleRecord: Record = {
-    id: 'about-example',
-    for_name: 'the Record',
-    song_title: 'For the Record',
-    artist: 'Anonymous',
-    album_art_url: '/logo.svg',
-    spotify_track_id: undefined,
-    lyric_excerpt: 'Music reminds me of you',
-    reflection_text: '',
-    background_color: '#E2E4E6',
-    created_at: new Date(),
-  };
-
   return (
     <div className="min-h-screen">
       <HeaderNav />
-      <main className="max-w-5xl mx-auto px-6 pb-12">
+      <main className="max-w-6xl mx-auto px-6 pb-12">
         {/* Title */}
         <div className="text-center mb-16">
           <h1 className="text-6xl font-bold tracking-tight">
@@ -30,25 +16,68 @@ export default function AboutPage() {
         </div>
 
         {/* Two-column layout: Text on left, Card on right */}
-        <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-start mb-16">
-          {/* Left: Text content */}
-          <div className="flex-1 prose max-w-none">
+        <div className="flex flex-col md:flex-row gap-16 md:gap-20 items-start mb-16">
+          {/* Left: Text content - pushed more left */}
+          <div className="flex-[1.2] prose max-w-none md:-ml-8">
             <p className="text-gray-600 text-lg leading-relaxed mb-6 font-semibold">
               For the Record is an anonymous collection of the lyrics that remind you of someone and the stories behind them.
             </p>
 
             <p className="text-gray-600 leading-relaxed mb-6">
-              Music is special because we get to shape its meaning around our own lives. The same song can mean completely different things to two different people, because we each pour our own memories, moments, and emotions into it. And while music can attach itself to all kinds of experiences, the most powerful version of that is when it attaches to a person. A parent. A friend. A lover, past or present. A stranger who changed your perspective. We all have those songs that seem like they were written for your relationship with someone. For the Record is a place to share the lyrics that bring someone to mind, and to discover the songs other people hold on to and why. As it grows, For the Record hopes to bring people closer through music.
+              Music is special because we get to shape its meaning around our own lives. The same song can mean completely different things to two different people, because we each pour our own memories, moments, and emotions into it.
+            </p>
+
+            <p className="text-gray-600 leading-relaxed mb-6">
+              And while music can attach itself to all kinds of experiences, the most powerful version of that is when it attaches to a person. A parent. A friend. A lover, past or present. A stranger who changed your perspective. We all have those songs that seem like they were written for your relationship with someone.
+            </p>
+
+            <p className="text-gray-600 leading-relaxed mb-6">
+              For the Record is a place to share the lyrics that bring someone to mind, and to discover the songs other people hold on to and why. As it grows, For the Record hopes to bring people closer through music.
             </p>
           </div>
 
-          {/* Right: Example lyric card */}
-          <div className="flex items-center md:sticky md:top-8">
-            <div style={{ width: '340px' }}>
-              <RecordCard
-                record={exampleRecord}
-                onClick={() => {}}
-              />
+          {/* Right: Custom About page card - aligned with center of text */}
+          <div className="flex items-center flex-shrink-0 md:mr-8">
+            <div
+              className="rounded-[16px] sm:rounded-[20px] p-4 sm:p-5 md:p-6 flex flex-col"
+              style={{
+                width: '340px',
+                backgroundColor: '#E2E4E6',
+                boxShadow: "var(--shadow-md)",
+              }}
+            >
+              {/* Header: Album art (logo) + Song info */}
+              <div className="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-5 flex-shrink-0">
+                <div className="w-[40px] h-[40px] sm:w-[46px] sm:h-[46px] bg-transparent rounded-sm flex-shrink-0 overflow-hidden">
+                  <Image
+                    src="/logo.svg"
+                    alt="For the Record"
+                    width={46}
+                    height={46}
+                    loading="lazy"
+                    className="w-full h-full object-contain"
+                    style={{ mixBlendMode: 'multiply' }}
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-bold text-[14px] text-gray-900 truncate leading-tight">
+                    For the Record
+                  </div>
+                  <div className="text-[12px] text-gray-700 truncate leading-tight mt-1">
+                    Anonymous
+                  </div>
+                </div>
+              </div>
+
+              {/* Lyric excerpt */}
+              <div className="text-gray-900 font-bold text-lg sm:text-[20px] leading-[1.35] mb-4 sm:mb-5 flex-1 whitespace-pre-line">
+                Music reminds me of you
+              </div>
+
+              {/* For label */}
+              <div className="text-[10px] sm:text-[11px] font-medium italic text-gray-900/70 uppercase tracking-wide flex-shrink-0">
+                FOR THE RECORD
+              </div>
             </div>
           </div>
         </div>
