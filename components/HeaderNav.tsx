@@ -32,6 +32,7 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
                 height={133}
                 priority
                 className="transition-transform group-hover:scale-105 w-20 sm:w-24 md:w-28"
+                style={{ mixBlendMode: 'multiply' }}
               />
             </Link>
           </div>
