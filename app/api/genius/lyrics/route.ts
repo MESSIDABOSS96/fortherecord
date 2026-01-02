@@ -197,37 +197,90 @@ async function findBestSongMatch(
   return scored;
 }
 
-// Fetch lyrics using lyrics.ovh free API
-// More reliable than web scraping Genius
-async function fetchLyricsFromAPI(artist: string, title: string): Promise<string | null> {
+// Extract lyrics from Genius.com page
+// Preserves song structure tags like [Verse], [Chorus], [Bridge]
+async function extractGeniusLyrics(url: string): Promise<string | null> {
   try {
-    console.log(`Fetching lyrics from lyrics.ovh API for "${title}" by ${artist}`);
+    console.log(`Fetching lyrics from Genius: ${url}`);
 
-    const response = await axios.get(
-      `https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(title)}`,
-      {
-        timeout: 8000,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        }
+    const response = await axios.get(url, {
+      timeout: 8000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1'
       }
-    );
+    });
 
-    if (response.data && response.data.lyrics) {
-      const lyrics = response.data.lyrics.trim();
-      console.log(`Successfully fetched ${lyrics.length} characters from lyrics.ovh`);
-      return lyrics;
+    const $ = cheerio.load(response.data);
+
+    // Genius stores lyrics in div containers with data-lyrics-container="true"
+    const lyricsContainers = $('div[data-lyrics-container="true"]');
+
+    if (lyricsContainers.length === 0) {
+      console.error('No lyrics containers found on page');
+      return null;
     }
 
-    console.error('No lyrics in API response');
-    return null;
+    let lyrics = '';
+
+    lyricsContainers.each((_, element) => {
+      const processNode = (node: any): string => {
+        let text = '';
+
+        if (node.type === 'text') {
+          return node.data;
+        }
+
+        if (node.type === 'tag') {
+          // Preserve section headers like [Verse], [Chorus]
+          if (node.name === 'br') {
+            return '\n';
+          }
+
+          // Process children
+          if (node.children) {
+            for (const child of node.children) {
+              text += processNode(child);
+            }
+          }
+        }
+
+        return text;
+      };
+
+      const elementNode = element as any;
+      if (elementNode.children) {
+        for (const child of elementNode.children) {
+          lyrics += processNode(child);
+        }
+        lyrics += '\n\n';
+      }
+    });
+
+    lyrics = lyrics
+      .trim()
+      .replace(/\n{3,}/g, '\n\n') // Replace multiple newlines with double newlines
+      .replace(/\r\n/g, '\n');    // Normalize line endings
+
+    if (!lyrics || lyrics.length < 50) {
+      console.error(`Extracted lyrics too short: ${lyrics.length} chars`);
+      return null;
+    }
+
+    console.log(`Successfully extracted ${lyrics.length} characters from Genius`);
+    return lyrics;
   } catch (error) {
-    console.error('Error fetching from lyrics.ovh:', error);
+    console.error('Error extracting Genius lyrics:', error);
     if (axios.isAxiosError(error)) {
-      console.error('API error details:', {
+      console.error('Axios error:', {
         message: error.message,
         code: error.code,
-        status: error.response?.status
+        status: error.response?.status,
+        statusText: error.response?.statusText
       });
     }
     return null;
@@ -286,21 +339,22 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Try up to 2 matches using lyrics.ovh API
-    for (let i = 0; i < Math.min(scoredResults.length, 2); i++) {
+    // Try best match from Genius
+    for (let i = 0; i < Math.min(scoredResults.length, 1); i++) {
       const candidate = scoredResults[i];
 
-      console.log(`[${i + 1}] Attempting: "${candidate.title}" by ${candidate.artist} (score: ${candidate.score})`);
+      console.log(`[${i + 1}] Attempting Genius scrape: "${candidate.title}" by ${candidate.artist} (score: ${candidate.score})`);
+      console.log(`[${i + 1}] URL: ${candidate.url}`);
 
       try {
-        const lyrics = await fetchLyricsFromAPI(candidate.artist, cleanSongTitle(candidate.title));
+        const lyrics = await extractGeniusLyrics(candidate.url);
 
         if (!lyrics) {
-          console.error(`[${i + 1}] API returned null for "${candidate.title}"`);
+          console.error(`[${i + 1}] Genius scraper returned null for "${candidate.title}"`);
           continue; // Try next candidate
         }
 
-        console.log(`[${i + 1}] Fetched ${lyrics.length} chars from "${candidate.title}"`);
+        console.log(`[${i + 1}] Extracted ${lyrics.length} chars from "${candidate.title}"`);
 
         // Validate lyrics content
         if (!validateLyricsContent(lyrics, title, artist)) {
@@ -309,14 +363,14 @@ export async function GET(request: NextRequest) {
         }
 
         // Success! Return the lyrics
-        console.log(`✓ Successfully fetched lyrics for "${candidate.title}" by ${candidate.artist}`);
+        console.log(`✓ Successfully scraped Genius lyrics for "${candidate.title}" by ${candidate.artist}`);
         return NextResponse.json({
           lyrics,
           matchedTitle: candidate.title,
           matchedArtist: candidate.artist
         });
       } catch (err) {
-        console.error(`[${i + 1}] Exception fetching lyrics for "${candidate.title}":`, err);
+        console.error(`[${i + 1}] Exception scraping Genius for "${candidate.title}":`, err);
         console.error(`[${i + 1}] Error stack:`, err instanceof Error ? err.stack : 'No stack trace');
         continue; // Try next candidate
       }
