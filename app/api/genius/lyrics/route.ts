@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cleanSongTitle } from '@/utils/cleanSongTitle';
 import axios from 'axios';
-import * as cheerio from 'cheerio';
+const geniusLyrics = require('genius-lyrics-api');
 
 // Increase timeout for Vercel serverless function (requires Pro plan)
 // Hobby plan max is 10s, Pro allows up to 60s
@@ -197,92 +197,30 @@ async function findBestSongMatch(
   return scored;
 }
 
-// Extract lyrics from Genius.com page
-// Preserves song structure tags like [Verse], [Chorus], [Bridge]
-async function extractGeniusLyrics(url: string): Promise<string | null> {
+// Fetch lyrics using genius-lyrics-api package
+// Uses the package's built-in scraper which preserves [Verse], [Chorus] structure
+async function fetchGeniusLyrics(apiKey: string, title: string, artist: string): Promise<string | null> {
   try {
-    console.log(`Fetching lyrics from Genius: ${url}`);
+    console.log(`Fetching lyrics via genius-lyrics-api for "${title}" by ${artist}`);
 
-    const response = await axios.get(url, {
-      timeout: 8000,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1'
-      }
-    });
+    const options = {
+      apiKey: apiKey,
+      title: title,
+      artist: artist,
+      optimizeQuery: true
+    };
 
-    const $ = cheerio.load(response.data);
+    const lyrics = await geniusLyrics.getLyrics(options);
 
-    // Genius stores lyrics in div containers with data-lyrics-container="true"
-    const lyricsContainers = $('div[data-lyrics-container="true"]');
-
-    if (lyricsContainers.length === 0) {
-      console.error('No lyrics containers found on page');
+    if (!lyrics) {
+      console.error('genius-lyrics-api returned null/undefined');
       return null;
     }
 
-    let lyrics = '';
-
-    lyricsContainers.each((_, element) => {
-      const processNode = (node: any): string => {
-        let text = '';
-
-        if (node.type === 'text') {
-          return node.data;
-        }
-
-        if (node.type === 'tag') {
-          // Preserve section headers like [Verse], [Chorus]
-          if (node.name === 'br') {
-            return '\n';
-          }
-
-          // Process children
-          if (node.children) {
-            for (const child of node.children) {
-              text += processNode(child);
-            }
-          }
-        }
-
-        return text;
-      };
-
-      const elementNode = element as any;
-      if (elementNode.children) {
-        for (const child of elementNode.children) {
-          lyrics += processNode(child);
-        }
-        lyrics += '\n\n';
-      }
-    });
-
-    lyrics = lyrics
-      .trim()
-      .replace(/\n{3,}/g, '\n\n') // Replace multiple newlines with double newlines
-      .replace(/\r\n/g, '\n');    // Normalize line endings
-
-    if (!lyrics || lyrics.length < 50) {
-      console.error(`Extracted lyrics too short: ${lyrics.length} chars`);
-      return null;
-    }
-
-    console.log(`Successfully extracted ${lyrics.length} characters from Genius`);
+    console.log(`Successfully fetched ${lyrics.length} characters from Genius via package`);
     return lyrics;
   } catch (error) {
-    console.error('Error extracting Genius lyrics:', error);
-    if (axios.isAxiosError(error)) {
-      console.error('Axios error:', {
-        message: error.message,
-        code: error.code,
-        status: error.response?.status,
-        statusText: error.response?.statusText
-      });
-    }
+    console.error('Error using genius-lyrics-api:', error);
     return null;
   }
 }
@@ -339,22 +277,21 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Try best match from Genius
-    for (let i = 0; i < Math.min(scoredResults.length, 1); i++) {
+    // Try top 2 matches using genius-lyrics-api package
+    for (let i = 0; i < Math.min(scoredResults.length, 2); i++) {
       const candidate = scoredResults[i];
 
-      console.log(`[${i + 1}] Attempting Genius scrape: "${candidate.title}" by ${candidate.artist} (score: ${candidate.score})`);
-      console.log(`[${i + 1}] URL: ${candidate.url}`);
+      console.log(`[${i + 1}] Attempting via package: "${candidate.title}" by ${candidate.artist} (score: ${candidate.score})`);
 
       try {
-        const lyrics = await extractGeniusLyrics(candidate.url);
+        const lyrics = await fetchGeniusLyrics(apiKey, cleanSongTitle(candidate.title), candidate.artist);
 
         if (!lyrics) {
-          console.error(`[${i + 1}] Genius scraper returned null for "${candidate.title}"`);
+          console.error(`[${i + 1}] Package returned null for "${candidate.title}"`);
           continue; // Try next candidate
         }
 
-        console.log(`[${i + 1}] Extracted ${lyrics.length} chars from "${candidate.title}"`);
+        console.log(`[${i + 1}] Fetched ${lyrics.length} chars from "${candidate.title}"`);
 
         // Validate lyrics content
         if (!validateLyricsContent(lyrics, title, artist)) {
@@ -363,14 +300,14 @@ export async function GET(request: NextRequest) {
         }
 
         // Success! Return the lyrics
-        console.log(`✓ Successfully scraped Genius lyrics for "${candidate.title}" by ${candidate.artist}`);
+        console.log(`✓ Successfully fetched Genius lyrics for "${candidate.title}" by ${candidate.artist}`);
         return NextResponse.json({
           lyrics,
           matchedTitle: candidate.title,
           matchedArtist: candidate.artist
         });
       } catch (err) {
-        console.error(`[${i + 1}] Exception scraping Genius for "${candidate.title}":`, err);
+        console.error(`[${i + 1}] Exception fetching via package for "${candidate.title}":`, err);
         console.error(`[${i + 1}] Error stack:`, err instanceof Error ? err.stack : 'No stack trace');
         continue; // Try next candidate
       }
