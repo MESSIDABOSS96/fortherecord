@@ -26,7 +26,7 @@ export default function RecordCard({ record, onClick }: RecordCardProps) {
     >
       {/* Header: Album art + Song info */}
       <div className="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-5 flex-shrink-0">
-        <div className="w-[40px] h-[40px] sm:w-[46px] sm:h-[46px] bg-transparent rounded-sm flex-shrink-0 overflow-hidden">
+        <div className="w-[40px] h-[40px] sm:w-[46px] sm:h-[46px] bg-black/20 rounded-sm flex-shrink-0 overflow-hidden">
           {record.album_art_url ? (
             <Image
               src={record.album_art_url}
@@ -34,8 +34,7 @@ export default function RecordCard({ record, onClick }: RecordCardProps) {
               width={46}
               height={46}
               loading="lazy"
-              className="w-full h-full object-contain"
-              style={{ mixBlendMode: 'multiply' }}
+              className="w-full h-full object-cover"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
