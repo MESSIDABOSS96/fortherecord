@@ -97,7 +97,7 @@ async function getMusixmatchLyrics(
 
   const lyrics = data.message.body.lyrics?.lyrics_body;
   if (!lyrics) {
-    console.warn('No lyrics found in response');
+    console.warn(`No lyrics found for track ID ${trackId}. Status: ${data.message.header.status_code}`);
     return null;
   }
 
@@ -105,6 +105,12 @@ async function getMusixmatchLyrics(
   const cleanedLyrics = lyrics
     .split('*******')[0]
     .trim();
+
+  // Check if we got meaningful lyrics (not just empty or very short)
+  if (cleanedLyrics.length < 20) {
+    console.warn(`Lyrics too short for track ID ${trackId}: ${cleanedLyrics.length} chars`);
+    return null;
+  }
 
   console.log(`Successfully fetched ${cleanedLyrics.length} characters of lyrics`);
 
