@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cleanSongTitle } from '@/utils/cleanSongTitle';
 import axios from 'axios';
-const geniusLyrics = require('genius-lyrics-api');
 
 // Increase timeout for Vercel serverless function (requires Pro plan)
 // Hobby plan max is 10s, Pro allows up to 60s
@@ -202,6 +201,9 @@ async function findBestSongMatch(
 async function fetchGeniusLyrics(apiKey: string, title: string, artist: string): Promise<string | null> {
   try {
     console.log(`Fetching lyrics via genius-lyrics-api for "${title}" by ${artist}`);
+
+    // Dynamic import to handle CommonJS module in serverless environment
+    const geniusLyrics = await import('genius-lyrics-api');
 
     const options = {
       apiKey: apiKey,
