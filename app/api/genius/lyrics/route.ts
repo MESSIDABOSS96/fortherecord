@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cleanSongTitle } from '@/utils/cleanSongTitle';
 import axios from 'axios';
+import * as cheerio from 'cheerio';
 
 // Increase timeout for Vercel serverless function (requires Pro plan)
 // Hobby plan max is 10s, Pro allows up to 60s
@@ -196,33 +197,59 @@ async function findBestSongMatch(
   return scored;
 }
 
-// Fetch lyrics using genius-lyrics-api package
-// Uses the package's built-in scraper which preserves [Verse], [Chorus] structure
-async function fetchGeniusLyrics(apiKey: string, title: string, artist: string): Promise<string | null> {
+// Scrape lyrics from Genius.com URL
+// Uses modern cheerio to preserve [Verse], [Chorus], [Bridge] structure
+async function scrapeGeniusLyrics(url: string): Promise<string | null> {
   try {
-    console.log(`Fetching lyrics via genius-lyrics-api for "${title}" by ${artist}`);
+    console.log(`Scraping Genius lyrics from: ${url}`);
 
-    // Dynamic import to handle CommonJS module in serverless environment
-    const geniusLyrics = await import('genius-lyrics-api');
+    const response = await axios.get(url, {
+      timeout: 8000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml',
+        'Accept-Language': 'en-US,en;q=0.9',
+      }
+    });
 
-    const options = {
-      apiKey: apiKey,
-      title: title,
-      artist: artist,
-      optimizeQuery: true
-    };
+    const $ = cheerio.load(response.data);
+    const lyricsContainers = $('div[data-lyrics-container="true"]');
 
-    const lyrics = await geniusLyrics.getLyrics(options);
-
-    if (!lyrics) {
-      console.error('genius-lyrics-api returned null/undefined');
+    if (lyricsContainers.length === 0) {
+      console.error('No lyrics containers found');
       return null;
     }
 
-    console.log(`Successfully fetched ${lyrics.length} characters from Genius via package`);
+    let lyrics = '';
+    lyricsContainers.each((_, container) => {
+      $(container).contents().each((__, node) => {
+        if (node.type === 'text') {
+          lyrics += $(node).text();
+        } else if (node.type === 'tag') {
+          if (node.name === 'br') {
+            lyrics += '\n';
+          } else {
+            lyrics += $(node).text();
+          }
+        }
+      });
+      lyrics += '\n\n';
+    });
+
+    lyrics = lyrics.trim().replace(/\n{3,}/g, '\n\n');
+
+    if (!lyrics || lyrics.length < 50) {
+      console.error(`Lyrics too short: ${lyrics.length} chars`);
+      return null;
+    }
+
+    console.log(`Successfully scraped ${lyrics.length} characters from Genius`);
     return lyrics;
   } catch (error) {
-    console.error('Error using genius-lyrics-api:', error);
+    console.error('Error scraping Genius:', error);
+    if (axios.isAxiosError(error)) {
+      console.error('Axios error:', error.message, error.code, error.response?.status);
+    }
     return null;
   }
 }
@@ -279,21 +306,22 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Try top 2 matches using genius-lyrics-api package
+    // Try top 2 matches by scraping Genius with modern cheerio
     for (let i = 0; i < Math.min(scoredResults.length, 2); i++) {
       const candidate = scoredResults[i];
 
-      console.log(`[${i + 1}] Attempting via package: "${candidate.title}" by ${candidate.artist} (score: ${candidate.score})`);
+      console.log(`[${i + 1}] Attempting scrape: "${candidate.title}" by ${candidate.artist} (score: ${candidate.score})`);
+      console.log(`[${i + 1}] URL: ${candidate.url}`);
 
       try {
-        const lyrics = await fetchGeniusLyrics(apiKey, cleanSongTitle(candidate.title), candidate.artist);
+        const lyrics = await scrapeGeniusLyrics(candidate.url);
 
         if (!lyrics) {
-          console.error(`[${i + 1}] Package returned null for "${candidate.title}"`);
+          console.error(`[${i + 1}] Scraper returned null for "${candidate.title}"`);
           continue; // Try next candidate
         }
 
-        console.log(`[${i + 1}] Fetched ${lyrics.length} chars from "${candidate.title}"`);
+        console.log(`[${i + 1}] Scraped ${lyrics.length} chars from "${candidate.title}"`);
 
         // Validate lyrics content
         if (!validateLyricsContent(lyrics, title, artist)) {
@@ -302,14 +330,14 @@ export async function GET(request: NextRequest) {
         }
 
         // Success! Return the lyrics
-        console.log(`✓ Successfully fetched Genius lyrics for "${candidate.title}" by ${candidate.artist}`);
+        console.log(`✓ Successfully scraped Genius lyrics for "${candidate.title}" by ${candidate.artist}`);
         return NextResponse.json({
           lyrics,
           matchedTitle: candidate.title,
           matchedArtist: candidate.artist
         });
       } catch (err) {
-        console.error(`[${i + 1}] Exception fetching via package for "${candidate.title}":`, err);
+        console.error(`[${i + 1}] Exception scraping "${candidate.title}":`, err);
         console.error(`[${i + 1}] Error stack:`, err instanceof Error ? err.stack : 'No stack trace');
         continue; // Try next candidate
       }
