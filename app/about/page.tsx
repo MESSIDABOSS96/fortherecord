@@ -48,14 +48,14 @@ export default function AboutPage() {
             >
               {/* Header: Album art (logo) + Song info */}
               <div className="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-5 flex-shrink-0">
-                <div className="w-[40px] h-[40px] sm:w-[46px] sm:h-[46px] bg-transparent rounded-sm flex-shrink-0 overflow-hidden">
+                <div className="w-[46px] h-[46px] sm:w-[52px] sm:h-[52px] bg-transparent rounded-sm flex-shrink-0 overflow-hidden">
                   <Image
                     src="/logo.svg"
                     alt="For the Record"
-                    width={46}
-                    height={46}
+                    width={52}
+                    height={52}
                     loading="lazy"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover"
                     style={{ mixBlendMode: 'multiply' }}
                   />
                 </div>
