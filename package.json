@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.89.0",
+    "cheerio": "^1.1.2",
     "fast-average-color": "^9.5.0",
     "genius-lyrics-api": "^3.2.1",
     "next": "^15",

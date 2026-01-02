@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cleanSongTitle } from '@/utils/cleanSongTitle';
+import axios from 'axios';
+import * as cheerio from 'cheerio';
 
 // Increase timeout for Vercel serverless function (requires Pro plan)
 // Hobby plan max is 10s, Pro allows up to 60s
@@ -195,6 +197,65 @@ async function findBestSongMatch(
   return scored;
 }
 
+// Custom lyrics extraction using axios and cheerio
+// More reliable in serverless environments than genius-lyrics-api package
+async function extractLyrics(url: string): Promise<string | null> {
+  try {
+    console.log(`Fetching lyrics from: ${url}`);
+
+    const response = await axios.get(url, {
+      timeout: 8000, // 8 second timeout
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    });
+
+    const $ = cheerio.load(response.data);
+
+    // Genius stores lyrics in div containers with specific data attributes
+    const lyricsContainers = $('div[data-lyrics-container="true"]');
+
+    if (lyricsContainers.length === 0) {
+      console.error('No lyrics containers found on page');
+      return null;
+    }
+
+    let lyrics = '';
+    lyricsContainers.each((_, element) => {
+      // Get text content and preserve line breaks
+      const text = $(element).html();
+      if (text) {
+        // Convert <br> tags to newlines, remove other HTML tags
+        const cleaned = text
+          .replace(/<br\s*\/?>/gi, '\n')
+          .replace(/<[^>]+>/g, '')
+          .trim();
+        lyrics += cleaned + '\n';
+      }
+    });
+
+    lyrics = lyrics.trim();
+
+    if (!lyrics) {
+      console.error('Extracted empty lyrics');
+      return null;
+    }
+
+    console.log(`Successfully extracted ${lyrics.length} characters of lyrics`);
+    return lyrics;
+  } catch (error) {
+    console.error('Error in extractLyrics:', error);
+    if (axios.isAxiosError(error)) {
+      console.error('Axios error details:', {
+        message: error.message,
+        code: error.code,
+        status: error.response?.status
+      });
+    }
+    return null;
+  }
+}
+
 // Validate lyrics content to detect obviously wrong results
 // Simplified for speed to avoid Vercel timeout
 function validateLyricsContent(lyrics: string, title: string, artist: string): boolean {
@@ -246,9 +307,6 @@ export async function GET(request: NextRequest) {
         { status: 404 }
       );
     }
-
-    // Dynamic import of extractLyrics
-    const extractLyrics = (await import('genius-lyrics-api/lib/utils/extractLyrics' as any)).default as any;
 
     // Try up to 2 matches with detailed error logging
     for (let i = 0; i < Math.min(scoredResults.length, 2); i++) {
