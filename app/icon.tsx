@@ -24,21 +24,31 @@ export default async function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'transparent',
+          background: 'white',
           padding: '0',
           overflow: 'hidden',
         }}
       >
-        <img
-          src={`data:image/svg+xml;base64,${logoBase64}`}
-          alt="Logo"
-          width="200"
-          height="200"
+        <div
           style={{
-            objectFit: 'cover',
-            transform: 'scale(1.8)',
+            width: '400px',
+            height: '400px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transform: 'scale(3.5)',
           }}
-        />
+        >
+          <img
+            src={`data:image/svg+xml;base64,${logoBase64}`}
+            alt="Logo"
+            width="400"
+            height="400"
+            style={{
+              objectFit: 'contain',
+            }}
+          />
+        </div>
       </div>
     ),
     {
