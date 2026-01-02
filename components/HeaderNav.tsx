@@ -23,7 +23,7 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between relative">
           {/* Logo - Left */}
-          <div className="flex-shrink-0 -ml-12 sm:-ml-16 md:-ml-20 mt-3">
+          <div className="flex-shrink-0 -ml-16 sm:-ml-20 md:-ml-24 mt-1 sm:mt-2">
             <Link href="/" onClick={handleNavClick} className="flex items-center group">
               <Image
                 src="/logo.svg"
@@ -31,7 +31,7 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
                 width={110}
                 height={133}
                 priority
-                className="transition-transform group-hover:scale-105 w-20 sm:w-24 md:w-28"
+                className="transition-transform group-hover:scale-105 w-16 sm:w-18 md:w-20"
                 style={{ mixBlendMode: 'multiply' }}
               />
             </Link>
