@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   description: "Anonymous collection of songs, lyrics, and reflections",
 };
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{

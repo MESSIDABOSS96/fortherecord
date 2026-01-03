@@ -49,7 +49,7 @@ export default function AddPage() {
       {/* Cancel Button */}
       <button
         onClick={handleCancel}
-        className="absolute top-10 right-10 px-8 py-3 bg-transparent border-2 border-gray-900 rounded-full font-semibold text-sm hover:bg-gray-900 hover:text-white transition-colors z-40 shadow-md"
+        className="absolute top-14 right-4 px-3 py-1.5 sm:top-10 sm:right-10 sm:px-8 sm:py-3 bg-transparent border-2 border-gray-900 rounded-full font-semibold text-xs sm:text-sm hover:bg-gray-900 hover:text-white transition-colors z-40 shadow-md"
       >
         Cancel
       </button>

@@ -17,7 +17,7 @@ export default function MasonryGrid({ records, onCardClick }: MasonryGridProps) 
     1280: 4,     // xl breakpoint
     1024: 3,     // Tablet: 3 columns (lg)
     768: 2,      // md: 2 columns
-    640: 2,      // Mobile: 2 columns (sm)
+    640: 1,      // Mobile: 1 column (sm)
   };
 
   return (

@@ -19,26 +19,25 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
   };
 
   return (
-    <header className="w-full py-3 relative">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between relative">
+    <header className="w-full py-3 sm:py-4 relative">
+      <nav className="px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center h-12 sm:h-14 md:h-16">
           {/* Logo - Left */}
-          <div className="flex-shrink-0 -ml-16 sm:-ml-20 md:-ml-24 -mt-2 sm:-mt-1 md:mt-0">
-            <Link href="/" onClick={handleNavClick} className="flex items-center">
+          <div className="flex-shrink-0 justify-self-start">
+            <Link href="/" onClick={handleNavClick}>
               <Image
                 src="/logo.svg"
                 alt="For The Record"
                 width={110}
                 height={133}
                 priority
-                className="w-16 sm:w-18 md:w-20"
-                style={{ mixBlendMode: 'multiply' }}
+                className="h-12 sm:h-14 md:h-16 w-auto -ml-2 -mt-1"
               />
             </Link>
           </div>
 
           {/* Desktop Navigation - Center (hidden on mobile) */}
-          <div className="hidden md:flex gap-6 lg:gap-8 text-sm absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="hidden md:flex gap-6 lg:gap-8 text-sm justify-self-center">
             <Link
               href="/"
               onClick={onReset}
@@ -75,39 +74,41 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
             </Link>
           </div>
 
-          {/* Hamburger Menu Button - Mobile only */}
-          <button
-            onClick={toggleMobileMenu}
-            className="md:hidden p-2 text-gray-900 hover:text-gray-600 transition-colors"
-            aria-label="Toggle menu"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              {isMobileMenuOpen ? (
-                <path d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-        </div>
+          {/* Right side - Add button + Hamburger menu */}
+          <div className="flex items-center gap-2 sm:gap-3 justify-self-end">
+            {pathname !== '/add' && (
+              <button
+                onClick={() => router.push('/add')}
+                className="px-3 xs:px-4 sm:px-6 md:px-8 py-1.5 xs:py-2 sm:py-2.5 md:py-3 bg-transparent border-2 border-gray-900 rounded-full font-semibold text-xs xs:text-sm hover:bg-gray-900 hover:text-white transition-colors shadow-md whitespace-nowrap"
+              >
+                Add
+              </button>
+            )}
 
-        {/* Add button - Absolute positioned like original */}
-        {pathname !== '/add' && (
-          <button
-            onClick={() => router.push('/add')}
-            className="absolute top-8 right-6 sm:right-8 md:right-10 px-6 sm:px-8 py-2.5 sm:py-3 bg-transparent border-2 border-gray-900 rounded-full font-semibold text-sm hover:bg-gray-900 hover:text-white transition-colors z-40 shadow-md"
-          >
-            Add
-          </button>
-        )}
+            {/* Hamburger Menu Button - Mobile only */}
+            <button
+              onClick={toggleMobileMenu}
+              className="md:hidden p-2 text-gray-900 hover:text-gray-600 transition-colors"
+              aria-label="Toggle menu"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                {isMobileMenuOpen ? (
+                  <path d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
+        </div>
 
         {/* Mobile Menu Overlay */}
         {isMobileMenuOpen && (
