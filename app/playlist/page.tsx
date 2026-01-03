@@ -7,7 +7,7 @@ export default function PlaylistPage() {
     <div className="min-h-screen">
       <HeaderNav />
 
-      <main className="max-w-7xl mx-auto px-6 pb-12">
+      <main className="max-w-7xl mx-auto px-6 pt-6 sm:pt-8 md:pt-10 pb-12">
         {/* Title Section */}
         <div className="text-center mb-10">
           <h1 className="text-6xl font-bold mb-4 tracking-tight">

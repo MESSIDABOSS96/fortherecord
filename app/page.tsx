@@ -80,7 +80,7 @@ export default function Home() {
     <div className="min-h-screen">
       <HeaderNav onReset={handleReset} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pb-16">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 md:pt-10 pb-16">
         {/* Title and Search */}
         <div className="text-center mb-10 sm:mb-12 md:mb-14">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4">For the Record</h1>

@@ -7,7 +7,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen">
       <HeaderNav />
-      <main className="max-w-6xl mx-auto px-6 pb-12">
+      <main className="max-w-6xl mx-auto px-6 pt-6 sm:pt-8 md:pt-10 pb-12">
         {/* Title */}
         <div className="text-center mb-16">
           <h1 className="text-6xl font-bold tracking-tight">
