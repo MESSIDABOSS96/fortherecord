@@ -3,12 +3,17 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function HeaderNav({ onReset, rightAction }: { onReset?: () => void; rightAction?: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Fix: Ensure menu closes on route change to prevent "vanishing page" bug if menu stays open
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
@@ -19,19 +24,19 @@ export default function HeaderNav({ onReset, rightAction }: { onReset?: () => vo
   };
 
   return (
-    <header className="w-full py-3 sm:py-4 relative">
+    <header className="w-full py-3 sm:py-4 relative z-40">
       <nav className="px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center h-12 sm:h-14 md:h-16">
           {/* Logo - Left */}
           <div className="flex-shrink-0 justify-self-start">
             <Link href="/" onClick={handleNavClick}>
               <Image
-                src="/logo.svg"
+                src="/logo.jpg"
                 alt="For The Record"
-                width={110}
-                height={133}
+                width={128}
+                height={128}
                 priority
-                className="h-12 sm:h-14 md:h-16 w-auto -ml-2 -mt-1"
+                className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 -ml-4 -mt-2 object-contain"
               />
             </Link>
           </div>
