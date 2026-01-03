@@ -31,12 +31,12 @@ export default function HeaderNav({ onReset, rightAction }: { onReset?: () => vo
           <div className="flex-shrink-0 justify-self-start">
             <Link href="/" onClick={handleNavClick}>
               <Image
-                src="/logo.jpg"
+                src="/logo.svg"
                 alt="For The Record"
                 width={128}
                 height={128}
                 priority
-                className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 -ml-4 -mt-2 object-contain"
+                className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 -ml-4 -mt-2 object-contain"
               />
             </Link>
           </div>
