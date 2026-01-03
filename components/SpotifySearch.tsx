@@ -164,7 +164,7 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="w-full pl-11 pr-4 py-3.5 bg-[#f5f3f0] border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-sm placeholder:text-gray-500"
+          className="w-full pl-11 pr-4 py-3.5 bg-[#f5f3f0] border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-base sm:text-sm placeholder:text-gray-500"
           placeholder="Songs, Albums or Artists"
           autoFocus
         />

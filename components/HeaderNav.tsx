@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-export default function HeaderNav({ onReset }: { onReset?: () => void }) {
+export default function HeaderNav({ onReset, rightAction }: { onReset?: () => void; rightAction?: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -42,47 +42,48 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
               href="/"
               onClick={onReset}
               prefetch={true}
-              className={`transition-colors whitespace-nowrap ${
-                pathname === '/'
-                  ? 'font-bold text-gray-900'
-                  : 'text-gray-600 hover:text-gray-900 font-medium'
-              }`}
+              className={`transition-colors whitespace-nowrap ${pathname === '/'
+                ? 'font-bold text-gray-900'
+                : 'text-gray-600 hover:text-gray-900 font-medium'
+                }`}
             >
               Collection
             </Link>
             <Link
               href="/playlist"
               prefetch={true}
-              className={`transition-colors whitespace-nowrap ${
-                pathname === '/playlist'
-                  ? 'font-bold text-gray-900'
-                  : 'text-gray-600 hover:text-gray-900 font-medium'
-              }`}
+              className={`transition-colors whitespace-nowrap ${pathname === '/playlist'
+                ? 'font-bold text-gray-900'
+                : 'text-gray-600 hover:text-gray-900 font-medium'
+                }`}
             >
               Playlist of the Month
             </Link>
             <Link
               href="/about"
               prefetch={true}
-              className={`transition-colors whitespace-nowrap ${
-                pathname === '/about'
-                  ? 'font-bold text-gray-900'
-                  : 'text-gray-600 hover:text-gray-900 font-medium'
-              }`}
+              className={`transition-colors whitespace-nowrap ${pathname === '/about'
+                ? 'font-bold text-gray-900'
+                : 'text-gray-600 hover:text-gray-900 font-medium'
+                }`}
             >
               About
             </Link>
           </div>
 
           {/* Right side - Add button + Hamburger menu */}
-          <div className="flex items-center gap-2 sm:gap-3 justify-self-end">
-            {pathname !== '/add' && (
-              <button
-                onClick={() => router.push('/add')}
-                className="px-3 xs:px-4 sm:px-6 md:px-8 py-1.5 xs:py-2 sm:py-2.5 md:py-3 bg-transparent border-2 border-gray-900 rounded-full font-semibold text-xs xs:text-sm hover:bg-gray-900 hover:text-white transition-colors shadow-md whitespace-nowrap"
-              >
-                Add
-              </button>
+          <div className="flex items-center gap-2 sm:gap-3 justify-self-end flex-nowrap">
+            {rightAction ? (
+              rightAction
+            ) : (
+              pathname !== '/add' && (
+                <button
+                  onClick={() => router.push('/add')}
+                  className="px-3 xs:px-4 sm:px-6 md:px-8 py-1.5 xs:py-2 sm:py-2.5 md:py-3 bg-transparent border-2 border-gray-900 rounded-full font-semibold text-xs xs:text-sm hover:bg-gray-900 hover:text-white transition-colors shadow-md whitespace-nowrap"
+                >
+                  Add
+                </button>
+              )
             )}
 
             {/* Hamburger Menu Button - Mobile only */}
@@ -124,33 +125,30 @@ export default function HeaderNav({ onReset }: { onReset?: () => void }) {
                 <Link
                   href="/"
                   onClick={handleNavClick}
-                  className={`px-6 py-4 transition-colors ${
-                    pathname === '/'
-                      ? 'font-bold text-gray-900 bg-gray-100'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
+                  className={`px-6 py-4 transition-colors ${pathname === '/'
+                    ? 'font-bold text-gray-900 bg-gray-100'
+                    : 'text-gray-600 hover:bg-gray-50'
+                    }`}
                 >
                   Collection
                 </Link>
                 <Link
                   href="/playlist"
                   onClick={closeMobileMenu}
-                  className={`px-6 py-4 transition-colors ${
-                    pathname === '/playlist'
-                      ? 'font-bold text-gray-900 bg-gray-100'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
+                  className={`px-6 py-4 transition-colors ${pathname === '/playlist'
+                    ? 'font-bold text-gray-900 bg-gray-100'
+                    : 'text-gray-600 hover:bg-gray-50'
+                    }`}
                 >
                   Playlist of the Month
                 </Link>
                 <Link
                   href="/about"
                   onClick={closeMobileMenu}
-                  className={`px-6 py-4 transition-colors ${
-                    pathname === '/about'
-                      ? 'font-bold text-gray-900 bg-gray-100'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
+                  className={`px-6 py-4 transition-colors ${pathname === '/about'
+                    ? 'font-bold text-gray-900 bg-gray-100'
+                    : 'text-gray-600 hover:bg-gray-50'
+                    }`}
                 >
                   About
                 </Link>

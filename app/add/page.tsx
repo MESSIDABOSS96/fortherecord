@@ -44,15 +44,16 @@ export default function AddPage() {
 
   return (
     <div className="min-h-screen">
-      <HeaderNav />
-
-      {/* Cancel Button */}
-      <button
-        onClick={handleCancel}
-        className="absolute top-14 right-4 px-3 py-1.5 sm:top-10 sm:right-10 sm:px-8 sm:py-3 bg-transparent border-2 border-gray-900 rounded-full font-semibold text-xs sm:text-sm hover:bg-gray-900 hover:text-white transition-colors z-40 shadow-md"
-      >
-        Cancel
-      </button>
+      <HeaderNav
+        rightAction={
+          <button
+            onClick={handleCancel}
+            className="px-3 xs:px-4 sm:px-6 md:px-8 py-1.5 xs:py-2 sm:py-2.5 md:py-3 bg-transparent border-2 border-gray-900 rounded-full font-semibold text-xs xs:text-sm hover:bg-gray-900 hover:text-white transition-colors shadow-md whitespace-nowrap"
+          >
+            Cancel
+          </button>
+        }
+      />
 
       <AddRecordFlow onSubmit={handleSubmit} onCancel={handleCancel} />
     </div>
