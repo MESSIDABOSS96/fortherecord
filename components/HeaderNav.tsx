@@ -31,10 +31,10 @@ export default function HeaderNav({ onReset, rightAction }: { onReset?: () => vo
           <div className="flex-shrink-0 justify-self-start">
             <Link href="/" onClick={handleNavClick}>
               <Image
-                src="/logo.svg"
+                src="/logo.webp"
                 alt="For The Record"
-                width={128}
-                height={128}
+                width={512}
+                height={512}
                 priority
                 className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 -ml-4 -mt-2 object-contain"
               />
@@ -82,12 +82,13 @@ export default function HeaderNav({ onReset, rightAction }: { onReset?: () => vo
               rightAction
             ) : (
               pathname !== '/add' && (
-                <button
-                  onClick={() => router.push('/add')}
+                <Link
+                  href="/add"
+                  prefetch={true}
                   className="px-3 xs:px-4 sm:px-6 md:px-8 py-1.5 xs:py-2 sm:py-2.5 md:py-3 bg-transparent border-2 border-gray-900 rounded-full font-semibold text-xs xs:text-sm hover:bg-gray-900 hover:text-white transition-colors shadow-md whitespace-nowrap"
                 >
                   Add
-                </button>
+                </Link>
               )
             )}
 
@@ -130,6 +131,7 @@ export default function HeaderNav({ onReset, rightAction }: { onReset?: () => vo
                 <Link
                   href="/"
                   onClick={handleNavClick}
+                  prefetch={true}
                   className={`px-6 py-4 transition-colors ${pathname === '/'
                     ? 'font-bold text-gray-900 bg-gray-100'
                     : 'text-gray-600 hover:bg-gray-50'
@@ -140,6 +142,7 @@ export default function HeaderNav({ onReset, rightAction }: { onReset?: () => vo
                 <Link
                   href="/playlist"
                   onClick={closeMobileMenu}
+                  prefetch={true}
                   className={`px-6 py-4 transition-colors ${pathname === '/playlist'
                     ? 'font-bold text-gray-900 bg-gray-100'
                     : 'text-gray-600 hover:bg-gray-50'
@@ -150,6 +153,7 @@ export default function HeaderNav({ onReset, rightAction }: { onReset?: () => vo
                 <Link
                   href="/about"
                   onClick={closeMobileMenu}
+                  prefetch={true}
                   className={`px-6 py-4 transition-colors ${pathname === '/about'
                     ? 'font-bold text-gray-900 bg-gray-100'
                     : 'text-gray-600 hover:bg-gray-50'

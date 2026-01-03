@@ -50,10 +50,10 @@ export default function AboutPage() {
               <div className="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-5 flex-shrink-0">
                 <div className="w-[46px] h-[46px] sm:w-[52px] sm:h-[52px] bg-transparent rounded-sm flex-shrink-0 overflow-hidden">
                   <Image
-                    src="/logo.svg"
+                    src="/logo.webp"
                     alt="For the Record"
-                    width={52}
-                    height={52}
+                    width={512}
+                    height={512}
                     loading="lazy"
                     className="w-full h-full object-cover"
                   />

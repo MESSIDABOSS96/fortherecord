@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Record } from "@/types/record";
 import { searchRecords, FilterType } from "@/utils/searchRecords";
@@ -51,23 +51,30 @@ export default function Home() {
     fetchRecords();
   }, []);
 
-  // Debounced search effect
+  // Memoized filtered records with debouncing
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Filter records based on search query and active filter
-      const filtered = searchRecords(allRecords, searchQuery, activeFilter);
-      setRecords(filtered);
+      setDebouncedQuery(searchQuery);
     }, 300);
-
     return () => clearTimeout(timer);
-  }, [searchQuery, activeFilter, allRecords]);
+  }, [searchQuery]);
 
-  // Handle reset to initial state
-  const handleReset = () => {
+  const filteredRecords = useMemo(() => {
+    return searchRecords(allRecords, debouncedQuery, activeFilter);
+  }, [allRecords, debouncedQuery, activeFilter]);
+
+  useEffect(() => {
+    setRecords(filteredRecords);
+  }, [filteredRecords]);
+
+  // Handle reset to initial state (memoized)
+  const handleReset = useCallback(() => {
     setSearchQuery('');
     setActiveFilter('all');
     setSelectedRecord(null);
-  };
+  }, []);
 
   return (
     <div className="min-h-screen">
