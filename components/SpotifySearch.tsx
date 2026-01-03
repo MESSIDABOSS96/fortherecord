@@ -25,15 +25,46 @@ interface SpotifySearchProps {
   }) => void;
   isValidating?: boolean;
   validationError?: string;
+  onClearError?: () => void;
 }
 
-export default function SpotifySearch({ onSelectTrack, isValidating = false, validationError = '' }: SpotifySearchProps) {
+export default function SpotifySearch({ onSelectTrack, isValidating = false, validationError = '', onClearError }: SpotifySearchProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SpotifyTrack[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const selectedRef = useRef<HTMLButtonElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  // Clear validation error when user starts typing
+  useEffect(() => {
+    if (query.trim() && validationError && onClearError) {
+      onClearError();
+    }
+  }, [query, validationError, onClearError]);
+
+  // Dismiss keyboard on scroll (iOS behavior)
+  useEffect(() => {
+    const resultsContainer = resultsRef.current;
+    if (!resultsContainer) return;
+
+    const handleScroll = () => {
+      // Blur the input to dismiss keyboard when scrolling
+      if (inputRef.current && document.activeElement === inputRef.current) {
+        inputRef.current.blur();
+      }
+    };
+
+    resultsContainer.addEventListener('scroll', handleScroll, { passive: true });
+    resultsContainer.addEventListener('touchmove', handleScroll, { passive: true });
+
+    return () => {
+      resultsContainer.removeEventListener('scroll', handleScroll);
+      resultsContainer.removeEventListener('touchmove', handleScroll);
+    };
+  }, [results]);
 
   // Debounced search
   useEffect(() => {
@@ -160,11 +191,12 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
           <path d="M12.5 12.5L16 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="w-full pl-11 pr-4 py-3.5 bg-[#f5f3f0] border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-base sm:text-sm placeholder:text-gray-500"
+          className="w-full pl-11 pr-4 py-3.5 bg-[#f5f3f0] border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-[16px] placeholder:text-gray-500"
           placeholder="Songs, Albums or Artists"
           autoFocus
         />
@@ -205,7 +237,7 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
 
       {/* Results */}
       {!loading && results.length > 0 && (
-        <div className="space-y-2 max-h-96 overflow-y-auto">
+        <div ref={resultsRef} className="space-y-2 max-h-96 overflow-y-auto">
           <p className="text-sm text-gray-600">{results.length} results</p>
           {results.map((track, index) => {
             const isSelected = selectedIndex === index;

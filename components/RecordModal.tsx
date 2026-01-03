@@ -4,6 +4,7 @@ import { Record } from "@/types/record";
 import { cleanSongTitle } from "@/utils/cleanSongTitle";
 import Image from "next/image";
 import { useEffect } from "react";
+import { useScrollLock } from "@/hooks/useScrollLock";
 
 interface RecordModalProps {
   record: Record;
@@ -11,6 +12,9 @@ interface RecordModalProps {
 }
 
 export default function RecordModal({ record, onClose }: RecordModalProps) {
+  // Lock scroll when modal is open (handles iOS properly)
+  useScrollLock(true);
+
   // Close on escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -19,14 +23,6 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [onClose]);
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, []);
 
   const formattedDate = record.created_at.toLocaleDateString("en-US", {
     year: "numeric",

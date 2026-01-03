@@ -80,7 +80,7 @@ export default function Home() {
     <div className="min-h-screen">
       <HeaderNav onReset={handleReset} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 md:pt-10 pb-16">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 md:pt-10 pb-16 pb-for-fab">
         {/* Title and Search */}
         <div className="text-center mb-10 sm:mb-12 md:mb-14">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4">For the Record</h1>
@@ -105,7 +105,7 @@ export default function Home() {
                 placeholder="Search by person, song, lyric, or story"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-[#f5f3f0] border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-base placeholder:text-gray-500"
+                className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-[#f5f3f0] border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-[16px] placeholder:text-sm sm:placeholder:text-base placeholder:text-gray-500"
               />
             </div>
           </div>

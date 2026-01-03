@@ -45,11 +45,24 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
 
   const checkLyricsAvailability = async (title: string, artist: string): Promise<boolean> => {
     try {
+      console.log(`Checking lyrics for: "${title}" by ${artist}`);
       const response = await fetch(`/api/genius/lyrics?title=${encodeURIComponent(title)}&artist=${encodeURIComponent(artist)}`);
+      console.log('Lyrics API response status:', response.status);
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Lyrics API error (status ' + response.status + '):', errorText);
+        try {
+          const errorData = JSON.parse(errorText);
+          console.error('Parsed error:', errorData);
+        } catch (e) {
+          console.error('Could not parse error as JSON');
+        }
         return false;
       }
       const data = await response.json();
+      console.log('Lyrics data:', data);
+      console.log('Lyrics found:', !!data.lyrics);
       return !!data.lyrics;
     } catch (error) {
       console.error('Error checking lyrics:', error);
@@ -143,6 +156,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
               onSelectTrack={handleSongSelect}
               isValidating={isValidatingLyrics}
               validationError={lyricError}
+              onClearError={() => setLyricError('')}
             />
           </div>
         )}
@@ -174,7 +188,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
                   value={tempName}
                   onChange={(e) => setTempName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleNameSubmit()}
-                  className="w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-base sm:text-lg text-center"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-[16px] sm:text-lg text-center"
                   placeholder="Mom, Sarah, my best friend..."
                   autoFocus
                 />
@@ -346,7 +360,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
                       value={reflectionText}
                       onChange={(e) => setReflectionText(e.target.value)}
                       placeholder="Why do these lyrics remind you of them? Tell their story..."
-                      className="text-sm sm:text-base text-gray-900 leading-relaxed overflow-y-auto max-h-[400px] sm:max-h-[500px] bg-transparent border-none focus:outline-none focus:ring-0 resize-none w-full placeholder:text-gray-900 placeholder:italic"
+                      className="text-[16px] sm:text-base text-gray-900 leading-relaxed overflow-y-auto max-h-[400px] sm:max-h-[500px] bg-transparent border-none focus:outline-none focus:ring-0 resize-none w-full placeholder:text-gray-900 placeholder:italic"
                       style={{ minHeight: '150px' }}
                     />
                   </div>
@@ -367,15 +381,22 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
                 </div>
               </div>
 
-              {/* Publish button - below the card */}
-              <div className="mt-6 sm:mt-8 flex justify-center px-4">
-                <button
-                  onClick={handleSubmit}
-                  disabled={reflectionText.trim() === '' || isSubmitting}
-                  className="w-full sm:w-auto px-8 sm:px-12 py-3 sm:py-4 bg-gray-900 text-white rounded-full font-semibold text-sm sm:text-base hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md"
+              {/* Publish button - sticky on mobile, regular on desktop */}
+              <div className="mt-6 sm:mt-8 md:flex md:justify-center px-4 md:relative md:bottom-auto">
+                <div
+                  className="md:static fixed bottom-0 left-0 right-0 p-4 bg-[#f5f3f0] border-t border-gray-200 md:border-0 md:p-0 md:bg-transparent"
+                  style={{
+                    paddingBottom: `calc(1rem + var(--safe-area-inset-bottom))`,
+                  }}
                 >
-                  {isSubmitting ? 'Publishing...' : 'Publish Record'}
-                </button>
+                  <button
+                    onClick={handleSubmit}
+                    disabled={reflectionText.trim() === '' || isSubmitting}
+                    className="w-full sm:w-full md:w-auto px-8 sm:px-12 py-3 sm:py-4 bg-gray-900 text-white rounded-full font-semibold text-sm sm:text-base hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md"
+                  >
+                    {isSubmitting ? 'Publishing...' : 'Publish Record'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
