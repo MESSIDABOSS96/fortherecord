@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Record } from "@/types/record";
 import { searchRecords, FilterType } from "@/utils/searchRecords";
 import HeaderNav from "@/components/HeaderNav";
 import MasonryGrid from "@/components/MasonryGrid";
 import RecordModal from "@/components/RecordModal";
+import TapHint from "@/components/TapHint";
 
 export default function Home() {
   const [records, setRecords] = useState<Record[]>([]);
@@ -14,7 +15,9 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   // Load records from API on mount
   useEffect(() => {
@@ -78,7 +81,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      <HeaderNav onReset={handleReset} />
+      <HeaderNav onReset={handleReset} onMenuToggle={setIsMenuOpen} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 md:pt-10 pb-16 pb-for-fab">
         {/* Title and Search */}
@@ -156,6 +159,14 @@ export default function Home() {
           onClose={() => setSelectedRecord(null)}
         />
       )}
+
+      {/* First-time tap hint - mobile only */}
+      <TapHint
+        onCardOpened={!!selectedRecord}
+        isMenuOpen={isMenuOpen}
+        isSearching={!!searchQuery.trim()}
+        isOnHomePage={pathname === '/'}
+      />
     </div>
   );
 }

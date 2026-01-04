@@ -13,21 +13,33 @@ import Image from 'next/image';
 interface AddRecordFlowProps {
   onSubmit: (data: Omit<Record, 'id' | 'created_at'>) => void;
   onCancel: () => void;
+  currentStep?: number;
+  onStepChange?: (step: number) => void;
 }
 
-export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps) {
+export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepChange }: AddRecordFlowProps) {
   const {
-    step,
+    step: internalStep,
     songData,
     selectedLines,
     forName,
     reflectionText,
-    setStep,
+    setStep: setInternalStep,
     setSongData,
     setSelectedLines,
     setForName,
     setReflectionText,
   } = useAddRecordState();
+
+  // Use passed-in step if available, otherwise use internal step
+  const step = currentStep ?? internalStep;
+  const setStep = (newStep: number) => {
+    if (onStepChange) {
+      onStepChange(newStep);
+    } else {
+      setInternalStep(newStep as 1 | 2 | 3 | 4);
+    }
+  };
 
   const [tempName, setTempName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -163,20 +175,8 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
 
         {/* Step 2: Who are you thinking of? */}
         {step === 2 && songData && (
-          <div className="relative">
-            {/* Back button - responsive positioning */}
-            <div className="absolute left-0 sm:left-0 top-0">
-              <button
-                onClick={() => setStep(1)}
-                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-900 flex items-center justify-center text-white hover:bg-gray-700 transition-colors"
-              >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M16 10H6M10 6L6 10L10 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Content container - positioned independently, same as Step 1 */}
+          <div>
+            {/* Content container - same as Step 1 */}
             <div className="max-w-2xl mx-auto mt-6 sm:mt-8">
               <div className="text-center mb-8 sm:mb-12 px-4">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Who are you thinking of?</h2>
@@ -207,19 +207,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
 
         {/* Step 3: Lyric Selection - 2 column with preview */}
         {step === 3 && songData && (
-          <div className="relative">
-            {/* Back button - absolutely positioned on left, doesn't affect layout flow */}
-            <div className="absolute left-0 top-0">
-              <button
-                onClick={() => setStep(2)}
-                className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-white hover:bg-gray-700 transition-colors"
-              >
-                <svg width="24" height="24" viewBox="0 0 20 20" fill="none">
-                  <path d="M16 10H6M10 6L6 10L10 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-            </div>
-
+          <div>
             {/* Centered title section - matching steps 1 and 2 */}
             <div className="max-w-2xl mx-auto mt-6 sm:mt-8">
               <div className="text-center mb-8 sm:mb-12 px-4">
@@ -283,19 +271,7 @@ export default function AddRecordFlow({ onSubmit, onCancel }: AddRecordFlowProps
 
         {/* Step 4: Tell your story - Inline editing in expanded card */}
         {step === 4 && songData && (
-          <div className="relative">
-            {/* Back button - absolutely positioned on left, doesn't affect layout flow */}
-            <div className="absolute left-0 top-0">
-              <button
-                onClick={() => setStep(3)}
-                className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-white hover:bg-gray-700 transition-colors"
-              >
-                <svg width="24" height="24" viewBox="0 0 20 20" fill="none">
-                  <path d="M16 10H6M10 6L6 10L10 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-            </div>
-
+          <div>
             {/* Expanded card - matches RecordModal structure */}
             <div className="max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto mt-6 sm:mt-8 px-4">
               <div

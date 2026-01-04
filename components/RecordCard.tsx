@@ -18,12 +18,25 @@ export default function RecordCard({ record, onClick }: RecordCardProps) {
   return (
     <div
       onClick={onClick}
-      className="cursor-pointer rounded-[16px] sm:rounded-[20px] p-4 sm:p-5 md:p-6 transition-all hover:scale-[1.01] hover:shadow-lg flex flex-col"
+      onTouchStart={() => {}} // Enables :active states on iOS
+      role="button"
+      aria-label={`Read story about ${record.for_name} - ${cleanSongTitle(record.song_title)}`}
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      className="group cursor-pointer rounded-[16px] sm:rounded-[20px] p-4 sm:p-5 md:p-6 transition-all hover:scale-[1.01] hover:shadow-lg active:scale-[0.98] active:shadow-sm md:active:scale-100 md:active:shadow-lg flex flex-col relative"
       style={{
         backgroundColor: record.background_color,
         boxShadow: "var(--shadow-md)",
       }}
     >
+      {/* Darkening overlay on press - mobile only */}
+      <div className="absolute inset-0 bg-black/5 rounded-[16px] sm:rounded-[20px] opacity-0 group-active:opacity-100 md:group-active:opacity-0 transition-opacity pointer-events-none -z-10" />
+
       {/* Header: Album art + Song info */}
       <div className="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-5 flex-shrink-0">
         <div className="w-[40px] h-[40px] sm:w-[46px] sm:h-[46px] bg-black/20 rounded-sm flex-shrink-0 overflow-hidden">
