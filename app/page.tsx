@@ -22,10 +22,9 @@ export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Share function that can be called directly
+  // Share function that can be called directly - only sends URL for proper preview
   const handleShareRecord = async (record: Record) => {
-    const shareUrl = `${window.location.origin}?card=${record.id}`;
-    const shareText = `${cleanSongTitle(record.song_title)} by ${record.artist} - For ${record.for_name}`;
+    const shareUrl = `${window.location.origin}/card/${record.id}`;
     
     // Detect iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
@@ -34,9 +33,8 @@ export default function Home() {
     // On iOS, always use Web Share API if available - never show prompt
     if (isIOS && typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       try {
+        // Only send URL - no text or title to ensure iMessage shows preview
         await navigator.share({
-          title: shareText,
-          text: shareText,
           url: shareUrl,
         });
         return; // Successfully shared, exit early
@@ -54,9 +52,8 @@ export default function Home() {
     // For non-iOS or if Web Share API not available, try Web Share API first
     if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       try {
+        // Only send URL - no text or title
         await navigator.share({
-          title: shareText,
-          text: shareText,
           url: shareUrl,
         });
         return; // Successfully shared, exit early
@@ -88,10 +85,21 @@ export default function Home() {
   };
 
   // Check URL for card ID on mount and when records load
+  // Support both old query param format (?card=id) and new route format (/card/id)
   useEffect(() => {
     if (allRecords.length > 0) {
-      const urlParams = new URLSearchParams(window.location.search);
-      const cardId = urlParams.get('card');
+      let cardId: string | null = null;
+      
+      // Check for new route format first (/card/id)
+      const pathMatch = window.location.pathname.match(/^\/card\/([^/]+)$/);
+      if (pathMatch) {
+        cardId = pathMatch[1];
+      } else {
+        // Fall back to query param format (?card=id)
+        const urlParams = new URLSearchParams(window.location.search);
+        cardId = urlParams.get('card');
+      }
+      
       if (cardId) {
         const record = allRecords.find(r => r.id === cardId);
         if (record) {
