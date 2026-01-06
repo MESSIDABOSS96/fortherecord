@@ -27,7 +27,31 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
     const shareUrl = `${window.location.origin}?card=${record.id}`;
     const shareText = `${cleanSongTitle(record.song_title)} by ${record.artist} - For ${record.for_name}`;
     
-    // Try Web Share API first (mobile/iOS) - must be called from user gesture
+    // Detect iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    
+    // On iOS, always use Web Share API if available - never show prompt
+    if (isIOS && typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({
+          title: shareText,
+          text: shareText,
+          url: shareUrl,
+        });
+        return; // Successfully shared, exit early
+      } catch (err: any) {
+        // User cancelled - don't show any fallback on iOS
+        if (err?.name === 'AbortError' || err?.message?.includes('cancel')) {
+          return;
+        }
+        // For other errors on iOS, silently fail (don't show prompt)
+        console.error('Web Share API error on iOS:', err);
+        return;
+      }
+    }
+    
+    // For non-iOS or if Web Share API not available, try Web Share API first
     if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       try {
         await navigator.share({
@@ -46,7 +70,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
       }
     }
     
-    // Fallback: copy to clipboard
+    // Fallback: copy to clipboard (non-iOS only)
     if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
       try {
         await navigator.clipboard.writeText(shareUrl);
@@ -57,8 +81,10 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
       }
     }
     
-    // Final fallback: show URL in prompt (only if both above fail)
-    prompt('Copy this link:', shareUrl);
+    // Final fallback: show URL in prompt (non-iOS only)
+    if (!isIOS) {
+      prompt('Copy this link:', shareUrl);
+    }
   };
 
   // Update URL when modal opens
