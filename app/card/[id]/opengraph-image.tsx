@@ -1,5 +1,4 @@
 import { ImageResponse } from '@vercel/og';
-import { NextRequest } from 'next/server';
 import React from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { cleanSongTitle } from '@/utils/cleanSongTitle';
@@ -7,6 +6,10 @@ import { cleanSongTitle } from '@/utils/cleanSongTitle';
 export const runtime = 'edge';
 export const alt = 'Record Card';
 export const contentType = 'image/png';
+export const size = {
+  width: 1200,
+  height: 630,
+};
 
 async function getRecord(id: string) {
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://ygpnkvwretilfrmeirtp.supabase.co';
@@ -30,10 +33,11 @@ async function getRecord(id: string) {
   return data;
 }
 
-export default async function Image(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export default async function Image({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   try {
     const { id } = await params;
     const record = await getRecord(id);
