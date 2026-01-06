@@ -18,13 +18,14 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
   // Lock scroll when modal is open (handles iOS properly)
   useScrollLock(true);
 
-  // Share functionality - only sends URL for proper preview
+  // Share functionality - includes text/title for proper link preview
   const handleShare = async (e?: React.MouseEvent) => {
     if (e) {
       e.stopPropagation();
     }
     
     const shareUrl = `${window.location.origin}/card/${record.id}`;
+    const shareText = `${cleanSongTitle(record.song_title)} by ${record.artist} — For ${record.for_name}`;
     
     // Detect iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
@@ -33,8 +34,9 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
     // On iOS, always use Web Share API if available - never show prompt
     if (isIOS && typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       try {
-        // Only send URL - no text or title to ensure iMessage shows preview
         await navigator.share({
+          title: shareText,
+          text: shareText,
           url: shareUrl,
         });
         return; // Successfully shared, exit early
@@ -52,8 +54,9 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
     // For non-iOS or if Web Share API not available, try Web Share API first
     if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       try {
-        // Only send URL - no text or title
         await navigator.share({
+          title: shareText,
+          text: shareText,
           url: shareUrl,
         });
         return; // Successfully shared, exit early

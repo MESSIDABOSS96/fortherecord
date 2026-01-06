@@ -40,9 +40,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://fortherecord.vercel.app';
-  const title = `${cleanSongTitle(record.song_title)} — For ${record.for_name}`;
+  const title = `${cleanSongTitle(record.song_title)} by ${record.artist} — For ${record.for_name}`;
   const description = record.lyric_excerpt?.substring(0, 140) || record.reflection_text?.substring(0, 140) || `${cleanSongTitle(record.song_title)} by ${record.artist}`;
-  const ogImageUrl = `${siteUrl}/card/${id}/opengraph-image`;
+  const logoUrl = `${siteUrl}/logo.webp`;
 
   return {
     title,
@@ -52,10 +52,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       images: [
         {
-          url: ogImageUrl,
+          url: logoUrl,
           width: 1200,
           height: 630,
-          alt: title,
+          alt: 'For the Record',
         },
       ],
       url: `${siteUrl}/card/${id}`,
@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: 'summary_large_image',
       title,
       description,
-      images: [ogImageUrl],
+      images: [logoUrl],
     },
   };
 }
