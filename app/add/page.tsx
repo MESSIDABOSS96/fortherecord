@@ -57,7 +57,7 @@ export default function AddPage() {
         leftAction={currentStep > 1 ? (
           <button
             onClick={handleBack}
-            className="w-11 h-11 flex items-center justify-center text-gray-900 hover:bg-gray-100 rounded-full transition-colors active:bg-gray-200 md:hidden"
+            className="w-11 h-11 flex items-center justify-center text-gray-900 hover:bg-gray-100 rounded-full transition-colors active:bg-gray-200"
             aria-label="Back"
             style={{
               touchAction: 'manipulation',
@@ -70,7 +70,7 @@ export default function AddPage() {
           </button>
         ) : (
           // Empty spacer on step 1 to hide logo
-          <div className="w-11 h-11 md:hidden" />
+          <div className="w-11 h-11" />
         )}
         rightAction={
           <button

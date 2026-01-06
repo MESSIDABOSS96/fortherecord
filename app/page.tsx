@@ -19,40 +19,51 @@ export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
 
+  // Fetch records function
+  const fetchRecords = useCallback(async () => {
+    try {
+      const response = await fetch('/api/records');
+      if (!response.ok) {
+        throw new Error('Failed to fetch records');
+      }
+
+      const data = await response.json();
+
+      // Convert created_at strings back to Date objects
+      // Only keep lyric cards (filter out any non-lyric cards that might remain)
+      const recordsWithDates = data
+        .filter((r: any) => r.card_type === 'lyric' || !r.card_type)
+        .map((r: any) => ({
+          ...r,
+          cardType: r.card_type || r.cardType,
+          created_at: new Date(r.created_at)
+        }));
+
+      // Save unfiltered records to state
+      setAllRecords(recordsWithDates);
+      setRecords(recordsWithDates);
+    } catch (error) {
+      console.error('Error fetching records:', error);
+      // Set empty state on error
+      setAllRecords([]);
+      setRecords([]);
+    }
+  }, []);
+
   // Load records from API on mount
   useEffect(() => {
-    async function fetchRecords() {
-      try {
-        const response = await fetch('/api/records');
-        if (!response.ok) {
-          throw new Error('Failed to fetch records');
-        }
-
-        const data = await response.json();
-
-        // Convert created_at strings back to Date objects
-        // Only keep lyric cards (filter out any non-lyric cards that might remain)
-        const recordsWithDates = data
-          .filter((r: any) => r.card_type === 'lyric' || !r.card_type)
-          .map((r: any) => ({
-            ...r,
-            cardType: r.card_type || r.cardType,
-            created_at: new Date(r.created_at)
-          }));
-
-        // Save unfiltered records to state
-        setAllRecords(recordsWithDates);
-        setRecords(recordsWithDates);
-      } catch (error) {
-        console.error('Error fetching records:', error);
-        // Set empty state on error
-        setAllRecords([]);
-        setRecords([]);
-      }
-    }
-
     fetchRecords();
-  }, []);
+  }, [fetchRecords]);
+
+  // Refetch records when window regains focus (user returns from /add page)
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchRecords();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [fetchRecords]);
 
   // Memoized filtered records with debouncing
   const [debouncedQuery, setDebouncedQuery] = useState('');
@@ -83,7 +94,7 @@ export default function Home() {
     <div className="min-h-screen">
       <HeaderNav onReset={handleReset} onMenuToggle={setIsMenuOpen} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 md:pt-10 pb-16 pb-for-fab">
+      <main className="max-w-7xl mx-auto px-6 sm:px-6 md:px-8 pt-6 sm:pt-8 md:pt-10 pb-16 pb-for-fab">
         {/* Title and Search */}
         <div className="text-center mb-10 sm:mb-12 md:mb-14">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4">For the Record</h1>

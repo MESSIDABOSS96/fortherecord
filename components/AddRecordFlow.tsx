@@ -178,7 +178,17 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
           <div>
             {/* Content container - same as Step 1 */}
             <div className="max-w-2xl mx-auto mt-6 sm:mt-8">
-              <div className="text-center mb-8 sm:mb-12 px-4">
+              <div className="relative text-center mb-8 sm:mb-12 px-4">
+                {/* Back button - desktop only, aligned left */}
+                <button
+                  onClick={() => setStep(1)}
+                  className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+                  aria-label="Back"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                  </svg>
+                </button>
                 <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Who are you thinking of?</h2>
               </div>
 
@@ -210,7 +220,17 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
           <div>
             {/* Centered title section - matching steps 1 and 2 */}
             <div className="max-w-2xl mx-auto mt-6 sm:mt-8">
-              <div className="text-center mb-8 sm:mb-12 px-4">
+              <div className="relative text-center mb-8 sm:mb-12 px-4">
+                {/* Back button - desktop only, aligned left */}
+                <button
+                  onClick={() => setStep(2)}
+                  className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+                  aria-label="Back"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                  </svg>
+                </button>
                 <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Select lyrics</h2>
                 <p className="text-gray-600 text-base sm:text-lg">
                   Click up to 4 lines that remind you of {forName}
@@ -272,8 +292,21 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
         {/* Step 4: Tell your story - Inline editing in expanded card */}
         {step === 4 && songData && (
           <div>
+            {/* Back button - desktop only */}
+            <div className="max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto px-4 mb-4">
+              <button
+                onClick={() => setStep(3)}
+                className="hidden md:flex items-center gap-2 text-gray-900 hover:bg-gray-100 rounded-full transition-colors px-3 py-2"
+                aria-label="Back"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                <span className="text-sm font-medium">Back</span>
+              </button>
+            </div>
             {/* Expanded card - matches RecordModal structure */}
-            <div className="max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto mt-6 sm:mt-8 px-4">
+            <div className="max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto px-4">
               <div
                 className="rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col p-4 sm:p-6 md:p-8 max-h-[90vh] overflow-y-auto"
                 style={{

@@ -89,7 +89,7 @@ export default function TapHint({ onCardOpened, isMenuOpen, isSearching, isOnHom
 
         {/* Message */}
         <div className="text-sm font-medium whitespace-nowrap">
-          Tap any card to read the story
+          Tap any card to read its story
         </div>
 
         {/* Close button */}
