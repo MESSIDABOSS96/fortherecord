@@ -94,10 +94,13 @@ export default function RecordCard({ record, onClick, onLongPress }: RecordCardP
           onClick();
         }
       }}
-      className="group cursor-pointer rounded-[16px] sm:rounded-[20px] p-4 sm:p-5 md:p-6 transition-all hover:scale-[1.01] hover:shadow-lg active:scale-[0.98] active:shadow-sm md:active:scale-100 md:active:shadow-lg flex flex-col relative"
+      className="group cursor-pointer rounded-[16px] sm:rounded-[20px] p-4 sm:p-5 md:p-6 transition-all hover:scale-[1.01] hover:shadow-lg active:scale-[0.98] active:shadow-sm md:active:scale-100 md:active:shadow-lg flex flex-col relative select-none"
       style={{
         backgroundColor: record.background_color,
         boxShadow: "var(--shadow-md)",
+        WebkitUserSelect: 'none',
+        userSelect: 'none',
+        WebkitTouchCallout: 'none',
       }}
     >
       {/* Darkening overlay on press - mobile only */}
@@ -130,7 +133,7 @@ export default function RecordCard({ record, onClick, onLongPress }: RecordCardP
             </div>
           )}
         </div>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 select-none" style={{ WebkitUserSelect: 'none', userSelect: 'none' }}>
           <div className="font-bold text-[14px] text-gray-900 truncate leading-tight">
             {cleanSongTitle(record.song_title)}
           </div>
@@ -141,12 +144,24 @@ export default function RecordCard({ record, onClick, onLongPress }: RecordCardP
       </div>
 
       {/* Lyric excerpt - full display, no truncation */}
-      <div className="text-gray-900 font-bold text-lg sm:text-[20px] leading-[1.35] mb-4 sm:mb-5 flex-1 whitespace-pre-line">
+      <div 
+        className="text-gray-900 font-bold text-lg sm:text-[20px] leading-[1.35] mb-4 sm:mb-5 flex-1 whitespace-pre-line select-none"
+        style={{
+          WebkitUserSelect: 'none',
+          userSelect: 'none',
+        }}
+      >
         {record.lyric_excerpt}
       </div>
 
       {/* For label */}
-      <div className="text-[10px] sm:text-[11px] font-medium italic text-gray-900/70 uppercase tracking-wide flex-shrink-0">
+      <div 
+        className="text-[10px] sm:text-[11px] font-medium italic text-gray-900/70 uppercase tracking-wide flex-shrink-0 select-none"
+        style={{
+          WebkitUserSelect: 'none',
+          userSelect: 'none',
+        }}
+      >
         FOR {record.for_name.toUpperCase()}
       </div>
     </div>
