@@ -7,9 +7,10 @@ import Masonry from "react-masonry-css";
 interface MasonryGridProps {
   records: Record[];
   onCardClick: (record: Record) => void;
+  onCardLongPress?: (record: Record) => void;
 }
 
-export default function MasonryGrid({ records, onCardClick }: MasonryGridProps) {
+export default function MasonryGrid({ records, onCardClick, onCardLongPress }: MasonryGridProps) {
   // Responsive breakpoint configuration
   // Matches Tailwind's default breakpoints for consistency
   const breakpointColumns = {
@@ -31,6 +32,7 @@ export default function MasonryGrid({ records, onCardClick }: MasonryGridProps) 
           key={record.id}
           record={record}
           onClick={() => onCardClick(record)}
+          onLongPress={onCardLongPress ? () => onCardLongPress(record) : undefined}
         />
       ))}
     </Masonry>

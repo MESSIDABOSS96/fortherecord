@@ -10,36 +10,14 @@ import { useRouter } from "next/navigation";
 interface RecordModalProps {
   record: Record;
   onClose: () => void;
+  autoShare?: boolean;
 }
 
-export default function RecordModal({ record, onClose }: RecordModalProps) {
+export default function RecordModal({ record, onClose, autoShare = false }: RecordModalProps) {
   const router = useRouter();
   
   // Lock scroll when modal is open (handles iOS properly)
   useScrollLock(true);
-
-  // Update URL when modal opens
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    url.searchParams.set('card', record.id);
-    window.history.pushState({}, '', url.toString());
-    
-    // Clean up URL when modal closes
-    return () => {
-      const cleanUrl = new URL(window.location.href);
-      cleanUrl.searchParams.delete('card');
-      window.history.replaceState({}, '', cleanUrl.toString());
-    };
-  }, [record.id]);
-
-  // Close on escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, [onClose]);
 
   // Share functionality
   const handleShare = async (e?: React.MouseEvent) => {
@@ -83,6 +61,41 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
     // Final fallback: show URL in prompt (only if both above fail)
     prompt('Copy this link:', shareUrl);
   };
+
+  // Update URL when modal opens
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('card', record.id);
+    window.history.pushState({}, '', url.toString());
+    
+    // Clean up URL when modal closes
+    return () => {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('card');
+      window.history.replaceState({}, '', cleanUrl.toString());
+    };
+  }, [record.id]);
+
+  // Close on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [onClose]);
+
+  // Auto-trigger share if opened via long press
+  useEffect(() => {
+    if (autoShare) {
+      // Small delay to ensure modal is fully rendered
+      const timer = setTimeout(() => {
+        handleShare();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoShare]);
 
   const formattedDate = record.created_at.toLocaleDateString("en-US", {
     year: "numeric",

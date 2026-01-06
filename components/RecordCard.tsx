@@ -4,16 +4,20 @@ import { Record } from "@/types/record";
 import { calculateCardSize, CARD_SIZE_CONFIG } from "@/utils/cardSizing";
 import { cleanSongTitle } from "@/utils/cleanSongTitle";
 import Image from "next/image";
+import { useRef } from "react";
 
 interface RecordCardProps {
   record: Record;
   onClick: () => void;
+  onLongPress?: () => void;
 }
 
 // Main lyric card component
-export default function RecordCard({ record, onClick }: RecordCardProps) {
+export default function RecordCard({ record, onClick, onLongPress }: RecordCardProps) {
   const cardSize = calculateCardSize(record.lyric_excerpt);
   const sizeConfig = CARD_SIZE_CONFIG[cardSize];
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const isLongPress = useRef(false);
 
   // Prefetch image on hover/touch to speed up modal opening
   const prefetchImage = () => {
@@ -35,10 +39,51 @@ export default function RecordCard({ record, onClick }: RecordCardProps) {
     prefetchImage();
   };
 
+  // Long press handler
+  const handleTouchStartLongPress = (e: React.TouchEvent) => {
+    prefetchImage();
+    isLongPress.current = false;
+    
+    longPressTimer.current = setTimeout(() => {
+      isLongPress.current = true;
+      if (onLongPress) {
+        onLongPress();
+      }
+    }, 500); // 500ms for long press
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleTouchMove = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    // Prevent click if it was a long press
+    if (isLongPress.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      isLongPress.current = false;
+      return;
+    }
+    onClick();
+  };
+
   return (
     <div
-      onClick={onClick}
-      onTouchStart={handleTouchStart} // Prefetch image on touch + enables :active states on iOS
+      onClick={handleClick}
+      onTouchStart={handleTouchStartLongPress} // Long press detection + prefetch
+      onTouchEnd={handleTouchEnd}
+      onTouchMove={handleTouchMove}
+      onTouchCancel={handleTouchEnd}
       onMouseEnter={handleMouseEnter} // Prefetch image on hover
       role="button"
       aria-label={`Read story about ${record.for_name} - ${cleanSongTitle(record.song_title)}`}

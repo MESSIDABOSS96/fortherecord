@@ -16,6 +16,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
+  const [shouldAutoShare, setShouldAutoShare] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -175,7 +176,17 @@ export default function Home() {
             <p className="text-sm text-gray-400">Try different keywords or change your filter</p>
           </div>
         ) : (
-          <MasonryGrid records={records} onCardClick={setSelectedRecord} />
+          <MasonryGrid 
+            records={records} 
+            onCardClick={(record) => {
+              setShouldAutoShare(false);
+              setSelectedRecord(record);
+            }}
+            onCardLongPress={(record) => {
+              setShouldAutoShare(true);
+              setSelectedRecord(record);
+            }}
+          />
         )}
       </main>
 
@@ -183,7 +194,11 @@ export default function Home() {
       {selectedRecord && (
         <RecordModal
           record={selectedRecord}
-          onClose={() => setSelectedRecord(null)}
+          onClose={() => {
+            setSelectedRecord(null);
+            setShouldAutoShare(false);
+          }}
+          autoShare={shouldAutoShare}
         />
       )}
 
