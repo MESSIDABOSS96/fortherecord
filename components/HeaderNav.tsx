@@ -246,7 +246,7 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
           }}
           aria-label="Add new record"
         >
-          <img 
+          <Image 
             src="/custom.square.and.pencil.svg" 
             alt="Add" 
             width={28} 
