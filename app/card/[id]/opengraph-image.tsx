@@ -5,6 +5,8 @@ import { createClient } from '@supabase/supabase-js';
 import { cleanSongTitle } from '@/utils/cleanSongTitle';
 
 export const runtime = 'edge';
+export const alt = 'Record Card';
+export const contentType = 'image/png';
 
 async function getRecord(id: string) {
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://ygpnkvwretilfrmeirtp.supabase.co';
@@ -28,7 +30,7 @@ async function getRecord(id: string) {
   return data;
 }
 
-export async function GET(
+export default async function Image(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
