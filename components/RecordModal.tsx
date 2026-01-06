@@ -5,6 +5,7 @@ import { cleanSongTitle } from "@/utils/cleanSongTitle";
 import Image from "next/image";
 import { useEffect } from "react";
 import { useScrollLock } from "@/hooks/useScrollLock";
+import { useRouter } from "next/navigation";
 
 interface RecordModalProps {
   record: Record;
@@ -12,8 +13,24 @@ interface RecordModalProps {
 }
 
 export default function RecordModal({ record, onClose }: RecordModalProps) {
+  const router = useRouter();
+  
   // Lock scroll when modal is open (handles iOS properly)
   useScrollLock(true);
+
+  // Update URL when modal opens
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('card', record.id);
+    window.history.pushState({}, '', url.toString());
+    
+    // Clean up URL when modal closes
+    return () => {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('card');
+      window.history.replaceState({}, '', cleanUrl.toString());
+    };
+  }, [record.id]);
 
   // Close on escape key
   useEffect(() => {
@@ -23,6 +40,49 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [onClose]);
+
+  // Share functionality
+  const handleShare = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
+    
+    const shareUrl = `${window.location.origin}?card=${record.id}`;
+    const shareText = `${cleanSongTitle(record.song_title)} by ${record.artist} - For ${record.for_name}`;
+    
+    // Try Web Share API first (mobile/iOS) - must be called from user gesture
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({
+          title: shareText,
+          text: shareText,
+          url: shareUrl,
+        });
+        return; // Successfully shared, exit early
+      } catch (err: any) {
+        // User cancelled - don't show fallback
+        if (err?.name === 'AbortError' || err?.message?.includes('cancel')) {
+          return;
+        }
+        // For other errors, log and fall through to clipboard fallback
+        console.log('Web Share API error (falling back):', err);
+      }
+    }
+    
+    // Fallback: copy to clipboard
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        alert('Link copied to clipboard!');
+        return;
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    }
+    
+    // Final fallback: show URL in prompt (only if both above fail)
+    prompt('Copy this link:', shareUrl);
+  };
 
   const formattedDate = record.created_at.toLocaleDateString("en-US", {
     year: "numeric",
@@ -46,12 +106,12 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 w-8 h-8 sm:w-6 sm:h-6 rounded-full border-2 border-black hover:bg-black/10 flex items-center justify-center transition-colors"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center transition-opacity hover:opacity-70"
           aria-label="Close"
         >
           <svg
-            width="14"
-            height="14"
+            width="12"
+            height="12"
             viewBox="0 0 16 16"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -59,8 +119,9 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
             <path
               d="M2 2L14 14M14 2L2 14"
               stroke="black"
-              strokeWidth="2"
+              strokeWidth="1.5"
               strokeLinecap="round"
+              strokeOpacity="0.6"
             />
           </svg>
         </button>
@@ -78,6 +139,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
                     alt={record.song_title}
                     width={64}
                     height={64}
+                    priority
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -126,20 +188,35 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
             <div className="text-sm sm:text-base font-medium italic text-gray-800 uppercase tracking-wide mb-3 sm:mb-4 text-center">
               FOR {record.for_name.toUpperCase()}
             </div>
-            <div className="text-sm sm:text-base text-gray-900 leading-relaxed overflow-y-auto flex-1">
+            <div className="text-sm sm:text-base text-gray-900 leading-relaxed overflow-y-auto flex-1 text-center">
               {record.reflection_text}
             </div>
           </div>
         </div>
 
         {/* Footer - outside the bordered box */}
-        <div className="text-center">
+        <div className="text-center mt-6 sm:mt-8 md:mt-4 relative">
           <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-gray-900">
             Posted on {formattedDate}
           </div>
-          <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-gray-900">
-            For {record.for_name}
-          </div>
+
+          {/* Share button - mobile only, aligned with footer text */}
+          <button
+            onClick={handleShare}
+            className="md:hidden absolute -right-2 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center z-10"
+            aria-label="Share"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 100 115"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-gray-900"
+            >
+              <path d="m89.75 46.293c-0.023438 1.9531-0.83203 3.8164-2.25 5.1641l-23.293 23.25c-2.0547 2.1172-5.2031 2.7461-7.9141 1.5859-2.7305-1.1094-4.5117-3.7656-4.5-6.7109v-7.582c-12.91 0.84766-24.535 8.1055-30.961 19.332-0.96484 1.8203-2.8555 2.957-4.9141 2.9609-0.49219-0.011719-0.98438-0.082031-1.4609-0.21094-2.4531-0.62891-4.168-2.8398-4.1641-5.375v-3.25c0.003906-11.336 4.3047-22.246 12.035-30.535 7.7344-8.2891 18.32-13.34 29.629-14.129v-7.793c-0.011719-2.9453 1.7734-5.6016 4.5-6.707 2.7148-1.1641 5.8633-0.53516 7.918 1.582l23.125 23.25c1.418 1.3477 2.2266 3.2109 2.25 5.168z" fill="currentColor"/>
+            </svg>
+          </button>
         </div>
       </div>
     </div>

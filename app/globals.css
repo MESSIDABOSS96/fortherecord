@@ -140,3 +140,27 @@ body {
     padding-bottom: calc(7rem + var(--safe-area-inset-bottom));
   }
 }
+
+/* Custom scrollbar for story section */
+.story-scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.1);
+}
+
+.story-scrollable::-webkit-scrollbar {
+  width: 8px;
+}
+
+.story-scrollable::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.story-scrollable::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+
+.story-scrollable::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}

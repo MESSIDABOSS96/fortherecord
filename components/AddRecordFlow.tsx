@@ -179,10 +179,10 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
             {/* Content container - same as Step 1 */}
             <div className="max-w-2xl mx-auto mt-6 sm:mt-8">
               <div className="relative text-center mb-8 sm:mb-12 px-4">
-                {/* Back button - desktop only, aligned left */}
+                {/* Back button - desktop only, aligned with logo center */}
                 <button
                   onClick={() => setStep(1)}
-                  className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+                  className="hidden md:block absolute md:-left-[240px] lg:-left-[280px] xl:-left-[320px] top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
                   aria-label="Back"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -221,10 +221,10 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
             {/* Centered title section - matching steps 1 and 2 */}
             <div className="max-w-2xl mx-auto mt-6 sm:mt-8">
               <div className="relative text-center mb-8 sm:mb-12 px-4">
-                {/* Back button - desktop only, aligned left */}
+                {/* Back button - desktop only, aligned with logo center */}
                 <button
                   onClick={() => setStep(2)}
-                  className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+                  className="hidden md:block absolute md:-left-[240px] lg:-left-[280px] xl:-left-[320px] top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
                   aria-label="Back"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -296,7 +296,7 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
             <div className="max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto px-4 mb-4">
               <button
                 onClick={() => setStep(3)}
-                className="hidden md:flex items-center gap-2 text-gray-900 hover:bg-gray-100 rounded-full transition-colors px-3 py-2"
+                className="hidden md:flex items-center gap-2 text-gray-900 hover:bg-gray-100 rounded-full transition-colors px-3 py-2 md:-ml-[240px] lg:-ml-[280px] xl:-ml-[320px]"
                 aria-label="Back"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

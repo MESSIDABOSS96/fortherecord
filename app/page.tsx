@@ -8,6 +8,7 @@ import HeaderNav from "@/components/HeaderNav";
 import MasonryGrid from "@/components/MasonryGrid";
 import RecordModal from "@/components/RecordModal";
 import TapHint from "@/components/TapHint";
+import CardMetaTags from "@/components/CardMetaTags";
 
 export default function Home() {
   const [records, setRecords] = useState<Record[]>([]);
@@ -18,6 +19,20 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+
+  // Check URL for card ID on mount and when records load
+  useEffect(() => {
+    if (allRecords.length > 0) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const cardId = urlParams.get('card');
+      if (cardId) {
+        const record = allRecords.find(r => r.id === cardId);
+        if (record) {
+          setSelectedRecord(record);
+        }
+      }
+    }
+  }, [allRecords]);
 
   // Fetch records function
   const fetchRecords = useCallback(async () => {
@@ -92,6 +107,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
+      <CardMetaTags record={selectedRecord} />
       <HeaderNav onReset={handleReset} onMenuToggle={setIsMenuOpen} />
 
       <main className="max-w-7xl mx-auto px-6 sm:px-6 md:px-8 pt-6 sm:pt-8 md:pt-10 pb-16 pb-for-fab">

@@ -15,10 +15,31 @@ export default function RecordCard({ record, onClick }: RecordCardProps) {
   const cardSize = calculateCardSize(record.lyric_excerpt);
   const sizeConfig = CARD_SIZE_CONFIG[cardSize];
 
+  // Prefetch image on hover/touch to speed up modal opening
+  const prefetchImage = () => {
+    if (record.album_art_url) {
+      // Check if already prefetched
+      const existingLink = document.querySelector(`link[href="${record.album_art_url}"]`);
+      if (!existingLink) {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.as = 'image';
+        link.href = record.album_art_url;
+        document.head.appendChild(link);
+      }
+    }
+  };
+
+  const handleMouseEnter = prefetchImage;
+  const handleTouchStart = () => {
+    prefetchImage();
+  };
+
   return (
     <div
       onClick={onClick}
-      onTouchStart={() => {}} // Enables :active states on iOS
+      onTouchStart={handleTouchStart} // Prefetch image on touch + enables :active states on iOS
+      onMouseEnter={handleMouseEnter} // Prefetch image on hover
       role="button"
       aria-label={`Read story about ${record.for_name} - ${cleanSongTitle(record.song_title)}`}
       tabIndex={0}

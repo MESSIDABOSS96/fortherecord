@@ -246,10 +246,13 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
           }}
           aria-label="Add new record"
         >
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
+          <img 
+            src="/custom.square.and.pencil.svg" 
+            alt="Add" 
+            width={28} 
+            height={28}
+            className="w-7 h-7"
+          />
         </button>
       )}
     </>
