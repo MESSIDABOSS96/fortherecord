@@ -79,6 +79,7 @@ export default function RecordCard({ record, onClick, onLongPress }: RecordCardP
 
   return (
     <div
+      data-card-id={record.id}
       onClick={handleClick}
       onTouchStart={handleTouchStartLongPress} // Long press detection + prefetch
       onTouchEnd={handleTouchEnd}

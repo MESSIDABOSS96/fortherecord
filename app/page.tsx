@@ -18,6 +18,7 @@ export default function Home() {
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [shouldScrollToCard, setShouldScrollToCard] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -95,10 +96,47 @@ export default function Home() {
         const record = allRecords.find(r => r.id === cardId);
         if (record) {
           setSelectedRecord(record);
+          setShouldScrollToCard(true); // Mark that we should scroll when modal opens
         }
       }
     }
   }, [allRecords]);
+
+  // Scroll to card when it's opened from URL or when modal closes
+  useEffect(() => {
+    if (selectedRecord && shouldScrollToCard) {
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        const cardElement = document.querySelector(`[data-card-id="${selectedRecord.id}"]`);
+        if (cardElement) {
+          cardElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center',
+            inline: 'nearest'
+          });
+        }
+        setShouldScrollToCard(false); // Reset flag
+      }, 100);
+    }
+  }, [selectedRecord, shouldScrollToCard]);
+
+  // Scroll to card when modal closes
+  const handleCloseModal = () => {
+    if (selectedRecord) {
+      // Small delay to ensure modal is closed
+      setTimeout(() => {
+        const cardElement = document.querySelector(`[data-card-id="${selectedRecord.id}"]`);
+        if (cardElement) {
+          cardElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center',
+            inline: 'nearest'
+          });
+        }
+      }, 100);
+    }
+    setSelectedRecord(null);
+  };
 
   // Fetch records function
   const fetchRecords = useCallback(async () => {
@@ -244,6 +282,7 @@ export default function Home() {
           <MasonryGrid 
             records={records} 
             onCardClick={(record) => {
+              setShouldScrollToCard(false); // Don't scroll on normal clicks
               setSelectedRecord(record);
             }}
             onCardLongPress={(record) => {
@@ -257,7 +296,7 @@ export default function Home() {
       {selectedRecord && (
         <RecordModal
           record={selectedRecord}
-          onClose={() => setSelectedRecord(null)}
+          onClose={handleCloseModal}
         />
       )}
 
