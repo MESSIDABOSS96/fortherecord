@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Record } from "@/types/record";
 import { searchRecords, FilterType } from "@/utils/searchRecords";
+import { cleanSongTitle } from "@/utils/cleanSongTitle";
 import HeaderNav from "@/components/HeaderNav";
 import MasonryGrid from "@/components/MasonryGrid";
 import RecordModal from "@/components/RecordModal";
@@ -16,10 +17,48 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
-  const [shouldAutoShare, setShouldAutoShare] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+
+  // Share function that can be called directly
+  const handleShareRecord = async (record: Record) => {
+    const shareUrl = `${window.location.origin}?card=${record.id}`;
+    const shareText = `${cleanSongTitle(record.song_title)} by ${record.artist} - For ${record.for_name}`;
+    
+    // Try Web Share API first (mobile/iOS) - must be called from user gesture
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({
+          title: shareText,
+          text: shareText,
+          url: shareUrl,
+        });
+        return; // Successfully shared, exit early
+      } catch (err: any) {
+        // User cancelled - don't show fallback
+        if (err?.name === 'AbortError' || err?.message?.includes('cancel')) {
+          return;
+        }
+        // For other errors, log and fall through to clipboard fallback
+        console.log('Web Share API error (falling back):', err);
+      }
+    }
+    
+    // Fallback: copy to clipboard
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        alert('Link copied to clipboard!');
+        return;
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    }
+    
+    // Final fallback: show URL in prompt (only if both above fail)
+    prompt('Copy this link:', shareUrl);
+  };
 
   // Check URL for card ID on mount and when records load
   useEffect(() => {
@@ -179,12 +218,10 @@ export default function Home() {
           <MasonryGrid 
             records={records} 
             onCardClick={(record) => {
-              setShouldAutoShare(false);
               setSelectedRecord(record);
             }}
             onCardLongPress={(record) => {
-              setShouldAutoShare(true);
-              setSelectedRecord(record);
+              handleShareRecord(record);
             }}
           />
         )}
@@ -194,11 +231,7 @@ export default function Home() {
       {selectedRecord && (
         <RecordModal
           record={selectedRecord}
-          onClose={() => {
-            setSelectedRecord(null);
-            setShouldAutoShare(false);
-          }}
-          autoShare={shouldAutoShare}
+          onClose={() => setSelectedRecord(null)}
         />
       )}
 

@@ -10,10 +10,9 @@ import { useRouter } from "next/navigation";
 interface RecordModalProps {
   record: Record;
   onClose: () => void;
-  autoShare?: boolean;
 }
 
-export default function RecordModal({ record, onClose, autoShare = false }: RecordModalProps) {
+export default function RecordModal({ record, onClose }: RecordModalProps) {
   const router = useRouter();
   
   // Lock scroll when modal is open (handles iOS properly)
@@ -85,17 +84,6 @@ export default function RecordModal({ record, onClose, autoShare = false }: Reco
     return () => window.removeEventListener("keydown", handleEscape);
   }, [onClose]);
 
-  // Auto-trigger share if opened via long press
-  useEffect(() => {
-    if (autoShare) {
-      // Small delay to ensure modal is fully rendered
-      const timer = setTimeout(() => {
-        handleShare();
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoShare]);
 
   const formattedDate = record.created_at.toLocaleDateString("en-US", {
     year: "numeric",
