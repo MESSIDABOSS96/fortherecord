@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        caveat: ['var(--font-caveat)', 'cursive'],
+      },
       screens: {
         'xs': '375px',  // Extra small breakpoint for better mobile control
       },

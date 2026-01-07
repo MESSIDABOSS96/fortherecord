@@ -10,7 +10,7 @@ export default function AboutPage() {
       <main className="max-w-6xl mx-auto px-6 pt-6 sm:pt-8 md:pt-10 pb-12 pb-for-fab">
         {/* Title */}
         <div className="text-center mb-16">
-          <h1 className="text-6xl font-bold tracking-tight">
+          <h1 className="text-6xl font-bold tracking-tight font-caveat">
             For the Record
           </h1>
         </div>

@@ -45,7 +45,7 @@ export default function AdminPage() {
     <div className="min-h-screen p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold">Record Manager</h1>
+          <h1 className="text-4xl font-bold font-caveat">Record Manager</h1>
           <button
             onClick={() => router.push('/')}
             className="px-6 py-2 bg-gray-900 text-white rounded-full hover:bg-gray-700"
