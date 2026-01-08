@@ -131,18 +131,16 @@ body {
 @keyframes writeIn {
   from {
     opacity: 0;
-    transform: translate3d(0, 5px, 0);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
   }
 }
 
 .animate-write-in {
   animation: writeIn 0.35s ease-out forwards;
   display: inline-block;
-  will-change: opacity, transform;
+  will-change: opacity;
   backface-visibility: hidden;
   -webkit-font-smoothing: subpixel-antialiased;
 }

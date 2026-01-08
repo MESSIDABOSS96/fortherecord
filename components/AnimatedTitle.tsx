@@ -83,7 +83,7 @@ export default function AnimatedTitle() {
 
   return (
     <>
-      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4 font-caveat">
+      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4 font-caveat" style={{ overflow: 'visible' }}>
         {text.split('').map((char, index) => (
           <span
             key={index}
