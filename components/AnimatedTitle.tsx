@@ -7,15 +7,25 @@ let hasAnimatedInThisPageLoad = false;
 
 export default function AnimatedTitle() {
   const [shouldAnimate, setShouldAnimate] = useState<boolean | null>(null);
+  const [fontLoaded, setFontLoaded] = useState(false);
   const text = "For the Record";
   const subheader = "An archive of lyrics that bring someone to mind";
 
-  // Calculate animation delay for subheader
-  // Title finishes at: 14 chars * 0.05s + 0.35s animation = 1.05s
-  // Add small pause before subheader: 1.05s + 0.15s = 1.2s
-  const subheaderDelay = (text.length * 0.05) + 0.35 + 0.15;
+  // Wait for fonts to load before animating (fixes mobile rendering issues)
+  useEffect(() => {
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        setFontLoaded(true);
+      });
+    } else {
+      // Fallback if Font Loading API is not supported
+      setFontLoaded(true);
+    }
+  }, []);
 
   useEffect(() => {
+    if (!fontLoaded) return;
+
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -36,10 +46,15 @@ export default function AnimatedTitle() {
       // Already animated during this page load (client-side navigation)
       setShouldAnimate(false);
     }
-  }, []);
+  }, [fontLoaded]);
+
+  // Calculate animation delay for subheader
+  // Title finishes at: 14 chars * 0.05s + 0.35s animation = 1.05s
+  // Add small pause before subheader: 1.05s + 0.15s = 1.2s
+  const subheaderDelay = (text.length * 0.05) + 0.35 + 0.15;
 
   // Don't render anything until we know whether to animate (prevents hydration flash)
-  if (shouldAnimate === null) {
+  if (shouldAnimate === null || !fontLoaded) {
     return (
       <>
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4 font-caveat" style={{ opacity: 0 }}>
