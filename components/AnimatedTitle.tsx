@@ -8,6 +8,12 @@ let hasAnimatedInThisPageLoad = false;
 export default function AnimatedTitle() {
   const [shouldAnimate, setShouldAnimate] = useState<boolean | null>(null);
   const text = "For the Record";
+  const subheader = "An archive of lyrics that bring someone to mind";
+
+  // Calculate animation delay for subheader
+  // Title finishes at: 14 chars * 0.05s + 0.35s animation = 1.05s
+  // Add small pause before subheader: 1.05s + 0.15s = 1.2s
+  const subheaderDelay = (text.length * 0.05) + 0.35 + 0.15;
 
   useEffect(() => {
     // Check for reduced motion preference
@@ -35,35 +41,56 @@ export default function AnimatedTitle() {
   // Don't render anything until we know whether to animate (prevents hydration flash)
   if (shouldAnimate === null) {
     return (
-      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4 font-caveat" style={{ opacity: 0 }}>
-        For the Record
-      </h1>
+      <>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4 font-caveat" style={{ opacity: 0 }}>
+          For the Record
+        </h1>
+        <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-12 md:mb-[60px] px-4" style={{ opacity: 0 }}>
+          {subheader}
+        </p>
+      </>
     );
   }
 
   if (!shouldAnimate) {
     // No animation - show regular text
     return (
-      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4 font-caveat">
-        For the Record
-      </h1>
+      <>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4 font-caveat">
+          For the Record
+        </h1>
+        <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-12 md:mb-[60px] px-4">
+          {subheader}
+        </p>
+      </>
     );
   }
 
   return (
-    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4 font-caveat">
-      {text.split('').map((char, index) => (
-        <span
-          key={index}
-          className="animate-write-in"
-          style={{
-            animationDelay: `${index * 0.05}s`,
-            opacity: 0,
-          }}
-        >
-          {char === ' ' ? '\u00A0' : char}
-        </span>
-      ))}
-    </h1>
+    <>
+      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4 font-caveat">
+        {text.split('').map((char, index) => (
+          <span
+            key={index}
+            className="animate-write-in"
+            style={{
+              animationDelay: `${index * 0.05}s`,
+              opacity: 0,
+            }}
+          >
+            {char === ' ' ? '\u00A0' : char}
+          </span>
+        ))}
+      </h1>
+      <p
+        className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-12 md:mb-[60px] px-4 animate-fade-in"
+        style={{
+          animationDelay: `${subheaderDelay}s`,
+          opacity: 0,
+        }}
+      >
+        {subheader}
+      </p>
+    </>
   );
 }

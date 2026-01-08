@@ -131,17 +131,38 @@ body {
 @keyframes writeIn {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.9);
+    transform: translate3d(0, 5px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 .animate-write-in {
-  animation: writeIn 0.4s ease-out forwards;
+  animation: writeIn 0.35s ease-out forwards;
   display: inline-block;
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+/* Subheader fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+  will-change: opacity;
+  backface-visibility: hidden;
 }
 
 /* Dynamic viewport height support */

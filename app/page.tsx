@@ -15,6 +15,7 @@ import AnimatedTitle from "@/components/AnimatedTitle";
 export default function Home() {
   const [records, setRecords] = useState<Record[]>([]);
   const [allRecords, setAllRecords] = useState<Record[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
@@ -173,11 +174,13 @@ export default function Home() {
       // Save unfiltered records to state
       setAllRecords(recordsWithDates);
       setRecords(recordsWithDates);
+      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching records:', error);
       // Set empty state on error
       setAllRecords([]);
       setRecords([]);
+      setIsLoading(false);
     }
   }, []);
 
@@ -230,7 +233,6 @@ export default function Home() {
         {/* Title and Search */}
         <div className="text-center mb-10 sm:mb-12 md:mb-14">
           <AnimatedTitle />
-          <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-12 md:mb-[60px] px-4">An archive of lyrics that bring someone to mind</p>
 
           {/* Search bar */}
           <div className="max-w-xl mx-auto mb-4 px-4">
@@ -276,12 +278,14 @@ export default function Home() {
           )}
 
           {/* Record count */}
-          <p className="text-sm text-gray-600">
-            {searchQuery
-              ? `${records.length} record${records.length !== 1 ? 's' : ''} found`
-              : `${allRecords.length} Records Archived`
-            }
-          </p>
+          {!isLoading && (
+            <p className="text-sm text-gray-600">
+              {searchQuery
+                ? `${records.length} record${records.length !== 1 ? 's' : ''} found`
+                : `${allRecords.length} Records Archived`
+              }
+            </p>
+          )}
         </div>
 
         {/* Masonry Grid with empty state */}
