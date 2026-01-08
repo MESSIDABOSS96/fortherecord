@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG Path Generator - For the Record</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin-top: 0;
+      color: #333;
+    }
+    #preview {
+      font-family: 'Caveat', cursive;
+      font-size: 80px;
+      font-weight: 700;
+      margin: 30px 0;
+      text-align: center;
+      color: #000;
+    }
+    canvas {
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      display: block;
+      margin: 20px auto;
+      background: white;
+    }
+    .output {
+      background: #f8f8f8;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      word-wrap: break-word;
+      max-height: 400px;
+      overflow-y: auto;
+      position: relative;
+    }
+    button {
+      background: #000;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+    }
+    button:hover {
+      background: #333;
+    }
+    .info {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid #2196f3;
+    }
+    .success {
+      background: #e8f5e9;
+      border-left-color: #4caf50;
+    }
+    .controls {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    label {
+      font-weight: 600;
+      margin-right: 10px;
+    }
+    input[type="range"] {
+      width: 200px;
+    }
+    .metric {
+      display: inline-block;
+      background: #f0f0f0;
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin: 5px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SVG Path Generator for "For the Record"</h1>
+
+    <div class="info">
+      <strong>Instructions:</strong> This tool generates SVG path data for the "For the Record" title in Caveat font.
+      Click "Generate SVG Path" and the path data will appear below. You can then copy it and use it in your AnimatedTitle component.
+    </div>
+
+    <div id="preview">For the Record</div>
+
+    <div class="controls">
+      <label>Font Size:</label>
+      <input type="range" id="fontSize" min="40" max="150" value="80" />
+      <span id="fontSizeValue">80px</span>
+
+      <label>Font Weight:</label>
+      <select id="fontWeight">
+        <option value="400">400 (Regular)</option>
+        <option value="500">500</option>
+        <option value="600">600</option>
+        <option value="700" selected>700 (Bold)</option>
+      </select>
+    </div>
+
+    <button onclick="generatePath()">Generate SVG Path</button>
+    <button onclick="copyToClipboard()" id="copyBtn" style="display: none;">Copy SVG Code</button>
+
+    <div id="metrics" style="margin: 20px 0;"></div>
+
+    <canvas id="canvas"></canvas>
+
+    <div id="output" class="output" style="display: none;"></div>
+
+    <div class="info success" id="successMsg" style="display: none;">
+      <strong>Success!</strong> SVG path generated. Use the "Copy SVG Code" button to copy the complete SVG element with animation classes.
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const preview = document.getElementById('preview');
+    const fontSizeInput = document.getElementById('fontSize');
+    const fontWeightInput = document.getElementById('fontWeight');
+    const fontSizeValue = document.getElementById('fontSizeValue');
+
+    let generatedSVG = '';
+    let pathLength = 0;
+
+    // Update font size
+    fontSizeInput.addEventListener('input', (e) => {
+      const size = e.target.value;
+      fontSizeValue.textContent = size + 'px';
+      preview.style.fontSize = size + 'px';
+    });
+
+    // Update font weight
+    fontWeightInput.addEventListener('input', (e) => {
+      preview.style.fontWeight = e.target.value;
+    });
+
+    function generatePath() {
+      const text = "For the Record";
+      const fontSize = parseInt(fontSizeInput.value);
+      const fontWeight = fontWeightInput.value;
+      const fontFamily = 'Caveat';
+
+      // Set canvas size
+      canvas.width = 1200;
+      canvas.height = 200;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Set font
+      ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'center';
+
+      // Measure text
+      const metrics = ctx.measureText(text);
+      const textWidth = metrics.width;
+      const textHeight = fontSize;
+
+      // Draw text for reference
+      ctx.fillStyle = '#000';
+      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+      // Since we can't directly convert canvas text to SVG paths without external libraries,
+      // we'll create an SVG using <text> element and provide instructions for conversion
+
+      // Calculate viewBox dimensions
+      const viewBoxWidth = Math.ceil(textWidth * 1.2);
+      const viewBoxHeight = Math.ceil(textHeight * 1.5);
+      const centerX = viewBoxWidth / 2;
+      const centerY = viewBoxHeight / 2 + fontSize * 0.1;
+
+      // Generate SVG code with text element
+      // Note: For true path-based animation, this needs to be converted using a tool
+      generatedSVG = `<svg
+  viewBox="0 0 ${viewBoxWidth} ${viewBoxHeight}"
+  className="w-full h-auto"
+  xmlns="http://www.w3.org/2000/svg"
+  style={{ maxWidth: '800px', margin: '0 auto' }}
+>
+  <text
+    x="${centerX}"
+    y="${centerY}"
+    fontFamily="Caveat"
+    fontSize="${fontSize}"
+    fontWeight="${fontWeight}"
+    textAnchor="middle"
+    fill="currentColor"
+  >
+    For the Record
+  </text>
+</svg>`;
+
+      // Display metrics
+      document.getElementById('metrics').innerHTML = `
+        <div class="metric">Text Width: ${Math.ceil(textWidth)}px</div>
+        <div class="metric">ViewBox: ${viewBoxWidth} × ${viewBoxHeight}</div>
+        <div class="metric">Font Size: ${fontSize}px</div>
+        <div class="metric">Font Weight: ${fontWeight}</div>
+      `;
+
+      // Show output
+      const outputDiv = document.getElementById('output');
+      outputDiv.style.display = 'block';
+      outputDiv.innerHTML = `<strong>Generated SVG (using &lt;text&gt; element):</strong><br><br>${escapeHtml(generatedSVG)}
+
+<br><br><strong>Note:</strong> This SVG uses a &lt;text&gt; element. For the stroke drawing animation to work properly,
+you need to convert this to &lt;path&gt; elements. Here are three options:
+
+<br><br><strong>Option 1: Use an online converter</strong>
+<ol>
+  <li>Visit <a href="https://danmarshall.github.io/google-font-to-svg-path/" target="_blank">google-font-to-svg-path</a></li>
+  <li>Enter "For the Record" and select Caveat font</li>
+  <li>Copy the generated path data</li>
+</ol>
+
+<strong>Option 2: Use Figma (Recommended)</strong>
+<ol>
+  <li>Create text "For the Record" with Caveat font (size ${fontSize}px, weight ${fontWeight})</li>
+  <li>Right-click → "Flatten" or "Outline Stroke"</li>
+  <li>Copy as SVG (Cmd/Ctrl + C)</li>
+  <li>Paste and extract the &lt;path&gt; data</li>
+</ol>
+
+<strong>Option 3: Simplified approach (no path conversion needed)</strong>
+<br>Use a simpler character-by-character animation instead of stroke drawing. This is easier to implement but
+won't have the "pen drawing" effect. Would you like me to implement this instead?`;
+
+      document.getElementById('copyBtn').style.display = 'inline-block';
+      document.getElementById('successMsg').style.display = 'block';
+    }
+
+    function escapeHtml(html) {
+      return html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function copyToClipboard() {
+      navigator.clipboard.writeText(generatedSVG).then(() => {
+        const btn = document.getElementById('copyBtn');
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => {
+          btn.textContent = originalText;
+        }, 2000);
+      });
+    }
+
+    // Generate on page load
+    window.addEventListener('load', () => {
+      setTimeout(generatePath, 100);
+    });
+  </script>
+</body>
+</html>

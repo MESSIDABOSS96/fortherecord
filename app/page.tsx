@@ -10,6 +10,7 @@ import MasonryGrid from "@/components/MasonryGrid";
 import RecordModal from "@/components/RecordModal";
 import TapHint from "@/components/TapHint";
 import CardMetaTags from "@/components/CardMetaTags";
+import AnimatedTitle from "@/components/AnimatedTitle";
 
 export default function Home() {
   const [records, setRecords] = useState<Record[]>([]);
@@ -228,8 +229,8 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-6 sm:px-6 md:px-8 pt-6 sm:pt-8 md:pt-10 pb-16 pb-for-fab">
         {/* Title and Search */}
         <div className="text-center mb-10 sm:mb-12 md:mb-14">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4 font-caveat">For the Record</h1>
-          <p className="text-lg sm:text-xl text-gray-600 mb-8 sm:mb-12 md:mb-[60px] px-4">An archive of lyrics that bring someone to mind</p>
+          <AnimatedTitle />
+          <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-12 md:mb-[60px] px-4">An archive of lyrics that bring someone to mind</p>
 
           {/* Search bar */}
           <div className="max-w-xl mx-auto mb-4 px-4">

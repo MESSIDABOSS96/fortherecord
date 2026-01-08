@@ -10,10 +10,10 @@ export default function PlaylistPage() {
       <main className="max-w-7xl mx-auto px-6 pt-6 sm:pt-8 md:pt-10 pb-12 pb-for-fab">
         {/* Title Section */}
         <div className="text-center mb-10">
-          <h1 className="text-6xl font-bold mb-4 tracking-tight">
+          <h1 className="text-6xl font-bold mb-4 tracking-tight font-caveat">
             Playlist of the Month
           </h1>
-          <p className="text-xl text-gray-600 mb-8">
+          <p className="text-base sm:text-lg text-gray-600 mb-8">
             A playlist of every song added to the collection this month
           </p>
         </div>
