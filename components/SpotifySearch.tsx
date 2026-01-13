@@ -146,16 +146,9 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
   };
 
   const handleSelectTrack = async (track: SpotifyTrack) => {
-    // Immediately trigger the callback with a default color to advance to next step
-    onSelectTrack({
-      song_title: track.name,
-      artist: track.artists,
-      album_art_url: track.albumArtMedium, // 300x300 image
-      spotify_track_id: track.id,
-      background_color: '#A39A91', // Default color, will be updated async
-    });
+    // Extract color first, then call onSelectTrack with the correct color
+    let backgroundColor = '#A39A91'; // Default fallback
 
-    // Extract color in background (non-blocking)
     try {
       const response = await fetch('/api/bucket-extract', {
         method: 'POST',
@@ -165,12 +158,21 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
 
       if (response.ok) {
         const colorData = await response.json();
-        // Color will be available for preview, but we don't block the flow
-        console.log('Extracted color:', colorData.bgColor);
+        backgroundColor = colorData.bgColor;
+        console.log('Extracted color:', backgroundColor);
       }
     } catch (error) {
       console.error('Background color extraction failed:', error);
     }
+
+    // Now trigger the callback with the extracted color
+    onSelectTrack({
+      song_title: track.name,
+      artist: track.artists,
+      album_art_url: track.albumArtMedium, // 300x300 image
+      spotify_track_id: track.id,
+      background_color: backgroundColor,
+    });
   };
 
   return (
