@@ -8,7 +8,7 @@ export const seedRecords: Record[] = [
   {
     "id": "6",
     "card_type": "lyric",
-    "for_name": "Isabel",
+    "for_name": "alex",
     "song_title": "Weird Fishes / Arpeggi",
     "artist": "Radiohead",
     "album_art_url": "https://i.scdn.co/image/ab67616d00001e02de3c04b5fc750b68899b20a9",

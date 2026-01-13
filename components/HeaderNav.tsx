@@ -38,8 +38,8 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
 
   return (
     <>
-      <header className={`w-full py-3 sm:py-4 relative z-40 ${hideOnMobile ? 'hidden md:block' : ''}`}>
-        <nav className="px-4 sm:px-6 lg:px-8">
+      <header className={`w-full py-2 sm:py-3 relative z-40 ${hideOnMobile ? 'hidden md:block' : ''}`}>
+        <nav className="px-2 sm:px-3 lg:px-4">
           <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center h-12 sm:h-14 md:h-16">
             {/* Logo - Left (or leftAction on mobile if provided) */}
             <div className="flex-shrink-0 justify-self-start">
@@ -47,7 +47,7 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
                 <>
                   {/* Show leftAction on mobile, logo on desktop */}
                   <div className="md:hidden">{leftAction}</div>
-                  <Link href="/" onClick={handleNavClick} className="hidden md:block md:-ml-12 lg:-ml-16">
+                  <Link href="/" onClick={handleNavClick} className="hidden md:block">
                     <Image
                       src="/logo.webp"
                       alt="For the Record"
@@ -59,7 +59,7 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
                   </Link>
                 </>
               ) : (
-                <Link href="/" onClick={handleNavClick} className="md:-ml-12 lg:-ml-16">
+                <Link href="/" onClick={handleNavClick}>
                   <Image
                     src="/logo.webp"
                     alt="For the Record"
