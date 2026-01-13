@@ -4,8 +4,7 @@ import { Record } from "@/types/record";
 import { calculateCardSize, CARD_SIZE_CONFIG } from "@/utils/cardSizing";
 import { cleanSongTitle } from "@/utils/cleanSongTitle";
 import Image from "next/image";
-import { useRef, useState } from "react";
-import html2canvas from "html2canvas";
+import { useRef } from "react";
 
 interface RecordCardProps {
   record: Record;
@@ -19,8 +18,6 @@ export default function RecordCard({ record, onClick, onLongPress }: RecordCardP
   const sizeConfig = CARD_SIZE_CONFIG[cardSize];
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const isLongPress = useRef(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isCopying, setIsCopying] = useState(false);
 
   // Prefetch image on hover/touch to speed up modal opening
   const prefetchImage = () => {
@@ -80,98 +77,10 @@ export default function RecordCard({ record, onClick, onLongPress }: RecordCardP
     onClick();
   };
 
-  const handleContextMenu = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!cardRef.current || isCopying) return;
-
-    // Check if clipboard API is available
-    if (!navigator.clipboard || !window.ClipboardItem) {
-      console.warn('Clipboard API not supported. Image copying is not available.');
-      return;
-    }
-
-    setIsCopying(true);
-
-    try {
-      // Convert card to canvas with optimized settings
-      const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: record.background_color || null, // Use card background
-        scale: 2, // Higher quality for better image
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        width: cardRef.current.offsetWidth,
-        height: cardRef.current.offsetHeight,
-        windowWidth: cardRef.current.scrollWidth,
-        windowHeight: cardRef.current.scrollHeight,
-      });
-
-      // Convert canvas to blob
-      canvas.toBlob(async (blob) => {
-        if (!blob) {
-          console.error('Failed to create image blob');
-          setIsCopying(false);
-          return;
-        }
-
-        try {
-          // Copy to clipboard
-          await navigator.clipboard.write([
-            new ClipboardItem({
-              'image/png': blob,
-            }),
-          ]);
-
-          // Show visual feedback
-          const originalTitle = cardRef.current?.getAttribute('title');
-          if (cardRef.current) {
-            cardRef.current.setAttribute('title', 'Copied to clipboard!');
-            setTimeout(() => {
-              if (cardRef.current) {
-                cardRef.current.setAttribute('title', originalTitle || 'Right-click to copy as image');
-              }
-            }, 2000);
-          }
-        } catch (err) {
-          console.error('Failed to copy to clipboard:', err);
-          // Fallback: download the image
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `${cleanSongTitle(record.song_title)}-${record.for_name}.png`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-          
-          // Show feedback for download
-          const originalTitle = cardRef.current?.getAttribute('title');
-          if (cardRef.current) {
-            cardRef.current.setAttribute('title', 'Image downloaded!');
-            setTimeout(() => {
-              if (cardRef.current) {
-                cardRef.current.setAttribute('title', originalTitle || 'Right-click to copy as image');
-              }
-            }, 2000);
-          }
-        } finally {
-          setIsCopying(false);
-        }
-      }, 'image/png');
-    } catch (error) {
-      console.error('Failed to generate card image:', error);
-      setIsCopying(false);
-    }
-  };
-
   return (
     <div
-      ref={cardRef}
       data-card-id={record.id}
       onClick={handleClick}
-      onContextMenu={handleContextMenu}
       onTouchStart={handleTouchStartLongPress} // Long press detection + prefetch
       onTouchEnd={handleTouchEnd}
       onTouchMove={handleTouchMove}
@@ -194,7 +103,6 @@ export default function RecordCard({ record, onClick, onLongPress }: RecordCardP
         userSelect: 'none',
         WebkitTouchCallout: 'none',
       }}
-      title={isCopying ? "Copying..." : "Right-click to copy as image"}
     >
       {/* Darkening overlay on press - mobile only */}
       <div className="absolute inset-0 bg-black/5 rounded-[16px] sm:rounded-[20px] opacity-0 group-active:opacity-100 md:group-active:opacity-0 transition-opacity pointer-events-none -z-10" />
