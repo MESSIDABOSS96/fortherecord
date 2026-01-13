@@ -11,6 +11,7 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-inter)', 'sans-serif'],
         caveat: ['var(--font-caveat)', 'cursive'],
+        merriweather: ['var(--font-merriweather)', 'serif'],
       },
       screens: {
         'xs': '375px',  // Extra small breakpoint for better mobile control

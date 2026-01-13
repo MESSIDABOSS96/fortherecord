@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Caveat, Inter } from "next/font/google";
+import { Caveat, Inter, Merriweather } from "next/font/google";
 import "./globals.css";
 
 const caveat = Caveat({
@@ -11,6 +11,13 @@ const caveat = Caveat({
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const merriweather = Merriweather({
+  subsets: ["latin"],
+  variable: "--font-merriweather",
+  weight: ["300", "400", "700"],
   display: "swap",
 });
 
@@ -36,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${caveat.variable} ${inter.variable}`}>
+    <html lang="en" className={`${caveat.variable} ${inter.variable} ${merriweather.variable}`}>
       <body className={inter.className}>{children}</body>
     </html>
   );
