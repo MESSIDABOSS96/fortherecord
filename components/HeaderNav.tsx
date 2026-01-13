@@ -47,26 +47,26 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
                 <>
                   {/* Show leftAction on mobile, logo on desktop */}
                   <div className="md:hidden">{leftAction}</div>
-                  <Link href="/" onClick={handleNavClick} className="hidden md:block">
+                  <Link href="/" onClick={handleNavClick} className="hidden md:block sm:-ml-2 lg:-ml-4">
                     <Image
                       src="/logo.webp"
-                      alt="For The Record"
-                      width={512}
-                      height={512}
+                      alt="For the Record"
+                      width={96}
+                      height={96}
                       priority
-                      className="h-24 w-24 -ml-4 -mt-2 object-contain"
+                      className="h-20 w-20 object-contain"
                     />
                   </Link>
                 </>
               ) : (
-                <Link href="/" onClick={handleNavClick}>
+                <Link href="/" onClick={handleNavClick} className="sm:-ml-2 lg:-ml-4">
                   <Image
                     src="/logo.webp"
-                    alt="For The Record"
-                    width={512}
-                    height={512}
+                    alt="For the Record"
+                    width={96}
+                    height={96}
                     priority
-                    className="h-14 w-14 sm:h-16 sm:w-16 md:h-24 md:w-24 md:-ml-4 md:-mt-2 object-contain"
+                    className="h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 object-contain"
                   />
                 </Link>
               )}
@@ -78,30 +78,24 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
                 href="/"
                 onClick={onReset}
                 prefetch={true}
-                className={`transition-colors whitespace-nowrap ${pathname === '/'
-                  ? 'font-bold text-gray-900'
-                  : 'text-gray-600 hover:text-gray-900 font-medium'
-                  }`}
+                className={`transition-colors whitespace-nowrap ${pathname === '/' ? 'font-bold' : 'font-medium'}`}
+                style={{ color: pathname === '/' ? 'var(--color-nav-text-active)' : 'var(--color-nav-text)' }}
               >
                 Collection
               </Link>
               <Link
                 href="/playlist"
                 prefetch={true}
-                className={`transition-colors whitespace-nowrap ${pathname === '/playlist'
-                  ? 'font-bold text-gray-900'
-                  : 'text-gray-600 hover:text-gray-900 font-medium'
-                  }`}
+                className={`transition-colors whitespace-nowrap ${pathname === '/playlist' ? 'font-bold' : 'font-medium'}`}
+                style={{ color: pathname === '/playlist' ? 'var(--color-nav-text-active)' : 'var(--color-nav-text)' }}
               >
                 Playlist of the Month
               </Link>
               <Link
                 href="/about"
                 prefetch={true}
-                className={`transition-colors whitespace-nowrap ${pathname === '/about'
-                  ? 'font-bold text-gray-900'
-                  : 'text-gray-600 hover:text-gray-900 font-medium'
-                  }`}
+                className={`transition-colors whitespace-nowrap ${pathname === '/about' ? 'font-bold' : 'font-medium'}`}
+                style={{ color: pathname === '/about' ? 'var(--color-nav-text-active)' : 'var(--color-nav-text)' }}
               >
                 About
               </Link>
@@ -116,7 +110,14 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
                   <Link
                     href="/add"
                     prefetch={true}
-                    className="hidden md:inline-flex px-3 xs:px-4 sm:px-6 md:px-8 py-1.5 xs:py-2 sm:py-2.5 md:py-3 bg-transparent border-2 border-gray-900 rounded-full font-semibold text-xs xs:text-sm hover:bg-gray-900 hover:text-white transition-colors shadow-md whitespace-nowrap"
+                    className="hidden md:inline-flex px-3 xs:px-4 sm:px-6 md:px-8 py-1.5 xs:py-2 sm:py-2.5 md:py-3 rounded-full font-semibold text-xs xs:text-sm transition-colors whitespace-nowrap hover:bg-white hover:text-black"
+                    style={{
+                      backgroundColor: 'var(--color-page-bg)',
+                      color: 'var(--color-text-primary)',
+                      borderWidth: '1px',
+                      borderStyle: 'solid',
+                      borderColor: 'var(--color-text-primary)'
+                    }}
                   >
                     Add
                   </Link>
@@ -127,7 +128,8 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
               {!hideMenu && (
                 <button
                   onClick={toggleMobileMenu}
-                  className="md:hidden p-2 text-gray-900 hover:text-gray-600 transition-colors"
+                  className="md:hidden p-2 transition-colors"
+                  style={{ color: 'var(--color-nav-text-active)' }}
                   aria-label="Toggle menu"
                 >
                   <svg
@@ -157,7 +159,7 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
               style={{
                 backdropFilter: 'blur(40px) saturate(180%)',
                 WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-                backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                backgroundColor: 'var(--color-nav-mobile-overlay)',
               }}
               onClick={closeMobileMenu}
             >
@@ -168,16 +170,17 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
                     <Link href="/" onClick={handleNavClick}>
                       <Image
                         src="/logo.webp"
-                        alt="For The Record"
-                        width={512}
-                        height={512}
+                        alt="For the Record"
+                        width={56}
+                        height={56}
                         priority
-                        className="h-14 w-14 object-contain"
+                        className="h-14 w-14"
                       />
                     </Link>
                     <button
                       onClick={closeMobileMenu}
-                      className="w-10 h-10 flex items-center justify-center text-gray-900"
+                      className="w-10 h-10 flex items-center justify-center"
+                      style={{ color: 'var(--color-nav-text-active)' }}
                       aria-label="Close menu"
                     >
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -193,10 +196,8 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
                     href="/"
                     onClick={handleNavClick}
                     prefetch={true}
-                    className={`text-2xl transition-colors ${pathname === '/'
-                      ? 'font-bold text-gray-900'
-                      : 'text-gray-700'
-                      }`}
+                    className={`text-2xl transition-colors ${pathname === '/' ? 'font-bold' : ''}`}
+                    style={{ color: pathname === '/' ? 'var(--color-nav-text-active)' : 'var(--color-nav-text)' }}
                   >
                     Collection
                   </Link>
@@ -204,10 +205,8 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
                     href="/playlist"
                     onClick={closeMobileMenu}
                     prefetch={true}
-                    className={`text-2xl transition-colors ${pathname === '/playlist'
-                      ? 'font-bold text-gray-900'
-                      : 'text-gray-700'
-                      }`}
+                    className={`text-2xl transition-colors ${pathname === '/playlist' ? 'font-bold' : ''}`}
+                    style={{ color: pathname === '/playlist' ? 'var(--color-nav-text-active)' : 'var(--color-nav-text)' }}
                   >
                     Playlist of the Month
                   </Link>
@@ -215,10 +214,8 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
                     href="/about"
                     onClick={closeMobileMenu}
                     prefetch={true}
-                    className={`text-2xl transition-colors ${pathname === '/about'
-                      ? 'font-bold text-gray-900'
-                      : 'text-gray-700'
-                      }`}
+                    className={`text-2xl transition-colors ${pathname === '/about' ? 'font-bold' : ''}`}
+                    style={{ color: pathname === '/about' ? 'var(--color-nav-text-active)' : 'var(--color-nav-text)' }}
                   >
                     About
                   </Link>
@@ -237,21 +234,28 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
             e.preventDefault();
             router.push('/add');
           }}
-          className="md:hidden fixed w-16 h-16 bg-gray-900 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-800 active:bg-gray-700 transition-colors z-50 p-4"
+          className="md:hidden fixed w-16 h-16 rounded-full flex items-center justify-center transition-colors z-50 p-4"
           style={{
             bottom: `calc(12px + var(--safe-area-inset-bottom))`,
             right: `calc(12px + var(--safe-area-inset-right))`,
+            backgroundColor: 'rgba(255, 255, 255, 0.15)',
+            backdropFilter: 'blur(20px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+            color: '#ffffff',
             touchAction: 'manipulation',
             WebkitTapHighlightColor: 'transparent',
           }}
           aria-label="Add new record"
         >
-          <Image 
-            src="/custom.square.and.pencil.svg" 
-            alt="Add" 
-            width={28} 
+          <Image
+            src="/custom.square.and.pencil.svg"
+            alt="Add"
+            width={28}
             height={28}
             className="w-7 h-7"
+            style={{ filter: 'brightness(0) invert(1)' }}
           />
         </button>
       )}

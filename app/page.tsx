@@ -21,6 +21,8 @@ export default function Home() {
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [shouldScrollToCard, setShouldScrollToCard] = useState(false);
+  const [titleAnimationStarted, setTitleAnimationStarted] = useState(false);
+  const [titleWritingComplete, setTitleWritingComplete] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -227,18 +229,32 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <CardMetaTags record={selectedRecord} />
-      <HeaderNav onReset={handleReset} onMenuToggle={setIsMenuOpen} />
+
+      {/* Header Nav - hidden until title starts */}
+      <div style={{ opacity: titleAnimationStarted ? 1 : 0, transition: 'opacity 0.4s ease-out' }}>
+        <HeaderNav onReset={handleReset} onMenuToggle={setIsMenuOpen} />
+      </div>
 
       <main className="max-w-7xl mx-auto px-6 sm:px-6 md:px-8 pt-6 sm:pt-8 md:pt-10 pb-16 pb-for-fab">
         {/* Title and Search */}
         <div className="text-center mb-10 sm:mb-12 md:mb-14">
-          <AnimatedTitle />
+          <AnimatedTitle
+            onAnimationStart={() => setTitleAnimationStarted(true)}
+            onAnimationComplete={() => setTitleWritingComplete(true)}
+            showContent={titleWritingComplete}
+          />
 
-          {/* Search bar */}
-          <div className="max-w-xl mx-auto mb-4 px-4">
+          {/* Search and content - hidden until title writing completes */}
+          <div style={{
+            opacity: titleWritingComplete ? 1 : 0,
+            transition: 'opacity 0.4s ease-out'
+          }}>
+            {/* Search bar */}
+            <div className="max-w-xl mx-auto mb-4 px-4">
             <div className="relative">
               <svg
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2"
+                style={{ color: 'var(--color-text-secondary)' }}
                 width="18"
                 height="18"
                 viewBox="0 0 20 20"
@@ -253,7 +269,14 @@ export default function Home() {
                 placeholder="Search by person, song, lyric, or story"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-[#f5f3f0] border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-[16px] placeholder:text-sm sm:placeholder:text-base placeholder:text-gray-500"
+                className="w-full pl-11 pr-4 py-3 sm:py-3.5 rounded-full focus:outline-none focus:ring-2 text-sm sm:text-[15px] placeholder:text-xs sm:placeholder:text-sm font-merriweather"
+                style={{
+                  backgroundColor: 'var(--color-input-bg)',
+                  borderColor: 'var(--color-input-border)',
+                  color: 'var(--color-text-secondary)',
+                  borderWidth: '1px',
+                  borderStyle: 'solid'
+                }}
               />
             </div>
           </div>
@@ -265,11 +288,12 @@ export default function Home() {
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
-                  className={
-                    activeFilter === filter
-                      ? "px-3 sm:px-4 py-1.5 text-xs sm:text-sm rounded-full bg-gray-900 text-white font-semibold cursor-pointer"
-                      : "px-3 sm:px-4 py-1.5 text-xs sm:text-sm rounded-full border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
-                  }
+                  className={`px-3 sm:px-4 py-1.5 text-xs sm:text-sm rounded-full transition-colors cursor-pointer ${activeFilter === filter ? 'font-semibold' : 'border'}`}
+                  style={{
+                    backgroundColor: activeFilter === filter ? 'var(--color-nav-text-active)' : 'var(--color-input-bg)',
+                    color: activeFilter === filter ? 'var(--color-page-bg)' : 'var(--color-text-primary)',
+                    borderColor: activeFilter === filter ? 'transparent' : 'var(--color-border)'
+                  }}
                 >
                   {filter.charAt(0).toUpperCase() + filter.slice(1)}
                 </button>
@@ -277,26 +301,32 @@ export default function Home() {
             </div>
           )}
 
-          {/* Record count */}
-          {!isLoading && (
-            <p className="text-sm text-gray-600">
-              {searchQuery
-                ? `${records.length} record${records.length !== 1 ? 's' : ''} found`
-                : `${allRecords.length} Records Archived`
-              }
-            </p>
-          )}
+            {/* Record count */}
+            {!isLoading && (
+              <p className="text-xs sm:text-sm font-merriweather italic" style={{ color: 'var(--color-text-secondary)' }}>
+                {searchQuery
+                  ? `${records.length} record${records.length !== 1 ? 's' : ''} found`
+                  : `${allRecords.length} Records Archived`
+                }
+              </p>
+            )}
+          </div>
         </div>
 
-        {/* Masonry Grid with empty state */}
-        {searchQuery && records.length === 0 ? (
+        {/* Masonry Grid - fades in with other content */}
+        <div style={{
+          opacity: titleWritingComplete ? 1 : 0,
+          transition: 'opacity 0.4s ease-out'
+        }}>
+          {/* Masonry Grid with empty state */}
+          {searchQuery && records.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-gray-500 mb-2">No records found for &quot;{searchQuery}&quot;</p>
-            <p className="text-sm text-gray-400">Try different keywords or change your filter</p>
+            <p className="mb-2" style={{ color: 'var(--color-text-secondary)' }}>No records found for &quot;{searchQuery}&quot;</p>
+            <p className="text-sm" style={{ color: 'var(--color-text-secondary)', opacity: 0.7 }}>Try different keywords or change your filter</p>
           </div>
         ) : (
-          <MasonryGrid 
-            records={records} 
+          <MasonryGrid
+            records={records}
             onCardClick={(record) => {
               setShouldScrollToCard(false); // Don't scroll on normal clicks
               setSelectedRecord(record);
@@ -306,6 +336,7 @@ export default function Home() {
             }}
           />
         )}
+        </div>
       </main>
 
       {/* Modals */}

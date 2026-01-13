@@ -249,8 +249,8 @@ export default function LyricSelector({
   if (loading) {
     return (
       <div className="text-center py-12">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-3"></div>
-        <p className="text-gray-600">Loading lyrics...</p>
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 mb-3" style={{ borderColor: 'var(--color-text-secondary)' }}></div>
+        <p style={{ color: 'var(--color-text-secondary)' }}>Loading lyrics...</p>
       </div>
     );
   }
@@ -272,12 +272,12 @@ export default function LyricSelector({
   return (
     <div>
       {/* Selection counter */}
-      <div className="mb-6 text-sm text-gray-600">
+      <div className="mb-6 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
         {selectedLines.length} out of 4 lines selected
       </div>
 
       {/* Lyrics display - Rounded outlined box */}
-      <div className="border-2 border-gray-300 rounded-2xl p-6 mb-6">
+      <div className="border-2 rounded-2xl p-6 mb-6" style={{ borderColor: 'var(--color-input-border)' }}>
         <div className="max-h-96 overflow-y-auto pr-2">
           {sections.map((section, sectionIdx) => {
             let lineIndex = section.startIndex;
@@ -286,7 +286,7 @@ export default function LyricSelector({
               <div key={sectionIdx} className="mb-8 last:mb-0">
                 {/* Section header - Bold, no brackets */}
                 {section.header && (
-                  <h3 className="text-base font-bold mb-3 text-gray-900">
+                  <h3 className="text-base font-bold mb-3" style={{ color: 'var(--color-text-primary)' }}>
                     {section.header}
                   </h3>
                 )}
@@ -304,15 +304,17 @@ export default function LyricSelector({
                         onClick={() => handleLineClick(line, globalIndex)}
                         onMouseEnter={() => setHoveredIndex(globalIndex)}
                         onMouseLeave={() => setHoveredIndex(null)}
-                        className={`
-                          px-3 py-2 rounded cursor-pointer transition-colors
-                          ${isSelected
-                            ? 'bg-gray-700 text-white'
+                        className="px-3 py-2 rounded cursor-pointer transition-colors"
+                        style={{
+                          backgroundColor: isSelected
+                            ? 'rgba(200, 200, 200, 0.3)'
                             : isHovered
-                              ? 'bg-gray-200 text-gray-900'
-                              : 'text-gray-700'
-                          }
-                        `}
+                              ? 'var(--color-input-bg)'
+                              : 'transparent',
+                          color: isSelected
+                            ? '#ffffff'
+                            : 'var(--color-text-primary)'
+                        }}
                       >
                         {line}
                       </div>
@@ -326,13 +328,19 @@ export default function LyricSelector({
       </div>
 
       {/* Continue button */}
-      <button
-        onClick={() => onConfirm(selectedLines)}
-        disabled={selectedLines.length === 0}
-        className="w-full px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold"
-      >
-        Continue with {selectedLines.length} {selectedLines.length === 1 ? 'line' : 'lines'}
-      </button>
+      <div className="flex justify-center">
+        <button
+          onClick={() => onConfirm(selectedLines)}
+          disabled={selectedLines.length === 0}
+          className="px-8 sm:px-12 py-3 sm:py-4 rounded-full disabled:cursor-not-allowed transition-colors font-semibold text-sm sm:text-base shadow-md"
+          style={{
+            backgroundColor: 'rgba(128, 128, 128, 0.3)',
+            color: selectedLines.length > 0 ? '#ffffff' : 'rgba(255, 255, 255, 0.5)'
+          }}
+        >
+          Continue with {selectedLines.length} {selectedLines.length === 1 ? 'line' : 'lines'}
+        </button>
+      </div>
     </div>
   );
 }

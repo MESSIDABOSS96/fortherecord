@@ -146,8 +146,8 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
           <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
             {/* Filled portion */}
             <div
-              className="h-full bg-gray-900 rounded-full transition-all duration-300"
-              style={{ width: `${(step / 4) * 100}%` }}
+              className="h-full rounded-full transition-all duration-300"
+              style={{ width: `${(step / 4) * 100}%`, backgroundColor: '#808080' }}
             />
           </div>
         </div>
@@ -160,7 +160,7 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
           <div className="max-w-2xl mx-auto mt-6 sm:mt-8">
             <div className="text-center mb-8 sm:mb-12 px-4">
               <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Select a Song</h2>
-              <p className="text-gray-600 text-base sm:text-lg">
+              <p className="text-base sm:text-lg" style={{ color: '#B3B3B3' }}>
                 Find the song that reminds you of someone
               </p>
             </div>
@@ -182,8 +182,9 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
                 {/* Back button - desktop only, aligned with logo center */}
                 <button
                   onClick={() => setStep(1)}
-                  className="hidden md:block absolute md:-left-[240px] lg:-left-[280px] xl:-left-[320px] top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+                  className="hidden md:block absolute md:-left-[240px] lg:-left-[280px] xl:-left-[320px] top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
                   aria-label="Back"
+                  style={{ color: 'var(--color-text-primary)' }}
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -198,18 +199,31 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
                   value={tempName}
                   onChange={(e) => setTempName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleNameSubmit()}
-                  className="w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-[16px] sm:text-lg text-center"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 rounded-full focus:outline-none text-[16px] sm:text-lg text-center"
+                  style={{
+                    backgroundColor: 'var(--color-input-bg)',
+                    borderColor: 'var(--color-input-border)',
+                    color: 'var(--color-text-secondary)',
+                    borderWidth: '1px',
+                    borderStyle: 'solid'
+                  }}
                   placeholder="Mom, Sarah, my best friend..."
                   autoFocus
                 />
 
-                <button
-                  onClick={handleNameSubmit}
-                  disabled={!tempName.trim()}
-                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold text-base sm:text-lg"
-                >
-                  Continue
-                </button>
+                <div className="flex justify-center">
+                  <button
+                    onClick={handleNameSubmit}
+                    disabled={!tempName.trim()}
+                    className="px-8 sm:px-12 py-3 sm:py-4 rounded-full disabled:cursor-not-allowed transition-colors font-semibold text-sm sm:text-base shadow-md"
+                    style={{
+                      backgroundColor: 'rgba(128, 128, 128, 0.3)',
+                      color: tempName.trim() ? '#ffffff' : 'rgba(255, 255, 255, 0.5)'
+                    }}
+                  >
+                    Continue
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -224,15 +238,16 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
                 {/* Back button - desktop only, aligned with logo center */}
                 <button
                   onClick={() => setStep(2)}
-                  className="hidden md:block absolute md:-left-[240px] lg:-left-[280px] xl:-left-[320px] top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+                  className="hidden md:block absolute md:-left-[240px] lg:-left-[280px] xl:-left-[320px] top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
                   aria-label="Back"
+                  style={{ color: 'var(--color-text-primary)' }}
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M19 12H5M12 19l-7-7 7-7" />
                   </svg>
                 </button>
                 <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Select lyrics</h2>
-                <p className="text-gray-600 text-base sm:text-lg">
+                <p className="text-base sm:text-lg" style={{ color: '#B3B3B3' }}>
                   Click up to 4 lines that remind you of {forName}
                 </p>
               </div>
@@ -278,7 +293,7 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
         {/* Mobile preview - only show if lines selected */}
         {step === 3 && songData && selectedLines.length > 0 && (
           <div className="lg:hidden mt-8 px-6">
-            <h2 className="text-xl font-bold mb-4">Preview</h2>
+            <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Preview</h2>
             <RecordPreview
               songData={songData}
               lyricExcerpt={getSortedLyricText(selectedLines)}
@@ -292,18 +307,21 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
         {/* Step 4: Tell your story - Inline editing in expanded card */}
         {step === 4 && songData && (
           <div>
-            {/* Back button - desktop only */}
-            <div className="max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto px-4 mb-4">
-              <button
-                onClick={() => setStep(3)}
-                className="hidden md:flex items-center gap-2 text-gray-900 hover:bg-gray-100 rounded-full transition-colors px-3 py-2 md:-ml-[240px] lg:-ml-[280px] xl:-ml-[320px]"
-                aria-label="Back"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M19 12H5M12 19l-7-7 7-7" />
-                </svg>
-                <span className="text-sm font-medium">Back</span>
-              </button>
+            {/* Back button section - matching steps 2 and 3 structure */}
+            <div className="max-w-2xl mx-auto mt-6 sm:mt-8 mb-6 sm:mb-8">
+              <div className="relative px-4">
+                {/* Back button - desktop only, aligned with title sections */}
+                <button
+                  onClick={() => setStep(3)}
+                  className="hidden md:block absolute md:-left-[240px] lg:-left-[280px] xl:-left-[320px] top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
+                  aria-label="Back"
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                  </svg>
+                </button>
+              </div>
             </div>
             {/* Expanded card - matches RecordModal structure */}
             <div className="max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto px-4">
@@ -401,7 +419,11 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
                   <button
                     onClick={handleSubmit}
                     disabled={reflectionText.trim() === '' || isSubmitting}
-                    className="w-full sm:w-full md:w-auto px-8 sm:px-12 py-3 sm:py-4 bg-gray-900 text-white rounded-full font-semibold text-sm sm:text-base hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md"
+                    className="w-full sm:w-full md:w-auto px-8 sm:px-12 py-3 sm:py-4 rounded-full font-semibold text-sm sm:text-base disabled:cursor-not-allowed transition-colors shadow-md"
+                    style={{
+                      backgroundColor: 'rgba(128, 128, 128, 0.3)',
+                      color: (reflectionText.trim() !== '' && !isSubmitting) ? '#ffffff' : 'rgba(255, 255, 255, 0.5)'
+                    }}
                   >
                     {isSubmitting ? 'Publishing...' : 'Publish Record'}
                   </button>

@@ -3,11 +3,21 @@
 @tailwind utilities;
 
 :root {
-  /* Design Tokens - Colors */
-  --color-page-bg: #f5f3f0;
+  /* Design Tokens - Colors (Light Theme) */
+  --color-page-bg: #1F1F1F;
   --color-text-primary: #1a1a1a;
-  --color-text-secondary: #666666;
+  --color-text-secondary: #B3B3B3;
   --color-border: #e0e0e0;
+
+  /* UI Elements - Light */
+  --color-input-bg: #ffffff;
+  --color-input-border: #e0e0e0;
+  --color-nav-text: #666666;
+  --color-nav-text-active: #1a1a1a;
+  --color-nav-mobile-overlay: rgba(255, 255, 255, 0.6);
+  --color-modal-backdrop: rgba(0, 0, 0, 0.3);
+  --color-fab-bg: #1a1a1a;
+  --color-fab-text: #ffffff;
 
   /* Card Colors */
   --color-card-purple: #c4a8d8;
@@ -42,6 +52,39 @@
   --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
   --safe-area-inset-left: env(safe-area-inset-left, 0px);
   --safe-area-inset-right: env(safe-area-inset-right, 0px);
+}
+
+/* Dark Mode - Pure Black Theme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Base Colors - Pure Black */
+    --color-page-bg: #1F1F1F;
+    --color-text-primary: #f5f3f0;
+    --color-text-secondary: #B3B3B3;
+    --color-border: #2a2a2a;
+
+    /* UI Elements - Dark */
+    --color-input-bg: #1a1a1a;
+    --color-input-border: #2a2a2a;
+    --color-nav-text: #b8a99a;
+    --color-nav-text-active: #f5f3f0;
+    --color-nav-mobile-overlay: rgba(0, 0, 0, 0.85);
+    --color-modal-backdrop: rgba(0, 0, 0, 0.7);
+    --color-fab-bg: #f5f3f0;
+    --color-fab-text: #1a1410;
+
+    /* Card Colors - Slightly muted for dark mode */
+    --color-card-purple: #a088b5;
+    --color-card-blue: #7091c0;
+    --color-card-red: #c46b6b;
+    --color-card-gray: #808994;
+    --color-card-orange: #b5785a;
+
+    /* Enhanced Shadows for Dark Mode */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 2px 8px 0 rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+  }
 }
 
 body {
@@ -86,7 +129,7 @@ body {
 /* Utility classes */
 .blur-background {
   backdrop-filter: blur(8px);
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: var(--color-modal-backdrop);
 }
 
 /* Staggered entrance animation */
@@ -127,6 +170,22 @@ body {
   animation: slideUp 0.3s ease-out forwards;
 }
 
+/* Subtle pulse animation for tap hint */
+@keyframes subtlePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.95;
+  }
+}
+
+.animate-subtle-pulse {
+  animation: subtlePulse 2s ease-in-out infinite;
+}
+
 /* Handwriting character reveal animation */
 @keyframes writeIn {
   from {
@@ -139,28 +198,30 @@ body {
 
 .animate-write-in {
   animation: writeIn 0.35s ease-out forwards;
+  animation-fill-mode: forwards;
   display: inline-block;
   will-change: opacity;
   backface-visibility: hidden;
   -webkit-font-smoothing: subpixel-antialiased;
+  transform: translateZ(0); /* Force hardware acceleration on mobile */
+  -webkit-transform: translateZ(0);
+  animation-play-state: running; /* Ensure animation runs on mobile */
 }
 
-/* Subheader fade-in animation */
+/* Fade-in animation - simplified and bulletproof */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translate3d(0, 0, 0);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
   }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.4s ease-out forwards;
+  animation: fadeIn 0.6s ease-out forwards;
+  animation-fill-mode: forwards;
   will-change: opacity;
-  backface-visibility: hidden;
 }
 
 /* Dynamic viewport height support */

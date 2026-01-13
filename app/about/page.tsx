@@ -10,7 +10,7 @@ export default function AboutPage() {
       <main className="max-w-6xl mx-auto px-6 pt-6 sm:pt-8 md:pt-10 pb-12 pb-for-fab">
         {/* Title */}
         <div className="text-center mb-16">
-          <h1 className="text-6xl font-bold tracking-tight font-caveat">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight font-caveat">
             For the Record
           </h1>
         </div>
@@ -19,19 +19,19 @@ export default function AboutPage() {
         <div className="flex flex-col md:flex-row gap-16 md:gap-20 items-center mb-16">
           {/* Left: Text content - pushed more left */}
           <div className="flex-[1.2] prose max-w-none md:-ml-8">
-            <p className="text-gray-600 text-lg leading-relaxed mb-6 font-semibold">
+            <p className="text-lg leading-relaxed mb-6 font-semibold" style={{ color: 'var(--color-text-secondary)' }}>
               For the Record is an anonymous collection of lyrics that bring someone to mind, and the stories behind them.
             </p>
 
-            <p className="text-gray-600 leading-relaxed mb-6">
+            <p className="leading-relaxed mb-6" style={{ color: 'var(--color-text-secondary)' }}>
               Music is special because we get to shape its meaning around our own lives. The same song can mean completely different things to two different people, because we each pour our own memories, moments, and emotions into it.
             </p>
 
-            <p className="text-gray-600 leading-relaxed mb-6">
+            <p className="leading-relaxed mb-6" style={{ color: 'var(--color-text-secondary)' }}>
               And while music can attach itself to all kinds of experiences, the most powerful version of that is when it attaches to a person. A parent. A friend. A lover, past or present. A stranger who changed your perspective. We all have those songs that seem like they were written for your relationship with someone.
             </p>
 
-            <p className="text-gray-600 leading-relaxed mb-6">
+            <p className="leading-relaxed mb-6" style={{ color: 'var(--color-text-secondary)' }}>
               For the Record is a place to share a lyric that reminds you of someone, and to discover the songs other people hold on to and why. As it grows, For the Record hopes to bring people closer through music.
             </p>
           </div>

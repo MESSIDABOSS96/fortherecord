@@ -146,10 +146,17 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
   };
 
   const handleSelectTrack = async (track: SpotifyTrack) => {
-    let matchedColor = '#A39A91'; // Default fallback (kinari-2)
+    // Immediately trigger the callback with a default color to advance to next step
+    onSelectTrack({
+      song_title: track.name,
+      artist: track.artists,
+      album_art_url: track.albumArtMedium, // 300x300 image
+      spotify_track_id: track.id,
+      background_color: '#A39A91', // Default color, will be updated async
+    });
 
+    // Extract color in background (non-blocking)
     try {
-      // Use bucket color extraction API (10-color deterministic system)
       const response = await fetch('/api/bucket-extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -158,21 +165,12 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
 
       if (response.ok) {
         const colorData = await response.json();
-        matchedColor = colorData.bgColor;
-      } else {
-        console.error('Bucket extraction API failed:', await response.text());
+        // Color will be available for preview, but we don't block the flow
+        console.log('Extracted color:', colorData.bgColor);
       }
     } catch (error) {
-      console.error('Bucket extraction failed:', error);
+      console.error('Background color extraction failed:', error);
     }
-
-    onSelectTrack({
-      song_title: track.name,
-      artist: track.artists,
-      album_art_url: track.albumArtMedium, // 300x300 image
-      spotify_track_id: track.id,
-      background_color: matchedColor,
-    });
   };
 
   return (
@@ -180,12 +178,13 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
       {/* Search Input */}
       <div className="relative">
         <svg
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+          className="absolute left-4 top-1/2 transform -translate-y-1/2"
           width="18"
           height="18"
           viewBox="0 0 20 20"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
+          style={{ color: 'var(--color-text-secondary)' }}
         >
           <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" />
           <path d="M12.5 12.5L16 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -196,7 +195,14 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="w-full pl-11 pr-4 py-3.5 bg-[#f5f3f0] border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-[16px] placeholder:text-gray-500"
+          className="w-full pl-11 pr-4 py-3.5 rounded-full focus:outline-none text-[16px] placeholder:text-xs sm:placeholder:text-sm font-merriweather"
+          style={{
+            backgroundColor: 'var(--color-input-bg)',
+            borderColor: 'var(--color-input-border)',
+            color: 'var(--color-text-secondary)',
+            borderWidth: '1px',
+            borderStyle: 'solid'
+          }}
           placeholder="Songs, Albums or Artists"
           autoFocus
         />
@@ -204,8 +210,8 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
 
       {/* Loading State */}
       {loading && (
-        <div className="text-center py-8 text-gray-500">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <div className="text-center py-8" style={{ color: 'var(--color-text-secondary)' }}>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--color-text-secondary)' }}></div>
           <p className="mt-2 text-sm">Searching...</p>
         </div>
       )}
@@ -238,7 +244,7 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
       {/* Results */}
       {!loading && results.length > 0 && (
         <div ref={resultsRef} className="space-y-2 max-h-96 overflow-y-auto">
-          <p className="text-sm text-gray-600">{results.length} results</p>
+          <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{results.length} results</p>
           {results.map((track, index) => {
             const isSelected = selectedIndex === index;
             // Check if this specific track is the one being validated
@@ -251,13 +257,20 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
                 ref={isSelected ? selectedRef : null}
                 onClick={() => !isValidating && handleSelectTrack(track)}
                 disabled={isValidating}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left border border-gray-300 ${isSelected
-                  ? 'bg-gray-200 shadow-sm'
-                  : 'hover:bg-gray-200 hover:shadow-sm'
-                  } ${isValidating ? 'opacity-75 cursor-wait' : ''}`}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left border ${isValidating ? 'opacity-75 cursor-wait' : ''}`}
+                style={{
+                  borderColor: 'var(--color-input-border)',
+                  backgroundColor: isSelected ? 'var(--color-input-bg)' : 'transparent',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--color-input-bg)';
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
+                }}
               >
                 {/* Album Art */}
-                <div className="w-14 h-14 bg-gray-200 rounded flex-shrink-0 overflow-hidden relative">
+                <div className="w-14 h-14 rounded flex-shrink-0 overflow-hidden relative" style={{ backgroundColor: 'var(--color-input-border)' }}>
                   {track.albumArtSmall && (
                     <Image
                       src={track.albumArtSmall}
@@ -278,9 +291,9 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
 
                 {/* Track Info */}
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-gray-900 truncate">{track.name}</div>
-                  <div className="text-sm text-gray-600 truncate">{track.artists}</div>
-                  <div className="text-xs text-gray-500 truncate">{track.album}</div>
+                  <div className="font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{track.name}</div>
+                  <div className="text-sm truncate" style={{ color: 'var(--color-text-secondary)' }}>{track.artists}</div>
+                  <div className="text-xs truncate" style={{ color: 'var(--color-text-secondary)' }}>{track.album}</div>
                 </div>
               </button>
             )
@@ -290,7 +303,7 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
 
       {/* Empty State */}
       {!loading && query.trim() && results.length === 0 && !error && (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8" style={{ color: 'var(--color-text-secondary)' }}>
           <p className="text-sm">No results found for &quot;{query}&quot;</p>
           <p className="text-xs mt-1">Try searching with different keywords</p>
         </div>
@@ -298,7 +311,7 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
 
       {/* Initial State */}
       {!query.trim() && !loading && (
-        <div className="text-center py-8 text-gray-400">
+        <div className="text-center py-8" style={{ color: 'var(--color-text-secondary)' }}>
           <svg
             width="48"
             height="48"

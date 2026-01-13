@@ -57,9 +57,10 @@ export default function AddPage() {
         leftAction={currentStep > 1 ? (
           <button
             onClick={handleBack}
-            className="w-11 h-11 flex items-center justify-center text-gray-900 hover:bg-gray-100 rounded-full transition-colors active:bg-gray-200"
+            className="w-11 h-11 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors active:bg-gray-200"
             aria-label="Back"
             style={{
+              color: 'var(--color-text-primary)',
               touchAction: 'manipulation',
               WebkitTapHighlightColor: 'transparent',
             }}
@@ -75,9 +76,10 @@ export default function AddPage() {
         rightAction={
           <button
             onClick={handleCancel}
-            className="w-11 h-11 flex items-center justify-center text-gray-900 hover:bg-gray-100 rounded-full transition-colors active:bg-gray-200"
+            className="w-11 h-11 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors active:bg-gray-200"
             aria-label="Close"
             style={{
+              color: 'var(--color-text-primary)',
               touchAction: 'manipulation',
               WebkitTapHighlightColor: 'transparent',
             }}
