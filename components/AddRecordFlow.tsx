@@ -182,7 +182,7 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
                 {/* Back button - desktop only, aligned with logo center */}
                 <button
                   onClick={() => setStep(1)}
-                  className="hidden md:block absolute md:-left-[240px] lg:-left-[280px] xl:-left-[320px] top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
+                  className="hidden md:block absolute md:-left-[240px] lg:-left-[280px] xl:-left-[320px] top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full"
                   aria-label="Back"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
@@ -238,7 +238,7 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
                 {/* Back button - desktop only, aligned with logo center */}
                 <button
                   onClick={() => setStep(2)}
-                  className="hidden md:block absolute md:-left-[240px] lg:-left-[280px] xl:-left-[320px] top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
+                  className="hidden md:block absolute md:-left-[240px] lg:-left-[280px] xl:-left-[320px] top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full"
                   aria-label="Back"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
@@ -313,7 +313,7 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
                 {/* Back button - desktop only, aligned with title sections */}
                 <button
                   onClick={() => setStep(3)}
-                  className="hidden md:block absolute md:-left-[240px] lg:-left-[280px] xl:-left-[320px] top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
+                  className="hidden md:block absolute md:-left-[240px] lg:-left-[280px] xl:-left-[320px] top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full"
                   aria-label="Back"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
@@ -409,25 +409,18 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
               </div>
 
               {/* Publish button - sticky on mobile, regular on desktop */}
-              <div className="mt-6 sm:mt-8 md:flex md:justify-center px-4 md:relative md:bottom-auto">
-                <div
-                  className="md:static fixed bottom-0 left-0 right-0 p-4 bg-[#f5f3f0] border-t border-gray-200 md:border-0 md:p-0 md:bg-transparent"
+              <div className="mt-6 sm:mt-8 flex justify-center px-4">
+                <button
+                  onClick={handleSubmit}
+                  disabled={reflectionText.trim() === '' || isSubmitting}
+                  className="px-8 sm:px-12 py-3 sm:py-4 rounded-full font-semibold text-sm sm:text-base disabled:cursor-not-allowed transition-colors shadow-md"
                   style={{
-                    paddingBottom: `calc(1rem + var(--safe-area-inset-bottom))`,
+                    backgroundColor: 'rgba(128, 128, 128, 0.3)',
+                    color: (reflectionText.trim() !== '' && !isSubmitting) ? '#ffffff' : 'rgba(255, 255, 255, 0.5)'
                   }}
                 >
-                  <button
-                    onClick={handleSubmit}
-                    disabled={reflectionText.trim() === '' || isSubmitting}
-                    className="w-full sm:w-full md:w-auto px-8 sm:px-12 py-3 sm:py-4 rounded-full font-semibold text-sm sm:text-base disabled:cursor-not-allowed transition-colors shadow-md"
-                    style={{
-                      backgroundColor: 'rgba(128, 128, 128, 0.3)',
-                      color: (reflectionText.trim() !== '' && !isSubmitting) ? '#ffffff' : 'rgba(255, 255, 255, 0.5)'
-                    }}
-                  >
-                    {isSubmitting ? 'Publishing...' : 'Publish Record'}
-                  </button>
-                </div>
+                  {isSubmitting ? 'Publishing...' : 'Publish Record'}
+                </button>
               </div>
             </div>
           </div>
