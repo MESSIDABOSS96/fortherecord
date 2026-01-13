@@ -47,7 +47,7 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
                 <>
                   {/* Show leftAction on mobile, logo on desktop */}
                   <div className="md:hidden">{leftAction}</div>
-                  <Link href="/" onClick={handleNavClick} className="hidden md:block sm:-ml-2 lg:-ml-4">
+                  <Link href="/" onClick={handleNavClick} className="hidden md:block -ml-2 sm:-ml-4 md:-ml-6 lg:-ml-8">
                     <Image
                       src="/logo.webp"
                       alt="For the Record"
@@ -59,7 +59,7 @@ export default function HeaderNav({ onReset, leftAction, rightAction, hideMenu =
                   </Link>
                 </>
               ) : (
-                <Link href="/" onClick={handleNavClick} className="sm:-ml-2 lg:-ml-4">
+                <Link href="/" onClick={handleNavClick} className="-ml-2 sm:-ml-4 md:-ml-6 lg:-ml-8">
                   <Image
                     src="/logo.webp"
                     alt="For the Record"
