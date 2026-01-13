@@ -27,7 +27,7 @@ export default function AddRecordInputs({
         <textarea
           value={reflectionText}
           onChange={(e) => onReflectionChange(e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 min-h-48 text-base"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 min-h-48 text-base"
           placeholder="Why does this song/lyric remind you of them? Tell their story..."
         />
         <p className="text-xs text-gray-500 mt-1">

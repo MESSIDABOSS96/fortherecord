@@ -168,7 +168,7 @@ export default function AddRecordModal({
                   onChange={(e) =>
                     setFormData({ ...formData, lyric_excerpt: e.target.value })
                   }
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 min-h-32"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 min-h-32"
                   placeholder="Paste the lyrics that remind you of them..."
                   required
                 />
@@ -196,7 +196,7 @@ export default function AddRecordModal({
                   onChange={(e) =>
                     setFormData({ ...formData, for_name: e.target.value })
                   }
-                  className="w-full px-4 py-3.5 bg-[#f5f3f0] border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-sm placeholder:text-gray-500"
+                  className="w-full px-4 py-3.5 bg-[#f5f3f0] border border-gray-300 rounded-full focus:outline-none focus:ring-0 text-sm placeholder:text-gray-500"
                   placeholder="e.g., Emma"
                   required
                 />
@@ -211,7 +211,7 @@ export default function AddRecordModal({
                   onChange={(e) =>
                     setFormData({ ...formData, reflection_text: e.target.value })
                   }
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 min-h-48"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 min-h-48"
                   placeholder="Why does this song/lyric remind you of them? Tell their story..."
                   required
                 />

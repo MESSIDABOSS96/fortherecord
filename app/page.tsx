@@ -266,10 +266,10 @@ export default function Home() {
               </svg>
               <input
                 type="text"
-                placeholder="Search by person, song, lyric, or story"
+                placeholder="Search by person, song, artist, or story"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 sm:py-3.5 rounded-full focus:outline-none focus:ring-2 text-sm sm:text-[15px] placeholder:text-xs sm:placeholder:text-sm font-merriweather"
+                className="w-full pl-11 pr-4 py-3 sm:py-3.5 rounded-full focus:outline-none text-sm sm:text-[15px] placeholder:text-xs sm:placeholder:text-sm font-merriweather"
                 style={{
                   backgroundColor: 'var(--color-input-bg)',
                   borderColor: 'var(--color-input-border)',
