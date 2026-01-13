@@ -261,3 +261,12 @@ body {
 .story-scrollable::-webkit-scrollbar-thumb:hover {
   background-color: rgba(0, 0, 0, 0.7);
 }
+
+/* Cursor pointer for all clickable elements */
+button:not(:disabled),
+a,
+[role="button"],
+[onClick],
+.cursor-pointer {
+  cursor: pointer;
+}
