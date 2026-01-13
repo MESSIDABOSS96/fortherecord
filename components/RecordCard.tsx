@@ -5,6 +5,7 @@ import { calculateCardSize, CARD_SIZE_CONFIG } from "@/utils/cardSizing";
 import { cleanSongTitle } from "@/utils/cleanSongTitle";
 import Image from "next/image";
 import { useRef, useState } from "react";
+import html2canvas from "html2canvas";
 
 interface RecordCardProps {
   record: Record;
@@ -94,9 +95,6 @@ export default function RecordCard({ record, onClick, onLongPress }: RecordCardP
     setIsCopying(true);
 
     try {
-      // Dynamically import html2canvas only on client side
-      const html2canvas = (await import('html2canvas')).default;
-      
       // Convert card to canvas with optimized settings
       const canvas = await html2canvas(cardRef.current, {
         backgroundColor: record.background_color || null, // Use card background
