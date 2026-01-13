@@ -2,10 +2,8 @@
 
 import { Record } from "@/types/record";
 import { cleanSongTitle } from "@/utils/cleanSongTitle";
-import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useScrollLock } from "@/hooks/useScrollLock";
-import { useRouter } from "next/navigation";
 
 interface RecordModalProps {
   record: Record;
@@ -14,7 +12,12 @@ interface RecordModalProps {
 
 export default function RecordModal({ record, onClose }: RecordModalProps) {
   const router = useRouter();
-  
+
+  // Animation state
+  const [isAnimating, setIsAnimating] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
   // Lock scroll when modal is open (handles iOS properly)
   useScrollLock(true);
 
@@ -107,6 +110,27 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
     return () => window.removeEventListener("keydown", handleEscape);
   }, [onClose]);
 
+  // Detect mobile viewport and reduced motion preference
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(motionQuery.matches);
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Trigger flip animation on mobile
+  useEffect(() => {
+    if (isMobile && !prefersReducedMotion) {
+      setIsAnimating(true);
+      const timer = setTimeout(() => setIsAnimating(false), 500);
+      return () => clearTimeout(timer);
+    } else {
+      setIsAnimating(false);
+    }
+  }, [isMobile, prefersReducedMotion]);
 
   const formattedDate = record.created_at.toLocaleDateString("en-US", {
     year: "numeric",
@@ -116,11 +140,11 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 blur-background"
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 blur-background ${isMobile && !prefersReducedMotion ? 'animate-backdrop-fade' : ''}`}
       onClick={onClose}
     >
       <div
-        className="relative max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl w-full rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col p-4 sm:p-6 md:p-8 max-h-[90vh] overflow-y-auto"
+        className={`relative max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl w-full rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col p-6 sm:p-8 md:p-10 max-h-[90vh] overflow-y-auto ${isMobile && !prefersReducedMotion && isAnimating ? 'animate-flip-in' : ''}`}
         style={{
           backgroundColor: record.background_color,
           boxShadow: "var(--shadow-lg)",
@@ -150,76 +174,19 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
           </svg>
         </button>
 
-        {/* Content box */}
-        <div className="flex flex-col md:flex-row mb-6 sm:mb-8 relative">
-          {/* Left panel: Song info + Lyrics */}
-          <div className="md:w-1/2 p-4 sm:p-6 md:p-8 flex flex-col">
-            {/* Album art + Song info */}
-            <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-black/20 rounded-sm flex-shrink-0 overflow-hidden">
-                {record.album_art_url ? (
-                  <Image
-                    src={record.album_art_url}
-                    alt={record.song_title}
-                    width={64}
-                    height={64}
-                    priority
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <svg
-                      width="32"
-                      height="32"
-                      viewBox="0 0 32 32"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle
-                        cx="16"
-                        cy="16"
-                        r="14"
-                        stroke="white"
-                        strokeWidth="2"
-                      />
-                      <circle cx="16" cy="16" r="6" fill="white" />
-                    </svg>
-                  </div>
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="font-bold text-lg sm:text-xl text-gray-900">
-                  {cleanSongTitle(record.song_title)}
-                </div>
-                <div className="text-sm sm:text-base text-gray-700">{record.artist}</div>
-              </div>
-            </div>
-
-            {/* Lyric excerpt */}
-            <div className="text-gray-900 font-bold text-xl sm:text-2xl leading-snug whitespace-pre-wrap">
-              {record.lyric_excerpt}
-            </div>
+        {/* Main content - centered story */}
+        <div className="flex flex-col items-center justify-center min-h-[40vh] py-6 sm:py-8">
+          <div className="text-sm sm:text-base font-medium italic text-gray-800 uppercase tracking-wide mb-6 sm:mb-8 text-center">
+            FOR {record.for_name.toUpperCase()}
           </div>
 
-          {/* Vertical divider */}
-          <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-4/5 w-px bg-black/20"></div>
-
-          {/* Horizontal divider for mobile */}
-          <div className="md:hidden h-px bg-black/20 my-4"></div>
-
-          {/* Right panel: Reflection */}
-          <div className="md:w-1/2 p-4 sm:p-6 md:p-8 flex flex-col">
-            <div className="text-sm sm:text-base font-medium italic text-gray-800 uppercase tracking-wide mb-3 sm:mb-4 text-center">
-              FOR {record.for_name.toUpperCase()}
-            </div>
-            <div className="text-sm sm:text-base text-gray-900 leading-relaxed overflow-y-auto flex-1 text-center">
-              {record.reflection_text}
-            </div>
+          <div className="text-base sm:text-lg md:text-xl text-gray-900 leading-relaxed text-center max-w-2xl px-4">
+            {record.reflection_text}
           </div>
         </div>
 
-        {/* Footer - outside the bordered box */}
-        <div className="text-center mt-6 sm:mt-8 md:mt-4 relative">
+        {/* Footer */}
+        <div className="text-center mt-8 sm:mt-10 relative">
           <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-gray-900">
             Posted on {formattedDate}
           </div>
@@ -236,7 +203,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
               viewBox="0 0 100 115"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="text-gray-900"
+              style={{ color: '#ffffff' }}
             >
               <path d="m89.75 46.293c-0.023438 1.9531-0.83203 3.8164-2.25 5.1641l-23.293 23.25c-2.0547 2.1172-5.2031 2.7461-7.9141 1.5859-2.7305-1.1094-4.5117-3.7656-4.5-6.7109v-7.582c-12.91 0.84766-24.535 8.1055-30.961 19.332-0.96484 1.8203-2.8555 2.957-4.9141 2.9609-0.49219-0.011719-0.98438-0.082031-1.4609-0.21094-2.4531-0.62891-4.168-2.8398-4.1641-5.375v-3.25c0.003906-11.336 4.3047-22.246 12.035-30.535 7.7344-8.2891 18.32-13.34 29.629-14.129v-7.793c-0.011719-2.9453 1.7734-5.6016 4.5-6.707 2.7148-1.1641 5.8633-0.53516 7.918 1.582l23.125 23.25c1.418 1.3477 2.2266 3.2109 2.25 5.168z" fill="currentColor"/>
             </svg>
