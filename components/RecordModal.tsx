@@ -176,7 +176,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
         </button>
 
         {/* Main content - centered story */}
-        <div className="flex flex-col items-center justify-center min-h-[40vh] py-6 sm:py-8">
+        <div className="flex flex-col items-center justify-center py-6 sm:py-8">
           <div className="text-sm sm:text-base font-medium italic text-gray-800 uppercase tracking-wide mb-6 sm:mb-8 text-center">
             FOR {record.for_name.toUpperCase()}
           </div>
@@ -204,7 +204,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
               viewBox="0 0 100 115"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              style={{ color: '#ffffff' }}
+              style={{ color: '#000000' }}
             >
               <path d="m89.75 46.293c-0.023438 1.9531-0.83203 3.8164-2.25 5.1641l-23.293 23.25c-2.0547 2.1172-5.2031 2.7461-7.9141 1.5859-2.7305-1.1094-4.5117-3.7656-4.5-6.7109v-7.582c-12.91 0.84766-24.535 8.1055-30.961 19.332-0.96484 1.8203-2.8555 2.957-4.9141 2.9609-0.49219-0.011719-0.98438-0.082031-1.4609-0.21094-2.4531-0.62891-4.168-2.8398-4.1641-5.375v-3.25c0.003906-11.336 4.3047-22.246 12.035-30.535 7.7344-8.2891 18.32-13.34 29.629-14.129v-7.793c-0.011719-2.9453 1.7734-5.6016 4.5-6.707 2.7148-1.1641 5.8633-0.53516 7.918 1.582l23.125 23.25c1.418 1.3477 2.2266 3.2109 2.25 5.168z" fill="currentColor"/>
             </svg>
