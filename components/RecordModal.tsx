@@ -4,6 +4,7 @@ import { Record } from "@/types/record";
 import { cleanSongTitle } from "@/utils/cleanSongTitle";
 import { useEffect, useState } from "react";
 import { useScrollLock } from "@/hooks/useScrollLock";
+import { useRouter } from "next/navigation";
 
 interface RecordModalProps {
   record: Record;
