@@ -201,6 +201,16 @@ export default function Home() {
     return () => window.removeEventListener('focus', handleFocus);
   }, [fetchRecords]);
 
+  // Refetch records when returning from add page with refresh parameter
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('refresh')) {
+      fetchRecords();
+      // Clean up the URL by removing the refresh parameter
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [fetchRecords]);
+
   // Memoized filtered records with debouncing
   const [debouncedQuery, setDebouncedQuery] = useState('');
 

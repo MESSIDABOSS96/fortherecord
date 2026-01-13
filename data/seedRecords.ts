@@ -13,9 +13,9 @@ export const seedRecords: Record[] = [
     "artist": "Radiohead",
     "album_art_url": "https://i.scdn.co/image/ab67616d00001e02de3c04b5fc750b68899b20a9",
     "lyric_excerpt": "In the deepest ocean\nThe bottom of the sea\nYour eyes\nThey turn me",
-    "reflection_text": "I've never told you this, but I think I've been in love with you for three years. We're best friends and I know I can never say it out loud because it would ruin everything. Your eyes do turn me - every time you look at me I feel like I'm drowning in the best possible way. This song captures that feeling perfectly, of falling deeper and deeper into something beautiful and terrifying, knowing there's no coming back up.",
+    "reflection_text": "even when i'm having a bad day, you'll just look at me and i'll feel like myself again",
     "background_color": "#FF7518",
-    "created_at": new Date("2025-11-20T00:00:00.000Z")
+    "created_at": new Date("2025-12-28T00:00:00.000Z")
   },
   {
     "id": "51",

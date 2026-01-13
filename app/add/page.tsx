@@ -42,8 +42,9 @@ export default function AddPage() {
         throw new Error('Failed to create record');
       }
 
-      // Navigate back to home
-      router.push('/');
+      // Navigate back to home and force refresh to show new record
+      router.push('/?refresh=' + Date.now());
+      router.refresh();
     } catch (error) {
       console.error('Error creating record:', error);
       alert('Failed to create record. Please try again.');
