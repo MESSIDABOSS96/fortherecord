@@ -284,7 +284,7 @@ export default function Home() {
           {/* Filter pills - only show when searching */}
           {searchQuery && (
             <div className="flex flex-wrap justify-center gap-2 mb-4 px-4">
-              {(['all', 'songs', 'lyrics', 'stories', 'people'] as FilterType[]).map((filter) => (
+              {(['all', 'songs', 'artists', 'lyrics', 'stories', 'people'] as FilterType[]).map((filter) => (
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}

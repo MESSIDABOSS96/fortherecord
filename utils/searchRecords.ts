@@ -1,6 +1,6 @@
 import { Record } from '@/types/record';
 
-export type FilterType = 'all' | 'songs' | 'lyrics' | 'stories' | 'people';
+export type FilterType = 'all' | 'songs' | 'artists' | 'lyrics' | 'stories' | 'people';
 
 /**
  * Searches records based on query string and filter type.
@@ -37,6 +37,9 @@ export function searchRecords(
           record.song_title.toLowerCase().includes(normalizedQuery) ||
           record.artist.toLowerCase().includes(normalizedQuery)
         );
+
+      case 'artists':
+        return record.artist.toLowerCase().includes(normalizedQuery);
 
       case 'lyrics':
         return record.lyric_excerpt.toLowerCase().includes(normalizedQuery);
