@@ -176,7 +176,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
         </button>
 
         {/* Main content - centered story */}
-        <div className="flex flex-col items-center justify-center py-6 sm:py-8">
+        <div className="flex flex-col items-center pt-2 sm:pt-4 pb-6 sm:pb-8">
           <div className="text-sm sm:text-base font-medium italic text-gray-800 uppercase tracking-wide mb-6 sm:mb-8 text-center">
             FOR {record.for_name.toUpperCase()}
           </div>
