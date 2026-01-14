@@ -176,8 +176,8 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
         </button>
 
         {/* Main content - centered story */}
-        <div className="flex flex-col items-center pt-2 sm:pt-4 pb-6 sm:pb-8">
-          <div className="text-sm sm:text-base font-medium italic text-gray-800 uppercase tracking-wide mb-6 sm:mb-8 text-center">
+        <div className="flex flex-col items-center pt-2 sm:pt-3 md:pt-4 pb-4 sm:pb-5 md:pb-6">
+          <div className="text-sm sm:text-base font-medium italic text-gray-800 uppercase tracking-wide mb-4 sm:mb-5 md:mb-6 text-center">
             FOR {record.for_name.toUpperCase()}
           </div>
 
@@ -187,7 +187,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8 sm:mt-10 relative">
+        <div className="text-center mt-6 sm:mt-7 md:mt-8 relative">
           <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-gray-900">
             Posted on {formattedDate}
           </div>
