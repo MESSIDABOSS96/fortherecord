@@ -135,20 +135,22 @@ export default function Home() {
     }
   }, [selectedRecord, shouldScrollToCard]);
 
-  // Scroll to card when modal closes
+  // Scroll to card when modal closes (mobile only)
   const handleCloseModal = () => {
     if (selectedRecord) {
-      // Small delay to ensure modal is closed
-      setTimeout(() => {
-        const cardElement = document.querySelector(`[data-card-id="${selectedRecord.id}"]`);
-        if (cardElement) {
-          cardElement.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center',
-            inline: 'nearest'
-          });
-        }
-      }, 100);
+      // Only scroll to card on mobile
+      if (window.innerWidth < 768) {
+        setTimeout(() => {
+          const cardElement = document.querySelector(`[data-card-id="${selectedRecord.id}"]`);
+          if (cardElement) {
+            cardElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+              inline: 'nearest'
+            });
+          }
+        }, 100);
+      }
     }
     setSelectedRecord(null);
   };
