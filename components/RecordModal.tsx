@@ -122,16 +122,16 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Trigger flip animation on mobile
+  // Trigger flip animation on all devices
   useEffect(() => {
-    if (isMobile && !prefersReducedMotion) {
+    if (!prefersReducedMotion) {
       setIsAnimating(true);
       const timer = setTimeout(() => setIsAnimating(false), 500);
       return () => clearTimeout(timer);
     } else {
       setIsAnimating(false);
     }
-  }, [isMobile, prefersReducedMotion]);
+  }, [prefersReducedMotion]);
 
   const formattedDate = record.created_at.toLocaleDateString("en-US", {
     year: "numeric",
@@ -141,11 +141,11 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 blur-background ${isMobile && !prefersReducedMotion ? 'animate-backdrop-fade' : ''}`}
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 blur-background ${!prefersReducedMotion ? 'animate-backdrop-fade' : ''}`}
       onClick={onClose}
     >
       <div
-        className={`relative max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl w-full rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col p-6 sm:p-8 md:p-10 max-h-[90vh] overflow-y-auto ${isMobile && !prefersReducedMotion && isAnimating ? 'animate-flip-in' : ''}`}
+        className={`relative max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl w-full rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col p-6 sm:p-8 md:p-10 max-h-[90vh] overflow-y-auto ${!prefersReducedMotion && isAnimating ? 'animate-flip-in' : ''}`}
         style={{
           backgroundColor: record.background_color,
           boxShadow: "var(--shadow-lg)",
