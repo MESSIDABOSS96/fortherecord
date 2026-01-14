@@ -18,6 +18,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
   const [isAnimating, setIsAnimating] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   // Lock scroll when modal is open (handles iOS properly)
   useScrollLock(true);
@@ -78,13 +79,15 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
     if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
       try {
         await navigator.clipboard.writeText(shareUrl);
-        alert('Link copied to clipboard!');
+        // Show iOS-styled toast notification
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 2500);
         return;
       } catch (err) {
         console.error('Failed to copy:', err);
       }
     }
-    
+
     // Final fallback: show URL in prompt (non-iOS only)
     if (!isIOS) {
       prompt('Copy this link:', shareUrl);
@@ -145,7 +148,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
       onClick={onClose}
     >
       <div
-        className={`relative max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl w-full rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col p-6 sm:p-8 md:p-10 max-h-[90vh] overflow-y-auto ${!prefersReducedMotion && isAnimating ? 'animate-flip-in' : ''}`}
+        className={`relative max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-2xl w-full rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col p-6 sm:p-8 md:p-10 max-h-[90vh] overflow-y-auto ${!prefersReducedMotion && isAnimating ? 'animate-flip-in' : ''}`}
         style={{
           backgroundColor: record.background_color,
           boxShadow: "var(--shadow-lg)",
@@ -176,7 +179,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
         </button>
 
         {/* Main content - centered story */}
-        <div className="flex flex-col items-center pt-2 sm:pt-3 md:pt-4 pb-4 sm:pb-5 md:pb-6">
+        <div className="flex flex-col items-center pt-1 sm:pt-2 md:pt-2 pb-4 sm:pb-5 md:pb-6">
           <div className="text-sm sm:text-base font-medium italic text-gray-800 uppercase tracking-wide mb-4 sm:mb-5 md:mb-6 text-center">
             FOR {record.for_name.toUpperCase()}
           </div>
@@ -192,7 +195,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
             Posted on {formattedDate}
           </div>
 
-          {/* Share button - mobile only, aligned with footer text */}
+          {/* Share button - mobile: next to date, desktop: bottom right */}
           <button
             onClick={handleShare}
             className="md:hidden absolute -right-2 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center z-10"
@@ -210,7 +213,42 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
             </svg>
           </button>
         </div>
+
+        {/* Desktop share button - bottom right */}
+        <button
+          onClick={handleShare}
+          className="hidden md:flex absolute bottom-6 right-6 w-10 h-10 items-center justify-center rounded-full transition-opacity hover:opacity-70 z-10"
+          aria-label="Share"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 100 115"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ color: '#000000' }}
+          >
+            <path d="m89.75 46.293c-0.023438 1.9531-0.83203 3.8164-2.25 5.1641l-23.293 23.25c-2.0547 2.1172-5.2031 2.7461-7.9141 1.5859-2.7305-1.1094-4.5117-3.7656-4.5-6.7109v-7.582c-12.91 0.84766-24.535 8.1055-30.961 19.332-0.96484 1.8203-2.8555 2.957-4.9141 2.9609-0.49219-0.011719-0.98438-0.082031-1.4609-0.21094-2.4531-0.62891-4.168-2.8398-4.1641-5.375v-3.25c0.003906-11.336 4.3047-22.246 12.035-30.535 7.7344-8.2891 18.32-13.34 29.629-14.129v-7.793c-0.011719-2.9453 1.7734-5.6016 4.5-6.707 2.7148-1.1641 5.8633-0.53516 7.918 1.582l23.125 23.25c1.418 1.3477 2.2266 3.2109 2.25 5.168z" fill="currentColor"/>
+          </svg>
+        </button>
       </div>
+
+      {/* iOS-styled toast notification */}
+      {showToast && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 animate-slide-up">
+          <div
+            className="rounded-2xl px-6 py-3 shadow-2xl"
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.85)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+            }}
+          >
+            <p className="text-white text-sm font-medium">Link copied to clipboard</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
