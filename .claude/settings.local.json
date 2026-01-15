@@ -28,7 +28,18 @@
       "Bash(git revert:*)",
       "Bash(grep:*)",
       "Bash(git restore:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(ipconfig getifaddr:*)",
+      "Bash(npx ngrok:*)",
+      "Bash(npx localtunnel:*)",
+      "Bash(/usr/libexec/ApplicationFirewall/socketfilterfw:*)",
+      "Bash(jq:*)",
+      "Bash(npx dotenv:*)",
+      "Bash(source .env.local)",
+      "Bash(while read line)",
+      "Bash(do export \"$line\")",
+      "Bash(done)",
+      "Bash(pkill:*)"
     ]
   }
 }
