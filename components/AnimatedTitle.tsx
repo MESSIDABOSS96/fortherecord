@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 
+const ANIMATION_KEY = "ftr_title_animated";
+
 interface AnimatedTitleProps {
   onAnimationStart?: () => void;
   onAnimationComplete?: () => void;
@@ -32,16 +34,20 @@ export default function AnimatedTitle({ onAnimationStart, onAnimationComplete, s
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (prefersReducedMotion) {
-      // Skip animation for users who prefer reduced motion
+    // Check if already animated this session (persists across client-side nav, resets on reload)
+    const hasAnimated = sessionStorage.getItem(ANIMATION_KEY) === "true";
+
+    if (prefersReducedMotion || hasAnimated) {
+      // Skip animation for users who prefer reduced motion or already animated this session
       setShouldAnimate(false);
       onAnimationStart?.();
       onAnimationComplete?.();
       return;
     }
 
-    // Start animation
+    // Start animation and mark as played for this session
     setShouldAnimate(true);
+    sessionStorage.setItem(ANIMATION_KEY, "true");
     onAnimationStart?.();
 
     // Letter stagger completes, then trigger completion quickly
