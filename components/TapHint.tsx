@@ -21,9 +21,9 @@ export default function TapHint({ onCardOpened, isMenuOpen, isSearching, isOnHom
     const wasDismissed = localStorage.getItem(HINT_DISMISSED_KEY);
 
     if (!wasDismissed) {
-      // Show hint after site content loads (title animation + content fade)
+      // Show hint after lyric cards are displayed
       setShouldRender(true);
-      const timer = setTimeout(() => setIsVisible(true), 1200);
+      const timer = setTimeout(() => setIsVisible(true), 1800);
       return () => clearTimeout(timer);
     } else {
       setIsPermanentlyDismissed(true);
@@ -73,7 +73,7 @@ export default function TapHint({ onCardOpened, isMenuOpen, isSearching, isOnHom
         className="rounded-full shadow-lg px-4 py-2.5 flex items-center gap-3 animate-slide-up animate-subtle-pulse"
         style={{
           backgroundColor: '#1a1a1a',
-          color: 'var(--color-text-primary)',
+          color: '#ffffff',
           maxWidth: 'calc(100% - 2rem)'
         }}
         role="status"
