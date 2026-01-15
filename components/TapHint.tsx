@@ -70,11 +70,10 @@ export default function TapHint({ onCardOpened, isMenuOpen, isSearching, isOnHom
       }}
     >
       <div
-        className="rounded-full shadow-lg px-4 py-2.5 flex items-center gap-3 animate-slide-up animate-subtle-pulse"
+        className="rounded-full shadow-lg pl-4 pr-3 py-2.5 flex items-center gap-2 animate-slide-up animate-subtle-pulse"
         style={{
           backgroundColor: '#1a1a1a',
-          color: '#ffffff',
-          maxWidth: 'calc(100% - 2rem)'
+          color: '#ffffff'
         }}
         role="status"
         aria-live="polite"
@@ -102,7 +101,7 @@ export default function TapHint({ onCardOpened, isMenuOpen, isSearching, isOnHom
         {/* Close button */}
         <button
           onClick={handleDismiss}
-          className="flex-shrink-0 ml-1 w-6 h-6 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors"
+          className="flex-shrink-0 w-6 h-6 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors"
           aria-label="Dismiss hint"
         >
           <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
