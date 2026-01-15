@@ -281,7 +281,7 @@ export default function Home() {
                 placeholder="Search by person, song, artist, or story"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 sm:py-3.5 rounded-full focus:outline-none text-sm sm:text-[15px] placeholder:text-xs sm:placeholder:text-sm font-merriweather"
+                className="w-full pl-11 pr-4 py-3 sm:py-3.5 rounded-full focus:outline-none text-sm sm:text-[15px] placeholder:text-xs sm:placeholder:text-sm"
                 style={{
                   backgroundColor: 'var(--color-input-bg)',
                   borderColor: 'var(--color-input-border)',
@@ -315,7 +315,7 @@ export default function Home() {
 
             {/* Record count */}
             {!isLoading && (
-              <p className="text-xs sm:text-sm font-merriweather italic" style={{ color: 'var(--color-text-secondary)' }}>
+              <p className="text-xs sm:text-sm italic" style={{ color: 'var(--color-text-secondary)' }}>
                 {searchQuery
                   ? `${records.length} record${records.length !== 1 ? 's' : ''} found`
                   : `${allRecords.length} Records Archived`

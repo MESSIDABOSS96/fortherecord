@@ -43,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${caveat.variable} ${inter.variable} ${merriweather.variable}`}>
+    <html lang="en" className={`${caveat.variable} ${inter.variable} ${merriweather.variable}`} style={{ colorScheme: 'light only' }}>
       <body className={inter.className}>{children}</body>
     </html>
   );

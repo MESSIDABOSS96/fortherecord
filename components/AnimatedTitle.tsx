@@ -2,9 +2,6 @@
 
 import { useState, useEffect } from "react";
 
-// Module-level flag that resets on full page reload but persists during client-side navigation
-let hasAnimatedInThisPageLoad = false;
-
 interface AnimatedTitleProps {
   onAnimationStart?: () => void;
   onAnimationComplete?: () => void;
@@ -35,23 +32,22 @@ export default function AnimatedTitle({ onAnimationStart, onAnimationComplete, s
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (prefersReducedMotion || hasAnimatedInThisPageLoad) {
-      // Skip animation for users who prefer reduced motion or already animated
+    if (prefersReducedMotion) {
+      // Skip animation for users who prefer reduced motion
       setShouldAnimate(false);
       onAnimationStart?.();
       onAnimationComplete?.();
       return;
     }
 
-    // Start animation and mark as played
+    // Start animation
     setShouldAnimate(true);
-    hasAnimatedInThisPageLoad = true;
     onAnimationStart?.();
 
-    // Title fades in over 0.5s, then trigger completion
+    // Letter stagger completes, then trigger completion quickly
     const timer = setTimeout(() => {
       onAnimationComplete?.();
-    }, 500);
+    }, 400);
 
     return () => clearTimeout(timer);
   }, [fontLoaded, onAnimationStart, onAnimationComplete]);
@@ -60,10 +56,10 @@ export default function AnimatedTitle({ onAnimationStart, onAnimationComplete, s
   if (shouldAnimate === null || !fontLoaded) {
     return (
       <>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4 font-caveat" style={{ opacity: 0 }}>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 tracking-tight px-4" style={{ opacity: 0 }}>
           {text}
         </h1>
-        <p className="text-sm sm:text-base mb-8 sm:mb-12 md:mb-[60px] px-4 font-merriweather" style={{ color: 'var(--color-text-secondary)', opacity: 0 }}>
+        <p className="text-sm sm:text-base mb-8 sm:mb-12 md:mb-[60px] px-4 font-light" style={{ color: 'var(--color-text-secondary)', opacity: 0 }}>
           {subheader}
         </p>
       </>
@@ -74,31 +70,34 @@ export default function AnimatedTitle({ onAnimationStart, onAnimationComplete, s
     // No animation - show regular text
     return (
       <>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4 font-caveat">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 tracking-tight px-4">
           {text}
         </h1>
-        <p className="text-sm sm:text-base mb-8 sm:mb-12 md:mb-[60px] px-4 font-merriweather" style={{ color: 'var(--color-text-secondary)' }}>
+        <p className="text-sm sm:text-base mb-8 sm:mb-12 md:mb-[60px] px-4 font-light" style={{ color: 'var(--color-text-secondary)' }}>
           {subheader}
         </p>
       </>
     );
   }
 
-  // Simple, quick fade-in animation
+  // Letter stagger animation
   return (
     <>
-      <h1
-        className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 tracking-tight px-4 font-caveat animate-fade-in"
-        style={{
-          animationDelay: '0s',
-          animationDuration: '0.5s',
-          opacity: 0
-        }}
-      >
-        {text}
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 tracking-tight px-4">
+        {text.split('').map((char, index) => (
+          <span
+            key={index}
+            className="animate-write-in"
+            style={{
+              animationDelay: `${index * 40}ms`
+            }}
+          >
+            {char === ' ' ? '\u00A0' : char}
+          </span>
+        ))}
       </h1>
       <p
-        className="text-sm sm:text-base mb-8 sm:mb-12 md:mb-[60px] px-4 font-merriweather transition-opacity duration-400"
+        className="text-sm sm:text-base mb-8 sm:mb-12 md:mb-[60px] px-4 font-light transition-opacity duration-400"
         style={{
           color: 'var(--color-text-secondary)',
           opacity: showContent ? 1 : 0

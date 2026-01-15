@@ -229,19 +229,22 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
 
             {/* Right panel: Reflection */}
             <div className="md:w-1/2 md:pl-8 flex flex-col border-t md:border-t-0 border-black/10 pt-6 md:pt-0">
-              <div className="text-sm sm:text-base font-medium italic text-gray-800 uppercase tracking-wide mb-4 text-center">
-                FOR {record.for_name.toUpperCase()}
+              <div className="text-sm sm:text-base font-bold text-gray-900 mb-6 text-center">
+                For {record.for_name}
               </div>
-              <div className="text-gray-900 leading-relaxed text-sm sm:text-base">
+              <div className="text-gray-900 leading-relaxed text-sm sm:text-base text-center">
                 {record.reflection_text}
               </div>
             </div>
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-center mt-6 sm:mt-8">
-            <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-gray-900">
+          <div className="flex flex-col items-center justify-center mt-6">
+            <div className="text-xs sm:text-sm tracking-wide text-gray-900/70">
               Posted on {formattedDate}
+            </div>
+            <div className="font-bold text-gray-900 text-sm sm:text-base mt-1">
+              fortherecord.fm
             </div>
           </div>
 

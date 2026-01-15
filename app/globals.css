@@ -3,10 +3,13 @@
 @tailwind utilities;
 
 :root {
+  /* Force light mode across all browsers */
+  color-scheme: light only;
+
   /* Design Tokens - Colors (Light Theme) */
-  --color-page-bg: #1F1F1F;
+  --color-page-bg: #faf7f2;
   --color-text-primary: #1a1a1a;
-  --color-text-secondary: #B3B3B3;
+  --color-text-secondary: #666666;
   --color-border: #e0e0e0;
 
   /* UI Elements - Light */
@@ -54,38 +57,6 @@
   --safe-area-inset-right: env(safe-area-inset-right, 0px);
 }
 
-/* Dark Mode - Pure Black Theme */
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Base Colors - Pure Black */
-    --color-page-bg: #1F1F1F;
-    --color-text-primary: #f5f3f0;
-    --color-text-secondary: #B3B3B3;
-    --color-border: #2a2a2a;
-
-    /* UI Elements - Dark */
-    --color-input-bg: #1a1a1a;
-    --color-input-border: #2a2a2a;
-    --color-nav-text: #b8a99a;
-    --color-nav-text-active: #f5f3f0;
-    --color-nav-mobile-overlay: rgba(0, 0, 0, 0.85);
-    --color-modal-backdrop: rgba(0, 0, 0, 0.7);
-    --color-fab-bg: #f5f3f0;
-    --color-fab-text: #1a1410;
-
-    /* Card Colors - Slightly muted for dark mode */
-    --color-card-purple: #a088b5;
-    --color-card-blue: #7091c0;
-    --color-card-red: #c46b6b;
-    --color-card-gray: #808994;
-    --color-card-orange: #b5785a;
-
-    /* Enhanced Shadows for Dark Mode */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-    --shadow-md: 0 2px 8px 0 rgb(0 0 0 / 0.4);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
-  }
-}
 
 body {
   background-color: var(--color-page-bg);
@@ -197,8 +168,8 @@ body {
 }
 
 .animate-write-in {
-  animation: writeIn 0.35s ease-out forwards;
-  animation-fill-mode: forwards;
+  animation: writeIn 0.35s ease-out both;
+  animation-fill-mode: both;
   display: inline-block;
   will-change: opacity;
   backface-visibility: hidden;

@@ -197,7 +197,7 @@ export default function SpotifySearch({ onSelectTrack, isValidating = false, val
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="w-full pl-11 pr-4 py-3.5 rounded-full focus:outline-none text-[16px] placeholder:text-xs sm:placeholder:text-sm font-merriweather"
+          className="w-full pl-11 pr-4 py-3.5 rounded-full focus:outline-none text-[16px] placeholder:text-xs sm:placeholder:text-sm"
           style={{
             backgroundColor: 'var(--color-input-bg)',
             borderColor: 'var(--color-input-border)',

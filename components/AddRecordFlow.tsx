@@ -147,7 +147,7 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
             {/* Filled portion */}
             <div
               className="h-full rounded-full transition-all duration-300"
-              style={{ width: `${(step / 4) * 100}%`, backgroundColor: '#808080' }}
+              style={{ width: `${(step / 4) * 100}%`, backgroundColor: '#1a1a1a' }}
             />
           </div>
         </div>
@@ -160,7 +160,7 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
           <div className="max-w-2xl mx-auto mt-6 sm:mt-8">
             <div className="text-center mb-8 sm:mb-12 px-4">
               <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Select a Song</h2>
-              <p className="text-base sm:text-lg" style={{ color: '#B3B3B3' }}>
+              <p className="text-base sm:text-lg" style={{ color: 'var(--color-text-secondary)' }}>
                 Find the song that reminds you of someone
               </p>
             </div>
@@ -247,7 +247,7 @@ export default function AddRecordFlow({ onSubmit, onCancel, currentStep, onStepC
                   </svg>
                 </button>
                 <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Select lyrics</h2>
-                <p className="text-base sm:text-lg" style={{ color: '#B3B3B3' }}>
+                <p className="text-base sm:text-lg" style={{ color: 'var(--color-text-secondary)' }}>
                   Click up to 4 lines that remind you of {forName}
                 </p>
               </div>

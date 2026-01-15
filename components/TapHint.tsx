@@ -21,9 +21,9 @@ export default function TapHint({ onCardOpened, isMenuOpen, isSearching, isOnHom
     const wasDismissed = localStorage.getItem(HINT_DISMISSED_KEY);
 
     if (!wasDismissed) {
-      // Show hint after 800ms delay
+      // Show hint after site content loads (title animation + content fade)
       setShouldRender(true);
-      const timer = setTimeout(() => setIsVisible(true), 800);
+      const timer = setTimeout(() => setIsVisible(true), 1200);
       return () => clearTimeout(timer);
     } else {
       setIsPermanentlyDismissed(true);
@@ -70,7 +70,12 @@ export default function TapHint({ onCardOpened, isMenuOpen, isSearching, isOnHom
       }}
     >
       <div
-        className="bg-gray-900 text-white rounded-full shadow-lg px-4 py-2.5 flex items-center gap-2.5 animate-slide-up"
+        className="rounded-full shadow-lg px-4 py-2.5 flex items-center gap-3 animate-slide-up animate-subtle-pulse"
+        style={{
+          backgroundColor: '#1a1a1a',
+          color: 'var(--color-text-primary)',
+          maxWidth: 'calc(100% - 2rem)'
+        }}
         role="status"
         aria-live="polite"
       >
@@ -97,10 +102,10 @@ export default function TapHint({ onCardOpened, isMenuOpen, isSearching, isOnHom
         {/* Close button */}
         <button
           onClick={handleDismiss}
-          className="flex-shrink-0 w-5 h-5 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors"
+          className="flex-shrink-0 ml-1 w-6 h-6 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors"
           aria-label="Dismiss hint"
         >
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
             <path d="M2 2L14 14M14 2L2 14" stroke="white" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </button>

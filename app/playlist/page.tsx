@@ -10,7 +10,7 @@ export default function PlaylistPage() {
       <main className="max-w-7xl mx-auto px-6 pt-6 sm:pt-8 md:pt-10 pb-12 pb-for-fab">
         {/* Title Section */}
         <div className="text-center mb-10">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 tracking-tight font-caveat">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 tracking-tight">
             Playlist of the Month
           </h1>
           <p className="text-base sm:text-lg mb-8" style={{ color: 'var(--color-text-secondary)' }}>
