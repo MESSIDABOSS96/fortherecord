@@ -1,6 +1,4 @@
 import { ImageResponse } from '@vercel/og';
-import React from 'react';
-import { cleanSongTitle } from '@/utils/cleanSongTitle';
 
 export const runtime = 'edge';
 export const alt = 'Record Card';
@@ -10,25 +8,42 @@ export const size = {
   height: 630,
 };
 
+function cleanSongTitle(title: string): string {
+  return title
+    .replace(/\s*\(feat\.[^)]*\)/gi, '')
+    .replace(/\s*\(ft\.[^)]*\)/gi, '')
+    .replace(/\s*feat\.[^-]*/gi, '')
+    .replace(/\s*ft\.[^-]*/gi, '')
+    .replace(/\s*\(with[^)]*\)/gi, '')
+    .replace(/\s*\[.*?\]/g, '')
+    .replace(/\s*-\s*\d{4}\s*remaster.*/gi, '')
+    .replace(/\s*\(\d{4}\s*remaster.*\)/gi, '')
+    .trim();
+}
+
 async function getRecord(id: string) {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://fortherecord.fm';
-
     const response = await fetch(`${baseUrl}/api/records/${id}`, {
       cache: 'no-store',
     });
 
     if (!response.ok) {
-      console.error(`Failed to fetch record ${id}: ${response.status} ${response.statusText}`);
       return null;
     }
 
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
     console.error('Error fetching record:', error);
     return null;
   }
+}
+
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                  'July', 'August', 'September', 'October', 'November', 'December'];
+  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 }
 
 export default async function Image({
@@ -36,278 +51,99 @@ export default async function Image({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  try {
-    const { id } = await params;
+  const { id } = await params;
 
-    if (!id) {
-      return new Response('Missing record ID', { status: 400 });
-    }
-
-    const record = await getRecord(id);
-
-    if (!record) {
-      return new Response(`Record not found: ${id}`, { status: 404 });
-    }
-
-    const backgroundColor = record.background_color || '#f5f3f0';
-    const songTitle = cleanSongTitle(record.song_title || '');
-    const artist = record.artist || '';
-    const lyrics = record.lyric_excerpt || '';
-    const forName = record.for_name || '';
-    const reflectionText = record.reflection_text || '';
-
-    // Format date
-    const createdAt = new Date(record.created_at);
-    const formattedDate = createdAt.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-
-    // Truncate lyrics if too long (for left panel)
-    const maxLyricsLength = 150;
-    const displayLyrics = lyrics.length > maxLyricsLength
-      ? lyrics.substring(0, maxLyricsLength) + '...'
-      : lyrics;
-
-    // Truncate reflection if too long (for right panel)
-    const maxReflectionLength = 200;
-    const displayReflection = reflectionText.length > maxReflectionLength
-      ? reflectionText.substring(0, maxReflectionLength) + '...'
-      : reflectionText;
-
+  if (!id) {
     return new ImageResponse(
-      React.createElement(
-        'div',
-        {
-          style: {
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            backgroundColor: backgroundColor,
-            padding: '48px 80px',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-            borderRadius: '24px',
-          },
-        },
-        // Single column mobile-style layout
-        React.createElement(
-          'div',
-          {
-            style: {
-              display: 'flex',
-              flexDirection: 'column',
-              flex: 1,
-            },
-          },
-          // Top: Album art + Song title + Artist (horizontal row)
-          React.createElement(
-            'div',
-            {
-              style: {
-                display: 'flex',
-                alignItems: 'center',
-                gap: '24px',
-                marginBottom: '32px',
-              },
-            },
-            React.createElement(
-              'div',
-              {
-                style: {
-                  width: '72px',
-                  height: '72px',
-                  borderRadius: '6px',
-                  backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                },
-              },
-              record.album_art_url
-                ? React.createElement('img', {
-                    src: record.album_art_url,
-                    alt: songTitle,
-                    width: 72,
-                    height: 72,
-                    style: { borderRadius: '6px', objectFit: 'cover' },
-                  })
-                : React.createElement(
-                    'div',
-                    {
-                      style: {
-                        width: '36px',
-                        height: '36px',
-                        border: '3px solid white',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      },
-                    },
-                    React.createElement('div', {
-                      style: {
-                        width: '12px',
-                        height: '12px',
-                        backgroundColor: 'white',
-                        borderRadius: '50%',
-                      },
-                    })
-                  )
-            ),
-            React.createElement(
-              'div',
-              { style: { flex: 1, minWidth: 0 } },
-              React.createElement(
-                'div',
-                {
-                  style: {
-                    fontSize: '28px',
-                    fontWeight: 'bold',
-                    color: '#1a1a1a',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    marginBottom: '6px',
-                  },
-                },
-                songTitle
-              ),
-              React.createElement(
-                'div',
-                {
-                  style: {
-                    fontSize: '22px',
-                    color: '#666666',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  },
-                },
-                artist
-              )
-            )
-          ),
-          // Middle: Lyric excerpt (bold, large)
-          React.createElement(
-            'div',
-            {
-              style: {
-                fontSize: '32px',
-                fontWeight: 'bold',
-                lineHeight: '1.35',
-                color: '#1a1a1a',
-                whiteSpace: 'pre-line',
-                marginBottom: '32px',
-              },
-            },
-            displayLyrics
-          ),
-          // Divider
-          React.createElement('div', {
-            style: {
-              width: '100%',
-              height: '1px',
-              backgroundColor: 'rgba(0, 0, 0, 0.1)',
-              marginBottom: '24px',
-            },
-          }),
-          // "For [name]" header
-          React.createElement(
-            'div',
-            {
-              style: {
-                fontSize: '20px',
-                fontWeight: 'bold',
-                color: '#1a1a1a',
-                marginBottom: '16px',
-                textAlign: 'center',
-              },
-            },
-            `For ${forName}`
-          ),
-          // Reflection text
-          React.createElement(
-            'div',
-            {
-              style: {
-                fontSize: '20px',
-                lineHeight: '1.5',
-                color: '#1a1a1a',
-                textAlign: 'center',
-                flex: 1,
-              },
-            },
-            displayReflection
-          )
-        ),
-        // Footer
-        React.createElement(
-          'div',
-          {
-            style: {
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              marginTop: '24px',
-            },
-          },
-          React.createElement(
-            'div',
-            {
-              style: {
-                fontSize: '16px',
-                color: 'rgba(26, 26, 26, 0.7)',
-                letterSpacing: '0.03em',
-              },
-            },
-            `Posted on ${formattedDate}`
-          ),
-          React.createElement(
-            'div',
-            {
-              style: {
-                fontSize: '18px',
-                fontWeight: 'bold',
-                color: '#1a1a1a',
-                marginTop: '6px',
-              },
-            },
-            'fortherecord.fm'
-          )
-        )
+      (
+        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5f3f0', fontSize: 32 }}>
+          Missing record ID
+        </div>
       ),
-      {
-        width: 1200,
-        height: 630,
-      }
-    );
-  } catch (error: any) {
-    console.error('Error generating OG image:', error);
-    return new ImageResponse(
-      React.createElement(
-        'div',
-        {
-          style: {
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#f5f3f0',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-            fontSize: '24px',
-            color: '#666',
-          },
-        },
-        `Error: ${error?.message || 'Failed to generate image'}`
-      ),
-      {
-        width: 1200,
-        height: 630,
-      }
+      { width: 1200, height: 630 }
     );
   }
+
+  const record = await getRecord(id);
+
+  if (!record) {
+    return new ImageResponse(
+      (
+        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5f3f0', fontSize: 32 }}>
+          Record not found
+        </div>
+      ),
+      { width: 1200, height: 630 }
+    );
+  }
+
+  const backgroundColor = record.background_color || '#f5f3f0';
+  const songTitle = cleanSongTitle(record.song_title || '');
+  const artist = record.artist || '';
+  const lyrics = record.lyric_excerpt || '';
+  const forName = record.for_name || '';
+  const reflectionText = record.reflection_text || '';
+  const formattedDate = formatDate(record.created_at);
+
+  // Truncate text
+  const displayLyrics = lyrics.length > 150 ? lyrics.substring(0, 150) + '...' : lyrics;
+  const displayReflection = reflectionText.length > 200 ? reflectionText.substring(0, 200) + '...' : reflectionText;
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: backgroundColor,
+          padding: '48px 80px',
+          fontFamily: 'system-ui, sans-serif',
+        }}
+      >
+        {/* Header: Song title + Artist */}
+        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 32 }}>
+          <div style={{ fontSize: 36, fontWeight: 700, color: '#1a1a1a', marginBottom: 8 }}>
+            {songTitle}
+          </div>
+          <div style={{ fontSize: 24, color: '#666666' }}>
+            {artist}
+          </div>
+        </div>
+
+        {/* Lyrics */}
+        <div style={{ fontSize: 32, fontWeight: 700, lineHeight: 1.4, color: '#1a1a1a', marginBottom: 32 }}>
+          {displayLyrics}
+        </div>
+
+        {/* Divider */}
+        <div style={{ width: '100%', height: 1, backgroundColor: 'rgba(0, 0, 0, 0.1)', marginBottom: 24 }} />
+
+        {/* For name */}
+        <div style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', marginBottom: 16, textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+          For {forName}
+        </div>
+
+        {/* Reflection */}
+        <div style={{ fontSize: 20, lineHeight: 1.5, color: '#1a1a1a', textAlign: 'center', display: 'flex', justifyContent: 'center', flex: 1 }}>
+          {displayReflection}
+        </div>
+
+        {/* Footer */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 24 }}>
+          <div style={{ fontSize: 16, color: 'rgba(26, 26, 26, 0.7)' }}>
+            Posted on {formattedDate}
+          </div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', marginTop: 6 }}>
+            fortherecord.fm
+          </div>
+        </div>
+      </div>
+    ),
+    {
+      width: 1200,
+      height: 630,
+    }
+  );
 }
