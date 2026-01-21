@@ -12,7 +12,7 @@ export const size = {
 
 async function getRecord(id: string) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://fortherecord-three.vercel.app';
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://fortherecord.fm';
 
     const response = await fetch(`${baseUrl}/api/records/${id}`, {
       cache: 'no-store',

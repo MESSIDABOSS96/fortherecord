@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://fortherecord.vercel.app';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://fortherecord.fm';
   const title = `${cleanSongTitle(record.song_title)} by ${record.artist} — For ${record.for_name}`;
   // Use reflection text as description for richer preview, fall back to lyrics
   const description = record.reflection_text?.substring(0, 200) || record.lyric_excerpt?.substring(0, 140) || `${cleanSongTitle(record.song_title)} by ${record.artist}`;

@@ -21,7 +21,7 @@ const merriweather = Merriweather({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://fortherecord.vercel.app';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://fortherecord.fm';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
