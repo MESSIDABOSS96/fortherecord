@@ -69,8 +69,6 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
       if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
         try {
           await navigator.share({
-            title: shareText,
-            text: shareText,
             url: shareUrl,
           });
           return;
