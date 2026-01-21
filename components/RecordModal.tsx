@@ -3,11 +3,8 @@
 import { Record } from "@/types/record";
 import { cleanSongTitle } from "@/utils/cleanSongTitle";
 import Image from "next/image";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useScrollLock } from "@/hooks/useScrollLock";
-import { useRouter } from "next/navigation";
-import html2canvas from "html2canvas";
-import ShareableCard from "./ShareableCard";
 
 interface RecordModalProps {
   record: Record;
@@ -15,16 +12,12 @@ interface RecordModalProps {
 }
 
 export default function RecordModal({ record, onClose }: RecordModalProps) {
-  const router = useRouter();
-  const shareableCardRef = useRef<HTMLDivElement>(null);
-
   // Animation state
   const [isAnimatingIn, setIsAnimatingIn] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
-  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
   // Lock scroll when modal is open (handles iOS properly)
   useScrollLock(true);
@@ -58,44 +51,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
     }
   };
 
-  // Generate shareable image from the hidden ShareableCard component
-  const generateShareImage = async (): Promise<File | null> => {
-    if (!shareableCardRef.current) return null;
-
-    try {
-      setIsGeneratingImage(true);
-
-      const canvas = await html2canvas(shareableCardRef.current, {
-        scale: 2, // Retina quality
-        useCORS: true, // Allow cross-origin images
-        allowTaint: true,
-        backgroundColor: record.background_color,
-        logging: false,
-      } as Parameters<typeof html2canvas>[1]);
-
-      return new Promise((resolve) => {
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const file = new File(
-              [blob],
-              `fortherecord-${record.for_name.toLowerCase().replace(/\s+/g, '-')}.png`,
-              { type: 'image/png' }
-            );
-            resolve(file);
-          } else {
-            resolve(null);
-          }
-        }, 'image/png', 1.0);
-      });
-    } catch (error) {
-      console.error('Error generating share image:', error);
-      return null;
-    } finally {
-      setIsGeneratingImage(false);
-    }
-  };
-
-  // Share functionality - includes image for social sharing
+  // Share functionality - link only, OG image provides preview
   const handleShare = async (e?: React.MouseEvent) => {
     if (e) {
       e.stopPropagation();
@@ -108,32 +64,15 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-    // On mobile (iOS and Android), use Web Share API with image
+    // On mobile, use Web Share API with link only
     if (isMobile) {
       if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
         try {
-          // Generate the share image
-          const imageFile = await generateShareImage();
-
-          // Check if file sharing is supported
-          const canShareFiles = imageFile && navigator.canShare && navigator.canShare({ files: [imageFile] });
-
-          if (canShareFiles) {
-            // Share with image file - Instagram/social will use the image
-            await navigator.share({
-              title: shareText,
-              text: shareText,
-              url: shareUrl,
-              files: [imageFile],
-            });
-          } else {
-            // Fallback: share without image (link only)
-            await navigator.share({
-              title: shareText,
-              text: shareText,
-              url: shareUrl,
-            });
-          }
+          await navigator.share({
+            title: shareText,
+            text: shareText,
+            url: shareUrl,
+          });
           return;
         } catch (err: any) {
           if (err?.name === 'AbortError' || err?.message?.includes('cancel')) {
@@ -368,36 +307,6 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
           </div>
         </div>
       )}
-
-      {/* Loading indicator while generating share image */}
-      {isGeneratingImage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div
-            className="rounded-2xl px-6 py-4 shadow-2xl"
-            style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.85)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-            }}
-          >
-            <p className="text-white text-sm font-medium">Preparing to share...</p>
-          </div>
-        </div>
-      )}
-
-      {/* Hidden ShareableCard for image capture - positioned off-screen */}
-      <div
-        style={{
-          position: 'fixed',
-          left: '-9999px',
-          top: 0,
-          opacity: 0,
-          pointerEvents: 'none',
-        }}
-        aria-hidden="true"
-      >
-        <ShareableCard ref={shareableCardRef} record={record} />
-      </div>
     </div>
   );
 }

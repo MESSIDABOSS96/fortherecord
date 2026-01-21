@@ -86,178 +86,161 @@ export default async function Image({
             display: 'flex',
             flexDirection: 'column',
             backgroundColor: backgroundColor,
-            padding: '48px',
+            padding: '48px 80px',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             borderRadius: '24px',
           },
         },
-        // Main content area - two columns
+        // Single column mobile-style layout
         React.createElement(
           'div',
           {
             style: {
               display: 'flex',
+              flexDirection: 'column',
               flex: 1,
-              gap: '48px',
             },
           },
-          // Left panel: Album art + Song info + Lyrics
+          // Top: Album art + Song title + Artist (horizontal row)
           React.createElement(
             'div',
             {
               style: {
                 display: 'flex',
-                flexDirection: 'column',
-                flex: 1,
-                paddingRight: '24px',
-                borderRight: '1px solid rgba(0, 0, 0, 0.15)',
+                alignItems: 'center',
+                gap: '24px',
+                marginBottom: '32px',
               },
             },
-            // Album art + Song info
             React.createElement(
               'div',
               {
                 style: {
+                  width: '72px',
+                  height: '72px',
+                  borderRadius: '6px',
+                  backgroundColor: 'rgba(0, 0, 0, 0.2)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '20px',
-                  marginBottom: '32px',
+                  justifyContent: 'center',
+                  flexShrink: 0,
                 },
               },
+              record.album_art_url
+                ? React.createElement('img', {
+                    src: record.album_art_url,
+                    alt: songTitle,
+                    width: 72,
+                    height: 72,
+                    style: { borderRadius: '6px', objectFit: 'cover' },
+                  })
+                : React.createElement(
+                    'div',
+                    {
+                      style: {
+                        width: '36px',
+                        height: '36px',
+                        border: '3px solid white',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      },
+                    },
+                    React.createElement('div', {
+                      style: {
+                        width: '12px',
+                        height: '12px',
+                        backgroundColor: 'white',
+                        borderRadius: '50%',
+                      },
+                    })
+                  )
+            ),
+            React.createElement(
+              'div',
+              { style: { flex: 1, minWidth: 0 } },
               React.createElement(
                 'div',
                 {
                   style: {
-                    width: '80px',
-                    height: '80px',
-                    borderRadius: '6px',
-                    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
+                    fontSize: '28px',
+                    fontWeight: 'bold',
+                    color: '#1a1a1a',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    marginBottom: '6px',
                   },
                 },
-                record.album_art_url
-                  ? React.createElement('img', {
-                      src: record.album_art_url,
-                      alt: songTitle,
-                      width: 80,
-                      height: 80,
-                      style: { borderRadius: '6px', objectFit: 'cover' },
-                    })
-                  : React.createElement(
-                      'div',
-                      {
-                        style: {
-                          width: '40px',
-                          height: '40px',
-                          border: '3px solid white',
-                          borderRadius: '50%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        },
-                      },
-                      React.createElement('div', {
-                        style: {
-                          width: '14px',
-                          height: '14px',
-                          backgroundColor: 'white',
-                          borderRadius: '50%',
-                        },
-                      })
-                    )
+                songTitle
               ),
               React.createElement(
                 'div',
-                { style: { flex: 1, minWidth: 0 } },
-                React.createElement(
-                  'div',
-                  {
-                    style: {
-                      fontSize: '26px',
-                      fontWeight: 'bold',
-                      color: '#1a1a1a',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      marginBottom: '6px',
-                    },
+                {
+                  style: {
+                    fontSize: '22px',
+                    color: '#666666',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
                   },
-                  songTitle
-                ),
-                React.createElement(
-                  'div',
-                  {
-                    style: {
-                      fontSize: '20px',
-                      color: '#666666',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    },
-                  },
-                  artist
-                )
-              )
-            ),
-            // Lyrics
-            React.createElement(
-              'div',
-              {
-                style: {
-                  fontSize: '28px',
-                  fontWeight: 'bold',
-                  lineHeight: '1.4',
-                  color: '#1a1a1a',
-                  whiteSpace: 'pre-line',
-                  flex: 1,
                 },
-              },
-              displayLyrics
+                artist
+              )
             )
           ),
-          // Right panel: For Name + Reflection
+          // Middle: Lyric excerpt (bold, large)
           React.createElement(
             'div',
             {
               style: {
-                display: 'flex',
-                flexDirection: 'column',
-                flex: 1,
-                paddingLeft: '24px',
-                justifyContent: 'flex-start',
+                fontSize: '32px',
+                fontWeight: 'bold',
+                lineHeight: '1.35',
+                color: '#1a1a1a',
+                whiteSpace: 'pre-line',
+                marginBottom: '32px',
               },
             },
-            // For [name] header
-            React.createElement(
-              'div',
-              {
-                style: {
-                  fontSize: '22px',
-                  fontWeight: 'bold',
-                  color: '#1a1a1a',
-                  marginBottom: '24px',
-                  textAlign: 'center',
-                },
+            displayLyrics
+          ),
+          // Divider
+          React.createElement('div', {
+            style: {
+              width: '100%',
+              height: '1px',
+              backgroundColor: 'rgba(0, 0, 0, 0.1)',
+              marginBottom: '24px',
+            },
+          }),
+          // "For [name]" header
+          React.createElement(
+            'div',
+            {
+              style: {
+                fontSize: '20px',
+                fontWeight: 'bold',
+                color: '#1a1a1a',
+                marginBottom: '16px',
+                textAlign: 'center',
               },
-              `For ${forName}`
-            ),
-            // Reflection text
-            React.createElement(
-              'div',
-              {
-                style: {
-                  fontSize: '20px',
-                  lineHeight: '1.6',
-                  color: '#1a1a1a',
-                  textAlign: 'center',
-                  flex: 1,
-                },
+            },
+            `For ${forName}`
+          ),
+          // Reflection text
+          React.createElement(
+            'div',
+            {
+              style: {
+                fontSize: '20px',
+                lineHeight: '1.5',
+                color: '#1a1a1a',
+                textAlign: 'center',
+                flex: 1,
               },
-              displayReflection
-            )
+            },
+            displayReflection
           )
         ),
         // Footer
