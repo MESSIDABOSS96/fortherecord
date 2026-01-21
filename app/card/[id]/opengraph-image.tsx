@@ -1,6 +1,12 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
+export const alt = 'For the Record';
+export const size = {
+  width: 1200,
+  height: 630,
+};
+export const contentType = 'image/png';
 
 export default async function Image({
   params,
@@ -25,8 +31,8 @@ export default async function Image({
             fontWeight: 700,
           }}
         >
-          <div style={{ marginBottom: 24 }}>For the Record</div>
-          <div style={{ fontSize: 32, color: '#666' }}>Card ID: {id || 'unknown'}</div>
+          <div style={{ display: 'flex', marginBottom: 24 }}>For the Record</div>
+          <div style={{ display: 'flex', fontSize: 32, color: '#666' }}>Card ID: {id || 'unknown'}</div>
         </div>
       ),
       {
