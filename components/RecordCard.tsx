@@ -39,15 +39,16 @@ export default function RecordCard({ record, onClick, onLongPress }: RecordCardP
     prefetchImage();
   };
 
-  // Long press handler
+  // Long press handler - triggers share on touchEnd to maintain user gesture chain for iOS
   const handleTouchStartLongPress = (e: React.TouchEvent) => {
     prefetchImage();
     isLongPress.current = false;
 
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
-      if (onLongPress) {
-        onLongPress();
+      // Haptic feedback when long press is detected (if available)
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        navigator.vibrate(10);
       }
     }, 500); // 500ms for long press
   };
@@ -56,6 +57,11 @@ export default function RecordCard({ record, onClick, onLongPress }: RecordCardP
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
       longPressTimer.current = null;
+    }
+
+    // Trigger share on touchEnd if long press was detected - this maintains user gesture chain for iOS
+    if (isLongPress.current && onLongPress) {
+      onLongPress();
     }
   };
 

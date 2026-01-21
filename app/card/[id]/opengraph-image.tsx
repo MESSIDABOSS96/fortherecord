@@ -12,10 +12,8 @@ export const size = {
 
 async function getRecord(id: string) {
   try {
-    // Fetch from API route instead of direct Supabase access in edge runtime
-    // In edge runtime, we need to use absolute URL
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://fortherecord-three.vercel.app';
-    
+
     const response = await fetch(`${baseUrl}/api/records/${id}`, {
       cache: 'no-store',
     });
@@ -40,7 +38,7 @@ export default async function Image({
 }) {
   try {
     const { id } = await params;
-    
+
     if (!id) {
       return new Response('Missing record ID', { status: 400 });
     }
@@ -56,12 +54,27 @@ export default async function Image({
     const artist = record.artist || '';
     const lyrics = record.lyric_excerpt || '';
     const forName = record.for_name || '';
+    const reflectionText = record.reflection_text || '';
 
-    // Truncate lyrics to fit in image (approximately 4-5 lines)
-    const maxLength = 120;
-    const displayLyrics = lyrics.length > maxLength 
-      ? lyrics.substring(0, maxLength) + '...' 
+    // Format date
+    const createdAt = new Date(record.created_at);
+    const formattedDate = createdAt.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    // Truncate lyrics if too long (for left panel)
+    const maxLyricsLength = 150;
+    const displayLyrics = lyrics.length > maxLyricsLength
+      ? lyrics.substring(0, maxLyricsLength) + '...'
       : lyrics;
+
+    // Truncate reflection if too long (for right panel)
+    const maxReflectionLength = 200;
+    const displayReflection = reflectionText.length > maxReflectionLength
+      ? reflectionText.substring(0, maxReflectionLength) + '...'
+      : reflectionText;
 
     return new ImageResponse(
       React.createElement(
@@ -75,127 +88,212 @@ export default async function Image({
             backgroundColor: backgroundColor,
             padding: '48px',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            borderRadius: '24px',
           },
         },
-        // Header: Album art + Song info
+        // Main content area - two columns
         React.createElement(
           'div',
           {
             style: {
               display: 'flex',
-              alignItems: 'center',
-              gap: '24px',
-              marginBottom: '32px',
+              flex: 1,
+              gap: '48px',
             },
           },
+          // Left panel: Album art + Song info + Lyrics
           React.createElement(
             'div',
             {
               style: {
-                width: '92px',
-                height: '92px',
-                borderRadius: '8px',
-                backgroundColor: 'rgba(0, 0, 0, 0.2)',
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
+                flexDirection: 'column',
+                flex: 1,
+                paddingRight: '24px',
+                borderRight: '1px solid rgba(0, 0, 0, 0.15)',
               },
             },
-            record.album_art_url
-              ? React.createElement('img', {
-                  src: record.album_art_url,
-                  alt: songTitle,
-                  width: 92,
-                  height: 92,
-                  style: { borderRadius: '8px', objectFit: 'cover' },
-                })
-              : React.createElement(
+            // Album art + Song info
+            React.createElement(
+              'div',
+              {
+                style: {
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '20px',
+                  marginBottom: '32px',
+                },
+              },
+              React.createElement(
+                'div',
+                {
+                  style: {
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '6px',
+                    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  },
+                },
+                record.album_art_url
+                  ? React.createElement('img', {
+                      src: record.album_art_url,
+                      alt: songTitle,
+                      width: 80,
+                      height: 80,
+                      style: { borderRadius: '6px', objectFit: 'cover' },
+                    })
+                  : React.createElement(
+                      'div',
+                      {
+                        style: {
+                          width: '40px',
+                          height: '40px',
+                          border: '3px solid white',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        },
+                      },
+                      React.createElement('div', {
+                        style: {
+                          width: '14px',
+                          height: '14px',
+                          backgroundColor: 'white',
+                          borderRadius: '50%',
+                        },
+                      })
+                    )
+              ),
+              React.createElement(
+                'div',
+                { style: { flex: 1, minWidth: 0 } },
+                React.createElement(
                   'div',
                   {
                     style: {
-                      width: '48px',
-                      height: '48px',
-                      border: '4px solid white',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      fontSize: '26px',
+                      fontWeight: 'bold',
+                      color: '#1a1a1a',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      marginBottom: '6px',
                     },
                   },
-                  React.createElement('div', {
+                  songTitle
+                ),
+                React.createElement(
+                  'div',
+                  {
                     style: {
-                      width: '16px',
-                      height: '16px',
-                      backgroundColor: 'white',
-                      borderRadius: '50%',
+                      fontSize: '20px',
+                      color: '#666666',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
                     },
-                  })
+                  },
+                  artist
                 )
-          ),
-          React.createElement(
-            'div',
-            { style: { flex: 1, minWidth: 0 } },
+              )
+            ),
+            // Lyrics
             React.createElement(
               'div',
               {
                 style: {
                   fontSize: '28px',
                   fontWeight: 'bold',
+                  lineHeight: '1.4',
                   color: '#1a1a1a',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  marginBottom: '8px',
+                  whiteSpace: 'pre-line',
+                  flex: 1,
                 },
               },
-              songTitle
-            ),
+              displayLyrics
+            )
+          ),
+          // Right panel: For Name + Reflection
+          React.createElement(
+            'div',
+            {
+              style: {
+                display: 'flex',
+                flexDirection: 'column',
+                flex: 1,
+                paddingLeft: '24px',
+                justifyContent: 'flex-start',
+              },
+            },
+            // For [name] header
             React.createElement(
               'div',
               {
                 style: {
-                  fontSize: '24px',
-                  color: '#666666',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
+                  fontSize: '22px',
+                  fontWeight: 'bold',
+                  color: '#1a1a1a',
+                  marginBottom: '24px',
+                  textAlign: 'center',
                 },
               },
-              artist
+              `For ${forName}`
+            ),
+            // Reflection text
+            React.createElement(
+              'div',
+              {
+                style: {
+                  fontSize: '20px',
+                  lineHeight: '1.6',
+                  color: '#1a1a1a',
+                  textAlign: 'center',
+                  flex: 1,
+                },
+              },
+              displayReflection
             )
           )
         ),
-        // Lyrics
+        // Footer
         React.createElement(
           'div',
           {
             style: {
-              fontSize: '36px',
-              fontWeight: 'bold',
-              lineHeight: '1.35',
-              color: '#1a1a1a',
-              marginBottom: '32px',
-              whiteSpace: 'pre-line',
-              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              marginTop: '24px',
             },
           },
-          displayLyrics
-        ),
-        // For label
-        React.createElement(
-          'div',
-          {
-            style: {
-              fontSize: '20px',
-              fontWeight: '500',
-              fontStyle: 'italic',
-              color: 'rgba(26, 26, 26, 0.7)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
+          React.createElement(
+            'div',
+            {
+              style: {
+                fontSize: '16px',
+                color: 'rgba(26, 26, 26, 0.7)',
+                letterSpacing: '0.03em',
+              },
             },
-          },
-          `FOR ${forName.toUpperCase()}`
+            `Posted on ${formattedDate}`
+          ),
+          React.createElement(
+            'div',
+            {
+              style: {
+                fontSize: '18px',
+                fontWeight: 'bold',
+                color: '#1a1a1a',
+                marginTop: '6px',
+              },
+            },
+            'fortherecord.fm'
+          )
         )
       ),
       {
@@ -205,7 +303,6 @@ export default async function Image({
     );
   } catch (error: any) {
     console.error('Error generating OG image:', error);
-    // Return a simple error image instead of blank screen
     return new ImageResponse(
       React.createElement(
         'div',
@@ -231,4 +328,3 @@ export default async function Image({
     );
   }
 }
-

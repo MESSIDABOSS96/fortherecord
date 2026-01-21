@@ -3,9 +3,11 @@
 import { Record } from "@/types/record";
 import { cleanSongTitle } from "@/utils/cleanSongTitle";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useScrollLock } from "@/hooks/useScrollLock";
 import { useRouter } from "next/navigation";
+import html2canvas from "html2canvas";
+import ShareableCard from "./ShareableCard";
 
 interface RecordModalProps {
   record: Record;
@@ -14,6 +16,7 @@ interface RecordModalProps {
 
 export default function RecordModal({ record, onClose }: RecordModalProps) {
   const router = useRouter();
+  const shareableCardRef = useRef<HTMLDivElement>(null);
 
   // Animation state
   const [isAnimatingIn, setIsAnimatingIn] = useState(true);
@@ -21,6 +24,7 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
   // Lock scroll when modal is open (handles iOS properly)
   useScrollLock(true);
@@ -29,19 +33,69 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
   const handleCopyLink = async () => {
     const shareUrl = `${window.location.origin}/card/${record.id}`;
 
-    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-      try {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(shareUrl);
-        setShowShareMenu(false);
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 2500);
-      } catch (err) {
-        console.error('Failed to copy:', err);
+      } else {
+        // Fallback for older browsers or non-secure contexts
+        const textArea = document.createElement('textarea');
+        textArea.value = shareUrl;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
       }
+      setShowShareMenu(false);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2500);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      // Still show toast even if copy failed in some edge cases
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2500);
     }
   };
 
-  // Share functionality - includes text/title for proper link preview
+  // Generate shareable image from the hidden ShareableCard component
+  const generateShareImage = async (): Promise<File | null> => {
+    if (!shareableCardRef.current) return null;
+
+    try {
+      setIsGeneratingImage(true);
+
+      const canvas = await html2canvas(shareableCardRef.current, {
+        scale: 2, // Retina quality
+        useCORS: true, // Allow cross-origin images
+        allowTaint: true,
+        backgroundColor: record.background_color,
+        logging: false,
+      } as Parameters<typeof html2canvas>[1]);
+
+      return new Promise((resolve) => {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const file = new File(
+              [blob],
+              `fortherecord-${record.for_name.toLowerCase().replace(/\s+/g, '-')}.png`,
+              { type: 'image/png' }
+            );
+            resolve(file);
+          } else {
+            resolve(null);
+          }
+        }, 'image/png', 1.0);
+      });
+    } catch (error) {
+      console.error('Error generating share image:', error);
+      return null;
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
+  // Share functionality - includes image for social sharing
   const handleShare = async (e?: React.MouseEvent) => {
     if (e) {
       e.stopPropagation();
@@ -54,47 +108,48 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-    // On mobile (iOS and Android), use Web Share API
+    // On mobile (iOS and Android), use Web Share API with image
     if (isMobile) {
-      // On iOS, always use Web Share API if available
-      if (isIOS && typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
-        try {
-          await navigator.share({
-            title: shareText,
-            text: shareText,
-            url: shareUrl,
-          });
-          return;
-        } catch (err: any) {
-          if (err?.name === 'AbortError' || err?.message?.includes('cancel')) {
-            return;
-          }
-          console.error('Web Share API error on iOS:', err);
-          return;
-        }
-      }
-
-      // Try Web Share API on Android
       if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
         try {
-          await navigator.share({
-            title: shareText,
-            text: shareText,
-            url: shareUrl,
-          });
+          // Generate the share image
+          const imageFile = await generateShareImage();
+
+          // Check if file sharing is supported
+          const canShareFiles = imageFile && navigator.canShare && navigator.canShare({ files: [imageFile] });
+
+          if (canShareFiles) {
+            // Share with image file - Instagram/social will use the image
+            await navigator.share({
+              title: shareText,
+              text: shareText,
+              url: shareUrl,
+              files: [imageFile],
+            });
+          } else {
+            // Fallback: share without image (link only)
+            await navigator.share({
+              title: shareText,
+              text: shareText,
+              url: shareUrl,
+            });
+          }
           return;
         } catch (err: any) {
           if (err?.name === 'AbortError' || err?.message?.includes('cancel')) {
             return;
           }
+          console.error('Web Share API error:', err);
+          // On iOS, don't show fallback
+          if (isIOS) return;
         }
       }
 
       // Mobile fallback: copy to clipboard
       await handleCopyLink();
     } else {
-      // On desktop, show custom share menu
-      setShowShareMenu(true);
+      // On desktop, copy link directly and show toast
+      await handleCopyLink();
     }
   };
 
@@ -268,20 +323,25 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
       </div>
 
       {/* iOS-styled toast notification */}
-      {showToast && (
-        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 animate-fade-in">
-          <div
-            className="rounded-2xl px-6 py-3 shadow-2xl"
-            style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.85)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-            }}
-          >
-            <p className="text-white text-sm font-medium">Link copied to clipboard</p>
-          </div>
+      <div
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none"
+        style={{
+          opacity: showToast ? 1 : 0,
+          transform: `translate(-50%, -50%) scale(${showToast ? 1 : 0.9})`,
+          transition: 'opacity 0.25s ease-out, transform 0.25s ease-out',
+        }}
+      >
+        <div
+          className="rounded-2xl px-6 py-3 shadow-2xl"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+          }}
+        >
+          <p className="text-white text-sm font-medium">Link copied to clipboard</p>
         </div>
-      )}
+      </div>
 
       {/* Desktop share menu */}
       {showShareMenu && (
@@ -308,6 +368,36 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
           </div>
         </div>
       )}
+
+      {/* Loading indicator while generating share image */}
+      {isGeneratingImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div
+            className="rounded-2xl px-6 py-4 shadow-2xl"
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.85)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+            }}
+          >
+            <p className="text-white text-sm font-medium">Preparing to share...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Hidden ShareableCard for image capture - positioned off-screen */}
+      <div
+        style={{
+          position: 'fixed',
+          left: '-9999px',
+          top: 0,
+          opacity: 0,
+          pointerEvents: 'none',
+        }}
+        aria-hidden="true"
+      >
+        <ShareableCard ref={shareableCardRef} record={record} />
+      </div>
     </div>
   );
 }
