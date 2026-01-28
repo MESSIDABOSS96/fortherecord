@@ -230,20 +230,22 @@ export default function RecordModal({ record, onClose }: RecordModalProps) {
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="flex flex-col items-center justify-center mt-6">
-            <div className="text-xs sm:text-sm tracking-wide text-gray-900/70">
-              Posted on {formattedDate}
-            </div>
-            <div className="font-bold text-gray-900 text-sm sm:text-base mt-1">
-              fortherecord.fm
+          {/* Footer - stamp centered */}
+          <div className="flex items-center justify-center mt-10">
+            <div className="flex flex-col items-center">
+              <div className="text-xs sm:text-sm tracking-wide text-gray-900/70">
+                Posted on {formattedDate}
+              </div>
+              <div className="font-bold text-gray-900 text-sm sm:text-base mt-1">
+                fortherecord.fm
+              </div>
             </div>
           </div>
 
-          {/* Share button - aligned with X button horizontally, footer text vertically */}
+          {/* Share button - positioned at bottom right of card */}
           <button
             onClick={handleShare}
-            className="absolute bottom-3 sm:bottom-5 right-3 sm:right-4 w-10 h-10 flex items-center justify-center rounded-full transition-opacity hover:opacity-70"
+            className="absolute bottom-4 right-4 w-10 h-10 flex items-center justify-center rounded-full transition-opacity hover:opacity-70"
             aria-label="Share"
           >
             <svg
