@@ -1,104 +1,65 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
-import AddRecordFlow from '@/components/AddRecordFlow';
+import Link from 'next/link';
 import HeaderNav from '@/components/HeaderNav';
-import { Record } from '@/types/record';
-import { useState } from 'react';
+import { SUBMISSIONS_CLOSED_MESSAGE } from '@/lib/records';
 
 export default function AddPage() {
-  const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
-
-  const handleCancel = () => {
-    router.push('/');
-  };
-
-  const handleBack = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleSubmit = async (recordData: Omit<Record, 'id' | 'created_at'>) => {
-    try {
-      // Create record with ID and timestamp
-      const newRecord: Record = {
-        ...recordData,
-        id: Date.now().toString(),
-        created_at: new Date(),
-      };
-
-      // Save to database via API
-      const response = await fetch('/api/records', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newRecord),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create record');
-      }
-
-      // Navigate back to home and force refresh to show new record
-      router.push('/?refresh=' + Date.now());
-      router.refresh();
-    } catch (error) {
-      console.error('Error creating record:', error);
-      alert('Failed to create record. Please try again.');
-    }
-  };
-
   return (
     <div className="min-h-screen">
-      <HeaderNav
-        hideMenu={true}
-        leftAction={currentStep > 1 ? (
-          <button
-            onClick={handleBack}
-            className="w-11 h-11 flex items-center justify-center rounded-full"
-            aria-label="Back"
-            style={{
-              color: 'var(--color-text-primary)',
-              touchAction: 'manipulation',
-              WebkitTapHighlightColor: 'transparent',
-            }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7" />
-            </svg>
-          </button>
-        ) : (
-          // Empty spacer on step 1 to hide logo
-          <div className="w-11 h-11" />
-        )}
-        rightAction={
-          <button
-            onClick={handleCancel}
-            className="w-11 h-11 flex items-center justify-center rounded-full"
-            aria-label="Close"
-            style={{
-              color: 'var(--color-text-primary)',
-              touchAction: 'manipulation',
-              WebkitTapHighlightColor: 'transparent',
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        }
-      />
+      <HeaderNav />
 
-      <AddRecordFlow
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-        currentStep={currentStep}
-        onStepChange={setCurrentStep}
-      />
+      <main className="flex flex-col items-center justify-center px-6 text-center" style={{ minHeight: '70vh' }}>
+        <h1
+          className="mb-5"
+          style={{
+            fontSize: 'clamp(1.75rem, 5vw, 2.5rem)',
+            fontWeight: 700,
+            letterSpacing: '-0.02em',
+            color: 'var(--color-text-primary)',
+          }}
+        >
+          Submissions are closed
+        </h1>
+
+        <p
+          className="mb-3"
+          style={{
+            maxWidth: '30rem',
+            fontSize: '1.0625rem',
+            lineHeight: 1.6,
+            color: 'var(--color-text-secondary)',
+          }}
+        >
+          {SUBMISSIONS_CLOSED_MESSAGE}
+        </p>
+
+        <p
+          className="mb-9"
+          style={{
+            maxWidth: '30rem',
+            fontSize: '1.0625rem',
+            lineHeight: 1.6,
+            color: 'var(--color-text-secondary)',
+          }}
+        >
+          Thank you to everyone who left a song here.
+        </p>
+
+        <Link
+          href="/"
+          className="inline-flex items-center justify-center rounded-full transition-opacity hover:opacity-80"
+          style={{
+            padding: '0.875rem 2rem',
+            fontSize: '0.9375rem',
+            fontWeight: 600,
+            backgroundColor: 'var(--color-fab-bg)',
+            color: 'var(--color-fab-text)',
+          }}
+        >
+          Read the archive
+        </Link>
+      </main>
     </div>
   );
 }

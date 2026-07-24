@@ -1,37 +1,24 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { createClient } from '@supabase/supabase-js';
 import { cleanSongTitle } from '@/utils/cleanSongTitle';
+import { getAllRecords, getRecordById } from '@/lib/records';
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-async function getRecord(id: string) {
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://ygpnkvwretilfrmeirtp.supabase.co';
-  const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncG5rdndyZXRpbGZybWVpcnRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY4OTgzNTUsImV4cCI6MjA4MjQ3NDM1NX0.Cqc7J68bQotQ1lQa61_PKc7thX_QUrQz7ahkAILxOOM';
+// Pre-render a share page for every record in the archive.
+export function generateStaticParams() {
+  return getAllRecords().map((record) => ({ id: record.id }));
+}
 
-  if (!supabaseUrl || !supabaseKey) {
-    return null;
-  }
-
-  const supabase = createClient(supabaseUrl, supabaseKey);
-  const { data, error } = await supabase
-    .from('records')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-  if (error || !data) {
-    return null;
-  }
-
-  return data;
+function getRecord(id: string) {
+  return getRecordById(id);
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const record = await getRecord(id);
+  const record = getRecord(id);
 
   if (!record) {
     return {

@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Record } from "@/types/record";
+import { getLyricRecords } from "@/lib/records";
 import { searchRecords, FilterType } from "@/utils/searchRecords";
 import { cleanSongTitle } from "@/utils/cleanSongTitle";
 import HeaderNav from "@/components/HeaderNav";
@@ -155,37 +156,19 @@ export default function Home() {
     setSelectedRecord(null);
   };
 
-  // Fetch records function
+  // Load records from the static archive.
+  // These ship with the build, so there is no network call that can fail and
+  // no database that can expire — the grid is never empty.
   const fetchRecords = useCallback(async () => {
-    try {
-      const response = await fetch('/api/records');
-      if (!response.ok) {
-        throw new Error('Failed to fetch records');
-      }
+    const archiveRecords = getLyricRecords().map((r) => ({
+      ...r,
+      cardType: r.card_type,
+      created_at: new Date(r.created_at),
+    }));
 
-      const data = await response.json();
-
-      // Convert created_at strings back to Date objects
-      // Only keep lyric cards (filter out any non-lyric cards that might remain)
-      const recordsWithDates = data
-        .filter((r: any) => r.card_type === 'lyric' || !r.card_type)
-        .map((r: any) => ({
-          ...r,
-          cardType: r.card_type || r.cardType,
-          created_at: new Date(r.created_at)
-        }));
-
-      // Save unfiltered records to state
-      setAllRecords(recordsWithDates);
-      setRecords(recordsWithDates);
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error fetching records:', error);
-      // Set empty state on error
-      setAllRecords([]);
-      setRecords([]);
-      setIsLoading(false);
-    }
+    setAllRecords(archiveRecords);
+    setRecords(archiveRecords);
+    setIsLoading(false);
   }, []);
 
   // Load records from API on mount
